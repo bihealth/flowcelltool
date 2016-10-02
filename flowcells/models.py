@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
 
@@ -139,11 +140,15 @@ class BarcodeSetEntry(models.Model):
         super().save(*args, **kwargs)
 
     def _validate_unique(self):
-        """Validates that the name is unique within the BarcodeSet"""
-        qs = BarcodeSetEntry.objects.filter(name=self.name)
-        if qs.filter(barcode_set=self.barcode_set).exists():
-            raise ValidationError(
-                'Barcode name must be unique in barcode set!')
+        """Validates that the name and sequence are unique within the
+        BarcodeSet
+        """
+        # check for unique name
+        for key in ('name', 'sequence'):
+            qs = BarcodeSetEntry.objects.filter(**{key: getattr(self, key)})
+            if qs.filter(barcode_set=self.barcode_set).exists():
+                raise ValidationError(
+                    'Barcode {} must be unique in barcode set!'.format(key))
 
     def __str__(self):
         return '{} ({})'.format(self.name, self.sequence)

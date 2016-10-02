@@ -5,6 +5,7 @@
 from test_plus.test import TestCase
 
 from django.forms.models import model_to_dict
+from django.core.exceptions import ValidationError
 
 from .. import models
 
@@ -95,10 +96,11 @@ class TestBarcodeSetEntry(TestCase, BarcodeSetMixin):
         self.barcode_set = self._make_barcode_set()
         self.barcode = self._make_barcode_set_entry(self.barcode_set)
 
-    def _make_barcode_set_entry(self, barcode_set):
+    def _make_barcode_set_entry(
+            self, barcode_set, name='AR01', sequence='ACGTGTTA'):
         values = {
-            'name': 'AR01',
-            'sequence': 'ACGTGTTA',
+            'name': name,
+            'sequence': sequence,
         }
         result = models.BarcodeSetEntry(barcode_set=barcode_set, **values)
         result.save()
@@ -120,3 +122,13 @@ class TestBarcodeSetEntry(TestCase, BarcodeSetMixin):
     def test__repr__(self):
         EXPECTED = """BarcodeSetEntry('AR01', 'ACGTGTTA')"""
         self.assertEqual(repr(self.barcode), EXPECTED)
+
+    def test_unique_name(self):
+        """Check uniqueness of the name is enforced"""
+        with self.assertRaises(ValidationError):
+            self._make_barcode_set_entry(self.barcode_set, 'AR01', 'NNNNNNNN')
+
+    def test_unique_sequence(self):
+        """Check uniqueness of the sequence is enforced"""
+        with self.assertRaises(ValidationError):
+            self._make_barcode_set_entry(self.barcode_set, 'ARNN', 'ACGTGTTA')
