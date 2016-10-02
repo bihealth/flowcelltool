@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Flow Cells{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Flow Cells</h2>
+
+  {% include "flowcells/_flowcell_list_buttons.html" %}
+
+  <div class="list-group">
+    <table class="table table-hover table-striped">
+      <thead>
+        <tr>
+            <th class="col-md-1">Date</th>
+            <th class="col-md-1">Status</th>
+            <th class="col-md-2">Instrument</th>
+            <th class="col-md-2">Flow Cell</th>
+            <th class="col-md-1">Mode</th>
+            <th class="col-md-1" title="RTA version 1.x/2.x">RTAv</th>
+            <th class="col-md-2">Operator</th>
+            <th class="col-md-1 text-right">Libraries</th>
+            <th class="col-md-1">&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for flowcell in flowcell_list %}
+          <tr>
+            <td>{{ flowcell.token_date }}</td>
+            <td>{{ flowcell.status }}</td>
+            <td>{{ flowcell.sequencing_machine }}</td>
+            <td>{{ flowcell.token_vendor_id }}</td>
+            <td>{{ flowcell.is_paired }}</td>
+            <td>{{ flowcell.rta_version }}</td>
+            <td>{{ flowcell.operator }}</td>
+            <td>{{ flowcell.libraries.count }}</td>
+            <td>-</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% include "flowcells/_flowcell_list_buttons.html" %}
+
+</div>
+{% endblock content %}

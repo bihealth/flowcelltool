@@ -228,7 +228,6 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
         self.assertEquals(self.flow_cell.token_label(), 'LABEL')
 
 
-
 class LibraryMixin:
     """Helper mixin that provides _make_library()"""
 
