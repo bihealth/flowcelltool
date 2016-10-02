@@ -21,6 +21,15 @@
 
     <!-- This file stores project-specific CSS -->
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
+
+    <!-- Fix table header column to body sizing -->
+    <style type="text/css">
+    table td[class*=col-], table th[class*=col-] {
+      position: static;
+      display: table-cell;
+      float: none;
+    }
+    </style>
     {% endblock %}
   </head>
 

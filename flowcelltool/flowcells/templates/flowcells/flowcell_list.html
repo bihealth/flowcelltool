@@ -12,7 +12,7 @@
   <div class="list-group">
     <table class="table table-hover table-striped">
       <thead>
-        <tr>
+        <tr class="row">
             <th class="col-md-1">Date</th>
             <th class="col-md-1">Status</th>
             <th class="col-md-2">Instrument</th>
@@ -29,9 +29,16 @@
           <tr>
             <td>{{ flowcell.token_date }}</td>
             <td>{{ flowcell.status }}</td>
-            <td>{{ flowcell.sequencing_machine }}</td>
+            <td>{{ flowcell.sequencing_machine.vendor_id }}</td>
             <td>{{ flowcell.token_vendor_id }}</td>
-            <td>{{ flowcell.is_paired }}</td>
+            <td>
+              {% if flowcell.is_paired %}
+                2 x
+              {% else %}
+                1 x
+              {% endif %}
+              {{ flowcell.read_length }}
+            </td>
             <td>{{ flowcell.rta_version }}</td>
             <td>{{ flowcell.operator }}</td>
             <td>{{ flowcell.libraries.count }}</td>

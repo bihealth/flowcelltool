@@ -2,6 +2,7 @@ import functools
 import re
 
 from django.db import models
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.contrib.postgres.fields import ArrayField
 
@@ -305,7 +306,7 @@ class FlowCell(models.Model):
 
     #: Status of the flow cell, as tracked with this app
     status = models.CharField(
-        max_length=50, default='initial',
+        max_length=50, default=FLOWCELL_STATUS_INITIAL,
         choices=FLOWCELL_STATUS_CHOICES,
         help_text='Processing status of flow cell')
 
@@ -371,6 +372,9 @@ class FlowCell(models.Model):
                   self.num_lanes, self.status, self.operator, self.is_paired,
                   self.index_read_count, self.rta_version, self.read_length)
         return tpl.format(', '.join(map(repr, values)))
+
+    def get_absolute_url(self):
+        return reverse('flowcell_view', kwargs={'pk': self.pk})
 
     def token_date(self):
         return self._name_tokens().get('date', '')

@@ -5,6 +5,7 @@
 from test_plus.test import TestCase
 
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from django.test import Client
 
 from .. import views
@@ -32,3 +33,55 @@ class TestFlowCellListView(TestCase, FlowCellMixin, SequencingMachineMixin):
         response = self.client.get('/flowcells/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['flowcell_list']), 1)
+
+
+class TestFlowCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
+
+    def setUp(self):
+        self.user = self.make_user(password='password')
+        self.machine = self._make_machine()
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.client = Client()
+        assert self.client.login(username=self.user.username,
+                                 password='password')
+
+    def test_render(self):
+        """Simply test that rendering the list view works"""
+        # Check precondition
+        self.assertEqual(FlowCell.objects.all().count(), 0)
+
+        # Simulate POST request
+        values = {
+            'name': self.flow_cell_name,
+            'num_lanes': 8,
+            'status': models.FLOWCELL_STATUS_INITIAL,
+            'operator': 'John Doe',
+            'is_paired': True,
+            'index_read_count': 1,
+            'rta_version': models.RTA_VERSION_V2,
+            'read_length': 151,
+        }
+
+        # Check resulting response
+        response = self.client.post('/flowcells/create', values)
+        self.assertRedirects(response, '/flowcells/')
+
+        # Check resulting database state
+        self.assertEqual(FlowCell.objects.all().count(), 1)
+        flow_cell = FlowCell.objects.all()[0]
+        self.assertIsNotNone(flow_cell)
+        EXPECTED = {
+            'id': flow_cell.pk,
+            'name': self.flow_cell_name,
+            'owner': self.user.pk,
+            'num_lanes': 8,
+            'status': models.FLOWCELL_STATUS_INITIAL,
+            'operator': 'John Doe',
+            'is_paired': True,
+            'index_read_count': 1,
+            'rta_version': models.RTA_VERSION_V2,
+            'sequencing_machine': self.machine.pk,
+            'read_length': 151,
+        }
+        self.assertEqual(model_to_dict(flow_cell), EXPECTED)

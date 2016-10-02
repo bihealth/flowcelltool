@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}Create Flow Cell{% endblock %}
+
+{% block content %}
+<h2>Create Flow Cell</h2>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form | crispy }}
+
+  <div class="text-xs-right mt-t-1 m-b-1">
+    <a role="button" class="btn btn-secondary"
+      href="{% url 'flowcell_list' %}">
+      Cancel
+    </a>
+    <button type="submit" class="btn btn-primary">
+      Create
+    </button>
+  </div>
+</form>
+{% endblock %}

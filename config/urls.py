@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
 
     # Flow cell management
-    url(r'^flowcells/', include('flowcelltool.flowcells.urls', namespace='flowcells')),
+    url(r'^flowcells/', include('flowcelltool.flowcells.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
