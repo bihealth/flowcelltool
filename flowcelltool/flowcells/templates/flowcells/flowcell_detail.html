@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Flow Cell Details {{ object.token_vendor_id }}{% endblock %}
+
+{% block content %}
+<h2>Flow Cell: {{ object.token_vendor_id }}</h2>
+
+{% include "flowcells/_flowcell_detail_buttons.html" %}
+
+<div class="row">
+  <h3>Details</h3>
+
+  {% include "flowcells/_flowcell_detail_properties.html" %}
+</div>
+
+<div class="row">
+  <h3>Libraries</h3>
+
+  {% include "flowcells/_flowcell_detail_libraries.html" %}
+</div>
+
+<!--
+<div class="row">
+  <h3>Flow Cell Layout</h3>
+</div>
+-->
+
+<!--
+<div class="row">
+  <h3>Sample Sheets</h3>
+</div>
+-->
+
+{% include "flowcells/_flowcell_detail_buttons.html" %}
+
+{% endblock %}

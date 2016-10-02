@@ -1,0 +1,44 @@
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+        <th class="col-md-3">Name</th>
+        <th class="col-md-1">Reference</th>
+        <th class="col-md-3">Index Set</th>
+        <th class="col-md-2">Index</th>
+        <th class="col-md-2">Index Seq.</th>
+        <th class="col-md-1">Lanes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for lib in object.libraries.all %}
+    <tr>
+      <td>{{ lib.name }}</td>
+      <td>{{ lib.reference }}</td>
+      <td>
+        {% if object.index_read_count %}
+          {% if object.index_read_count > 1 %}
+            {{ lib.barcode_set.name }}
+          {% else %}
+            / {{ lib.barcode_set.name }}
+          {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </td>
+      <td>
+        {% if object.index_read_count %}
+          {% if object.index_read_count > 1 %}
+            {{ lib.barcode.name }}
+          {% else %}
+            / {{ lib.barcode.name }}
+          {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </td>
+      <td>{{ lib.barcode.sequence }}</td>
+      <td>{{ lib.get_lane_nos_pretty }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

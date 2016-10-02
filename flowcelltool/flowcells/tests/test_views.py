@@ -35,7 +35,7 @@ class TestFlowCellListView(TestCase, FlowCellMixin, SequencingMachineMixin):
         self.assertEqual(len(response.context['flowcell_list']), 1)
 
 
-class TestFlowCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
+class TestFlowCellCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
 
     def setUp(self):
         self.user = self.make_user(password='password')
@@ -63,9 +63,8 @@ class TestFlowCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
             'read_length': 151,
         }
 
-        # Check resulting response
+        # Simulate the POST
         response = self.client.post('/flowcells/create', values)
-        self.assertRedirects(response, '/flowcells/')
 
         # Check resulting database state
         self.assertEqual(FlowCell.objects.all().count(), 1)
@@ -74,6 +73,7 @@ class TestFlowCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
         EXPECTED = {
             'id': flow_cell.pk,
             'name': self.flow_cell_name,
+            'description': None,
             'owner': self.user.pk,
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_INITIAL,
@@ -85,3 +85,13 @@ class TestFlowCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
             'read_length': 151,
         }
         self.assertEqual(model_to_dict(flow_cell), EXPECTED)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('flowcell_view', kwargs={'pk': flow_cell.pk}))
+
+
+class TestFlowCellDetailView(TestCase, FlowCellMixin, SequencingMachineMixin):
+
+    def testFail(self):
+        self.fail("Implement this test!")

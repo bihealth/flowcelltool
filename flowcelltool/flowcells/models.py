@@ -294,6 +294,14 @@ class FlowCell(models.Model):
         help_text=('The full flow cell name, e.g., '
                    '160303_ST-K12345_0815_A_BCDEFGHIXX_LABEL'))
 
+    #: Short description length
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text=(
+            'Short description of the flow cell ' +
+            markdown_allowed()))
+
     # TODO: rename to instrument?
     #: The sequencer used for processing this flow cell
     sequencing_machine = models.ForeignKey(

@@ -25,9 +25,6 @@ class FlowCellCreateView(CreateView):
     #: The model type to create
     model = models.FlowCell
 
-    #: The URL to redirect to
-    success_url = '/flowcells/'
-
     #: Fields to show in the create view, the rest is auto-filled
     fields = ('name', 'num_lanes', 'status', 'operator', 'is_paired',
               'index_read_count', 'rta_version', 'read_length')
@@ -36,7 +33,8 @@ class FlowCellCreateView(CreateView):
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
         self.object.save()
-        return redirect('flowcell_list')
+        return redirect(reverse(
+            'flowcell_view', kwargs={'pk': self.object.pk}))
 
 
 class FlowCellDetailView(DetailView):
@@ -48,4 +46,3 @@ class FlowCellDetailView(DetailView):
     #: Fields to show in the create view, the rest is auto-filled
     fields = ('name', 'num_lanes', 'status', 'operator', 'is_paired',
               'index_read_count', 'rta_version', 'read_length')
-

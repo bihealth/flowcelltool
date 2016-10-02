@@ -16,7 +16,7 @@ urlpatterns = [
         name='flowcell_create',
     ),
     url(
-        regex=r'^view$',
+        regex=r'^view/(?P<pk>\d+)$',
         view=views.FlowCellDetailView.as_view(),
         name='flowcell_view',
     ),
