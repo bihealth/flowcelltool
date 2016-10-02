@@ -47,7 +47,9 @@ class TestFlowCellCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
                                  password='password')
 
     def test_render(self):
-        """Simply test that rendering the list view works"""
+        """Simply test that post inserts a new flow cell and redirects to the
+        list view
+        """
         # Check precondition
         self.assertEqual(FlowCell.objects.all().count(), 0)
 
@@ -93,5 +95,26 @@ class TestFlowCellCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
 
 class TestFlowCellDetailView(TestCase, FlowCellMixin, SequencingMachineMixin):
 
-    def testFail(self):
-        self.fail("Implement this test!")
+    def setUp(self):
+        self.user = self.make_user(password='password')
+        self.machine = self._make_machine()
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.client = Client()
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151)
+        assert self.client.login(username=self.user.username,
+                                 password='password')
+
+    def test_render(self):
+        """Simply test that rendering the detail view works"""
+        # Simulate the POST
+        response = self.client.get(
+            reverse('flowcell_view', kwargs={'pk': self.flow_cell.pk}))
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['object'].pk,
+                         self.flow_cell.pk)
