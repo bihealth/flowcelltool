@@ -11,7 +11,7 @@ INDEX_WORKFLOWS = (
 MACHINE_MODELS = (
     ('MiSeq', 'MiSeq'),
     ('MiniSeq', 'MiniSeq'),
-    ('NextSeq', 'NextSeq'),
+    ('NextSeq500', 'NextSeq 500'),
     ('HiSeq1000', 'HiSeq 1000'),
     ('HiSeq1500', 'HiSeq 1500'),
     ('HiSeq3000', 'HiSeq 3000'),
@@ -23,7 +23,8 @@ class SequencingMachine(models.Model):
     """Represent a sequencing machine instance
     """
 
-    #: Vendor ID of the machine, reflected in file names and read names later on
+    #: Vendor ID of the machine, reflected in file names and read names later
+    #: on
     vendor_id = models.CharField(
         max_length=100,
         help_text='Vendor ID of the machine')
@@ -56,3 +57,12 @@ class SequencingMachine(models.Model):
         choices=INDEX_WORKFLOWS,
         default='A',
         help_text='Workflow to use for dual indexing')
+
+    def __str__(self):
+        tpl = 'SequencingMachine({})'
+        vals = (self.vendor_id, self.label, self.description,
+                self.machine_model, self.slot_count, self.dual_index_workflow)
+        return tpl.format(', '.join(map(repr, vals)))
+
+    def __repr__(self):
+        return str(self)
