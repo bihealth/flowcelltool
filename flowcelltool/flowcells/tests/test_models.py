@@ -219,6 +219,15 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
             models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
             True, 1, models.RTA_VERSION_V2, 151)
 
+    def test_tokens(self):
+        self.assertEquals(self.flow_cell.token_date(), '160303')
+        self.assertEquals(self.flow_cell.token_instrument(), 'NS5001234')
+        self.assertEquals(self.flow_cell.token_run_no(), '0815')
+        self.assertEquals(self.flow_cell.token_slot(), 'A')
+        self.assertEquals(self.flow_cell.token_vendor_id(), 'BCDEFGHIXX')
+        self.assertEquals(self.flow_cell.token_label(), 'LABEL')
+
+
 
 class LibraryMixin:
     """Helper mixin that provides _make_library()"""

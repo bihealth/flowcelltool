@@ -1,3 +1,4 @@
+import functools
 import re
 
 from django.db import models
@@ -369,6 +370,28 @@ class FlowCell(models.Model):
                   self.num_lanes, self.status, self.operator, self.is_paired,
                   self.index_read_count, self.rta_version, self.read_length)
         return tpl.format(', '.join(map(repr, values)))
+
+    def token_date(self):
+        return self._name_tokens().get('date', '')
+
+    def token_instrument(self):
+        return self._name_tokens().get('machine_name', '')
+
+    def token_run_no(self):
+        return self._name_tokens().get('run_no', '')
+
+    def token_slot(self):
+        return self._name_tokens().get('slot', '')
+
+    def token_vendor_id(self):
+        return self._name_tokens().get('vendor_id', '')
+
+    def token_label(self):
+        return self._name_tokens().get('label', '')
+
+    @functools.lru_cache()
+    def _name_tokens(self):
+        return re.match(FLOW_CELL_NAME_RE, self.name).groupdict()
 
 
 #: Reference used for identifying human samples
