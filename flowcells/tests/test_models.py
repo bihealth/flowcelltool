@@ -223,7 +223,7 @@ class LibraryMixin:
 
     def _make_library(
             self, flow_cell, name, reference, barcode_set, barcode,
-            lane_numbers):
+            lane_numbers, barcode_set2=None, barcode2=None):
         values = {
             'flow_cell': flow_cell,
             'name': name,
@@ -231,6 +231,8 @@ class LibraryMixin:
             'barcode_set': barcode_set,
             'barcode': barcode,
             'lane_numbers': lane_numbers,
+            'barcode_set2': barcode_set2,
+            'barcode2': barcode2,
         }
         result = models.Library(**values)
         result.save()
@@ -255,13 +257,16 @@ class Library(TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
             True, 1, models.RTA_VERSION_V2, 151)
         self.library = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
-            self.barcode_set, self.barcode, [1, 2])
+            self.barcode_set, self.barcode, [1, 2],
+            self.barcode_set, self.barcode2)
 
     def test_initialization(self):
         EXPECTED = {
-            'id': self.flow_cell.pk,
+            'id': self.library.pk,
             'barcode': self.barcode.pk,
             'barcode_set': self.barcode_set.pk,
+            'barcode2': self.barcode2.pk,
+            'barcode_set2': self.barcode_set.pk,
             'flow_cell': self.flow_cell.pk,
             'lane_numbers': [1, 2],
             'name': 'LIB_001',
@@ -270,7 +275,7 @@ class Library(TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
         self.assertEqual(model_to_dict(self.library), EXPECTED)
 
     def test__str__(self):
-        EXPECTED = 'LIB_001 (AR01:ACGTGTTA)'
+        EXPECTED = 'LIB_001 (AR01:ACGTGTTA, AR02:CGATATA)'
         self.assertEqual(str(self.library), EXPECTED)
 
     def test__repr__(self):
@@ -291,6 +296,13 @@ class Library(TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
             self._make_library(
                 self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
                 self.barcode_set, self.barcode, [2])
+
+    def test_validate_uniqueness_violate_barcode2(self):
+        with self.assertRaises(ValidationError):
+            self._make_library(
+                self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
+                self.barcode_set, self.barcode2, [2],
+                self.barcode_set, self.barcode2)
 
     def test_validate_lane_nos(self):
         with self.assertRaises(ValidationError):

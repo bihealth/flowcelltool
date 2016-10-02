@@ -354,7 +354,7 @@ class FlowCell(models.Model):
         Library
         """
         for library in self.libraries.all():
-            if any (l > self.num_lanes for l in library.lane_numbers):
+            if any(l > self.num_lanes for l in library.lane_numbers):
                 raise ValidationError(
                     'Library {} is on lane [{}] (> {})'.format(
                         library.name, list(sorted(library.lane_numbers)),
@@ -416,6 +416,14 @@ REFERENCE_CHOICES = (
 )
 
 
+def try_helper(f, arg, exc=AttributeError, default=''):
+    """Helper for easy nullable access"""
+    try:
+        return f(arg)
+    except exc:
+        return default
+
+
 class Library(models.Model):
     """The data stored for each library that is to be sequenced
     """
@@ -436,11 +444,23 @@ class Library(models.Model):
     reference = models.CharField(
         max_length=100, default='hg19', choices=REFERENCE_CHOICES)
 
-    #: The barcode set used for this library
-    barcode_set = models.ForeignKey(BarcodeSet)
+    #: The barcode set used for first barcode index of this library
+    barcode_set = models.ForeignKey(
+        BarcodeSet, null=True, on_delete=models.SET_NULL)
 
-    #: The barcode used for this library
-    barcode = models.ForeignKey(BarcodeSetEntry)
+    #: The barcode used for first barcode index this library
+    barcode = models.ForeignKey(
+        BarcodeSetEntry, null=True, on_delete=models.SET_NULL)
+
+    #: The barcode set used for second barcode index of this library
+    barcode_set2 = models.ForeignKey(
+        BarcodeSet, null=True, on_delete=models.SET_NULL,
+        related_name='barcode_sets2')
+
+    #: The barcode used for second barcode index this library
+    barcode2 = models.ForeignKey(
+        BarcodeSetEntry, null=True, on_delete=models.SET_NULL,
+        related_name='barcodes2')
 
     #: The lanes that the library was sequenced on on the flow cell
     lane_numbers = ArrayField(
@@ -479,10 +499,22 @@ class Library(models.Model):
             raise ValidationError(
                 ('There are libraries sharing flow cell lane with the '
                  'same barcode as {}: {}'.format(self.name, self.barcode)))
+        # Check that no libraries exist with the same secondary barcode
+        if self.barcode2:
+            if libs_on_lanes.filter(barcode2=self.barcode2).exists():
+                raise ValidationError(
+                    ('There are libraries sharing flow cell lane with the '
+                     'same secondary barcode as {}: {}'.format(
+                        self.name, self.barcode2)))
 
     def __str__(self):
-        values = (self.name, self.barcode.name, self.barcode.sequence)
-        return '{} ({}:{})'.format(*map(str, values))
+        values = (
+            self.name,
+            try_helper(lambda b: b.name, self.barcode),
+            try_helper(lambda b: b.sequence, self.barcode),
+            try_helper(lambda b: b.name, self.barcode2),
+            try_helper(lambda b: b.sequence, self.barcode2))
+        return '{} ({}:{}, {}:{})'.format(*map(str, values))
 
     def __repr__(self):
         tpl = 'Library({})'
