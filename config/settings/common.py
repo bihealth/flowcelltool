@@ -31,9 +31,6 @@ DJANGO_APPS = (
     # Useful template tags:
     'django.contrib.humanize',
 
-    # Local apps, implementing the site functionality
-    'flowcells',
-
     # Admin
     'django.contrib.admin',
 )
@@ -48,7 +45,8 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     # custom users app
     'flowcelltool.users.apps.UsersConfig',
-    # Your stuff: custom apps go here
+    # flowcell management
+    'flowcelltool.flowcells',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

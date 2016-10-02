@@ -64,8 +64,8 @@ class BarcodeSetMixin:
 
     def _make_barcode_set(self):
         values = {
-            'name': 'Agilent SureSelect XT',
-            'short_name': 'SureSelect',
+            'name': 'Agilent SureSelect XT Test',
+            'short_name': 'SureSelectTest',
         }
         result = models.BarcodeSet(**values)
         result.save()
@@ -82,17 +82,19 @@ class TestBarcodeSet(TestCase, BarcodeSetMixin):
         EXPECTED = {
             'id': self.barcode_set.pk,
             'description': None,
-            'name': 'Agilent SureSelect XT',
-            'short_name': 'SureSelect',
+            'name': 'Agilent SureSelect XT Test',
+            'short_name': 'SureSelectTest',
         }
         self.assertEqual(model_to_dict(self.barcode_set), EXPECTED)
 
     def test__str(self):
-        EXPECTED = """Agilent SureSelect XT (SureSelect)"""
+        EXPECTED = """Agilent SureSelect XT Test (SureSelectTest)"""
         self.assertEqual(str(self.barcode_set), EXPECTED)
 
     def test__repr__(self):
-        EXPECTED = """BarcodeSet('Agilent SureSelect XT', 'SureSelect')"""
+        EXPECTED = (
+            """BarcodeSet('Agilent SureSelect XT Test', """
+            """'SureSelectTest')""")
         self.assertEqual(repr(self.barcode_set), EXPECTED)
 
 
@@ -281,7 +283,8 @@ class Library(TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
     def test__repr__(self):
         EXPECTED = (
             r"""Library('160303_NS5001234_0815_A_BCDEFGHIXX_LABEL', """
-            r"""'hg19', BarcodeSet('Agilent SureSelect XT', 'SureSelect'), """
+            r"""'hg19', BarcodeSet('Agilent SureSelect XT Test', """
+            r"""'SureSelectTest'), """
             r"""BarcodeSetEntry('AR01', 'ACGTGTTA'), [1, 2])""")
         self.assertEqual(repr(self.library), EXPECTED)
 
