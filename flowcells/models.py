@@ -3,11 +3,7 @@ from django.db import models
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
 
 
-INDEX_WORKFLOWS = (
-    ('A', 'MiSeq, HiSeq <=2500'),
-    ('B', 'MiniSeq, NextSeq, HiSeq >=3000'),
-)
-
+#: Choices for machine models
 MACHINE_MODELS = (
     ('MiSeq', 'MiSeq'),
     ('MiniSeq', 'MiniSeq'),
@@ -16,6 +12,17 @@ MACHINE_MODELS = (
     ('HiSeq1500', 'HiSeq 1500'),
     ('HiSeq3000', 'HiSeq 3000'),
     ('HiSeq4000', 'HiSeq 4000'),
+    ('other', 'Other'),  # be a bit more future proof
+)
+
+
+#: Choices for index workflows, determines whether the second index is read
+#: as reverse-complement or not for dual indexing.  Could be inferred from
+#: the machine type but not doing so as we would have to know all machine
+#: types at any time.
+INDEX_WORKFLOWS = (
+    ('A', 'MiSeq, HiSeq <=2500'),
+    ('B', 'MiniSeq, NextSeq, HiSeq >=3000'),
 )
 
 
