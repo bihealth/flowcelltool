@@ -48,6 +48,48 @@ class SequencingMachineDeleteView(DeleteView):
     success_url = reverse_lazy('instrument_list')
 
 
+# SeqeuencingMachine Views ----------------------------------------------------
+
+
+class BarcodeSetListView(ListView):
+    """Shows a list of sequencing machines"""
+
+    model = models.BarcodeSet
+
+
+class BarcodeSetCreateView(CreateView):
+    """View for creating sequencing machine"""
+
+    model = models.BarcodeSet
+
+    #: Fields to show in creation form
+    fields = ['name', 'short_name', 'description']
+
+
+class BarcodeSetDetailView(DetailView):
+    """View detail of sequencing machine"""
+
+    model = models.BarcodeSet
+
+
+class BarcodeSetUpdateView(UpdateView):
+    """View for updating sequencing machines"""
+
+    model = models.BarcodeSet
+
+    #: Fields to show in creation form
+    fields = ['name', 'short_name', 'description']
+
+
+class BarcodeSetDeleteView(DeleteView):
+    """View for deleting sequencing machines"""
+
+    model = models.BarcodeSet
+
+    #: URL to redirect to on success
+    success_url = reverse_lazy('barcodeset_list')
+
+
 # FlowCell Views --------------------------------------------------------------
 
 
@@ -101,4 +143,6 @@ class FlowCellDeleteView(DeleteView):
     """View for deleting flow cell"""
 
     model = models.FlowCell
+
+    #: URL to redirect to on success
     success_url = reverse_lazy('flowcell_list')

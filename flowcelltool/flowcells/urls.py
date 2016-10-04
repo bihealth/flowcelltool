@@ -31,6 +31,33 @@ urlpatterns = [
         name='instrument_delete',
     ),
 
+    # BarcodeSet related ------------------------------------------------------
+    url(
+        regex=r'^barcodeset/list$',
+        view=views.BarcodeSetListView.as_view(),
+        name='barcodeset_list',
+    ),
+    url(
+        regex=r'^barcodeset/create$',
+        view=views.BarcodeSetCreateView.as_view(),
+        name='barcodeset_create',
+    ),
+    url(
+        regex=r'^barcodeset/view/(?P<pk>\d+)$',
+        view=views.BarcodeSetDetailView.as_view(),
+        name='barcodeset_view',
+    ),
+    url(
+        regex=r'^barcodeset/update/(?P<pk>\d+)$',
+        view=views.BarcodeSetUpdateView.as_view(),
+        name='barcodeset_update',
+    ),
+    url(
+        regex=r'^barcodeset/delete/(?P<pk>\d+)$',
+        view=views.BarcodeSetDeleteView.as_view(),
+        name='barcodeset_delete',
+    ),
+
     # FlowCell related --------------------------------------------------------
     url(
         regex=r'^$',
@@ -51,5 +78,10 @@ urlpatterns = [
         regex=r'^update/(?P<pk>\d+)$',
         view=views.FlowCellUpdateView.as_view(),
         name='flowcell_update',
+    ),
+    url(
+        regex=r'^delete/(?P<pk>\d+)$',
+        view=views.FlowCellDeleteView.as_view(),
+        name='flowcell_delete',
     ),
 ]

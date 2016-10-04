@@ -152,6 +152,9 @@ class BarcodeSet(models.Model):
         help_text=('Short description of the barcode set. ' +
                    markdown_allowed()))
 
+    def get_absolute_url(self):
+        return reverse('barcodeset_view', kwargs={'pk': self.pk})
+
     def __str__(self):
         return '{} ({})'.format(self.name, self.short_name)
 

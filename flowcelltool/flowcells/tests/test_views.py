@@ -10,9 +10,10 @@ from django.test import Client
 
 from .. import views
 from .. import models
-from ..models import SequencingMachine, FlowCell
+from ..models import SequencingMachine, FlowCell, BarcodeSet, BarcodeSetEntry
 
-from .test_models import SequencingMachineMixin, FlowCellMixin
+from .test_models import SequencingMachineMixin, FlowCellMixin, \
+    BarcodeSetMixin, BarcodeSetEntryMixin
 
 
 # FlowCell related ------------------------------------------------------------
@@ -200,7 +201,7 @@ class TestFlowCellDeleteView(TestCase, FlowCellMixin, SequencingMachineMixin):
 
         # Simulate the POST
         response = self.client.post(
-            reverse('instrument_delete', kwargs={'pk': self.machine.pk}))
+            reverse('flowcell_delete', kwargs={'pk': self.flow_cell.pk}))
 
         # Check resulting database state
         self.assertEqual(FlowCell.objects.all().count(), 0)
@@ -305,7 +306,7 @@ class TestSequencingMachineUpdateView(TestCase, SequencingMachineMixin):
                                  password='password')
 
     def test_render(self):
-        """Test that the flow cell update POST works"""
+        """Test that the instrument update POST works"""
         # Check precondition
         self.assertEqual(SequencingMachine.objects.all().count(), 1)
 
@@ -349,7 +350,7 @@ class TestSequencingMachineDeleteView(TestCase, SequencingMachineMixin):
                                  password='password')
 
     def test_render(self):
-        """Test that the flow cell delete POST works"""
+        """Test that the instrument delete POST works"""
         # Check precondition
         self.assertEqual(SequencingMachine.objects.all().count(), 1)
 
@@ -363,3 +364,168 @@ class TestSequencingMachineDeleteView(TestCase, SequencingMachineMixin):
         # Check resulting response
         self.assertRedirects(
             response, reverse('instrument_list'))
+
+
+# BarcodeSet related ----------------------------------------------------------
+
+
+class TestBarcodeSetListView(TestCase, BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATATA')
+        self.client = Client()
+
+    def test_render(self):
+        """Simply test that rendering the list view works"""
+        response = self.client.get(reverse('barcodeset_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 5)
+
+
+class TestBarcodeSetCreateView(TestCase):
+
+    def setUp(self):
+        self.user = self.make_user(password='password')
+        assert self.client.login(username=self.user.username,
+                                 password='password')
+
+    def test_render(self):
+        """Simply test that post inserts a new flow cell and redirects to the
+        list view
+        """
+        # Check precondition
+        self.assertEqual(BarcodeSet.objects.all().count(), 4)
+
+        # Simulate POST request
+        values = {
+            'name': 'some_barcodes',
+            'short_name': 'SBS',
+            'description': 'Some barcode set',
+        }
+
+        # Simulate the POST
+        response = self.client.post(reverse('barcodeset_create'), values)
+
+        # Check resulting database state
+        self.assertEqual(
+            BarcodeSet.objects.filter(name='some_barcodes').count(), 1)
+        barcode_set = BarcodeSet.objects.filter(name='some_barcodes')[0]
+        self.assertIsNotNone(barcode_set)
+        EXPECTED = {
+            'id': barcode_set.pk,
+            'name': 'some_barcodes',
+            'short_name': 'SBS',
+            'description': 'Some barcode set',
+        }
+        self.assertEqual(model_to_dict(barcode_set), EXPECTED)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('barcodeset_view',
+                              kwargs={'pk': barcode_set.pk}))
+
+
+class TestBarcodeSetDetailView(
+        TestCase, BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATAAA')
+        self.client = Client()
+
+    def test_render(self):
+        """Simply test that rendering the detail view works"""
+        # Simulate the GET
+        response = self.client.get(
+            reverse('barcodeset_view',
+                    kwargs={'pk': self.barcode_set.pk}))
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['object'].pk,
+                         self.barcode_set.pk)
+
+
+class TestBarcodeSetUpdateView(
+        TestCase, BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATAAA')
+        self.client = Client()
+
+    def test_render(self):
+        """Test that the barcode set update POST works"""
+        # Check precondition
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+
+        # Simulate POST request
+        values = model_to_dict(self.barcode_set)
+        values['name'] = 'Another name'
+        values['description'] = 'This is the description'
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('barcodeset_update', kwargs={'pk': self.barcode_set.pk}),
+            values)
+
+        # Check resulting database state
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        barcode_set = BarcodeSet.objects.get(pk=self.barcode_set.pk)
+        EXPECTED = {
+            'id': barcode_set.pk,
+            'name': values['name'],
+            'short_name': self.barcode_set.short_name,
+            'description': values['description'],
+        }
+        self.assertEqual(model_to_dict(barcode_set), EXPECTED)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('barcodeset_view',
+                              kwargs={'pk': barcode_set.pk}))
+
+
+class TestBarcodeSetDeleteView(
+        TestCase, BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATAAA')
+        self.client = Client()
+
+    def test_render(self):
+        """Test that the barcode set delete POST works"""
+        # Check precondition
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 66)
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('barcodeset_delete',
+                    kwargs={'pk': self.barcode_set.pk}))
+
+        # Check resulting database state
+        self.assertEqual(BarcodeSet.objects.all().count(), 4)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 64)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('barcodeset_list'))

@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Confirm deletion of {{ object.vendor_id }}{% endblock %}
+{% block title %}Confirm deletion of {{ object.name }}{% endblock %}
 
 {% block content %}
 <div class="row">
-  <h2>Confirm deletion of {{ object.vendor_id }}</h2>
+  <h2>Confirm deletion of {{ object.name }}</h2>
 
   <p>
-    Do you really want to delete the flow cell shown below and all of the
-    libraries on it?
+    Do you really want to delete the barcode set shown below and all
+    barcode entries?
   </p>
 
-  {% include "flowcells/_flowcell_detail_properties.html" %}
+  {% include "flowcells/_barcodeset_detail_properties.html" %}
 
   <form method="post">{% csrf_token %}
     <div class="mt-t-1 m-b-1">
       <a role="button" class="btn btn-secondary"
-          href="{% url 'flowcell_view' pk=object.pk %}">
+          href="{% url 'barcodeset_view' pk=object.pk %}">
         <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
         Cancel
       </a>
