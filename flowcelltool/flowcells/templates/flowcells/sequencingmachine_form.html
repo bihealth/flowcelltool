@@ -4,19 +4,18 @@
 
 {% block title %}
 {% if object.pk %}
-Update Flow Cell {{ object.token_vendor_id }}
+Update Sequencing Machine {{ object.vendor_id }}
 {% else %}
-Create Flow Cell
+Create Sequencing Machine
 {% endif %}
 {% endblock %}
 
 {% block content %}
-
-<div>
+<div class="row">
   {% if object.pk %}
-  <h2>Update Flow Cell {{ object.token_vendor_id }}</h2>
+  <h2>Update Sequencing Machine {{ object.vendor_id }}</h2>
   {% else %}
-  <h2>Create Flow Cell</h2>
+  <h2>Create Sequencing Machine</h2>
   {% endif %}
 
   <form method="post">
@@ -26,12 +25,12 @@ Create Flow Cell
     <div class="text-xs-right mt-t-1 m-b-1">
       <a role="button" class="btn btn-secondary"
         {% if object.pk %}
-          href="{% url 'flowcell_view' pk=object.pk %}">
+          href="{% url 'instrument_view' pk=object.pk %}">
         {% else %}
           href="{% url 'flowcell_list' %}">
         {% endif %}
-          <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-          Cancel
+        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+        Cancel
       </a>
       <button type="submit" class="btn btn-primary">
         <i class="fa fa-check" aria-hidden="true"></i>

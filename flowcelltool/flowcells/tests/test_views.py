@@ -15,6 +15,9 @@ from ..models import SequencingMachine, FlowCell
 from .test_models import SequencingMachineMixin, FlowCellMixin
 
 
+# FlowCell related ------------------------------------------------------------
+
+
 class TestFlowCellListView(TestCase, FlowCellMixin, SequencingMachineMixin):
 
     def setUp(self):
@@ -30,7 +33,7 @@ class TestFlowCellListView(TestCase, FlowCellMixin, SequencingMachineMixin):
 
     def test_render(self):
         """Simply test that rendering the list view works"""
-        response = self.client.get('/flowcells/')
+        response = self.client.get(reverse('flowcell_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['flowcell_list']), 1)
 
@@ -66,7 +69,7 @@ class TestFlowCellCreateView(TestCase, FlowCellMixin, SequencingMachineMixin):
         }
 
         # Simulate the POST
-        response = self.client.post('/flowcells/create', values)
+        response = self.client.post(reverse('flowcell_create'), values)
 
         # Check resulting database state
         self.assertEqual(FlowCell.objects.all().count(), 1)
@@ -143,10 +146,12 @@ class TestFlowCellUpdateView(TestCase, FlowCellMixin, SequencingMachineMixin):
         # Simulate POST request
         values = model_to_dict(self.flow_cell)
         values['name'] = values['name'] + 'YADAYADAYADA'
+        values['status'] = models.FLOWCELL_STATUS_DEMUX_COMPLETE
 
         # Simulate the POST
         response = self.client.post(
-            reverse('flowcell_update', kwargs={'pk': self.flow_cell.pk}))
+            reverse('flowcell_update', kwargs={'pk': self.flow_cell.pk}),
+            values)
 
         # Check resulting database state
         self.assertEqual(FlowCell.objects.all().count(), 1)
@@ -158,7 +163,7 @@ class TestFlowCellUpdateView(TestCase, FlowCellMixin, SequencingMachineMixin):
             'description': None,
             'owner': self.user.pk,
             'num_lanes': 8,
-            'status': models.FLOWCELL_STATUS_INITIAL,
+            'status': models.FLOWCELL_STATUS_DEMUX_COMPLETE,
             'operator': 'John Doe',
             'is_paired': True,
             'index_read_count': 1,
@@ -171,3 +176,190 @@ class TestFlowCellUpdateView(TestCase, FlowCellMixin, SequencingMachineMixin):
         # Check resulting response
         self.assertRedirects(
             response, reverse('flowcell_view', kwargs={'pk': flow_cell.pk}))
+
+
+class TestFlowCellDeleteView(TestCase, FlowCellMixin, SequencingMachineMixin):
+
+    def setUp(self):
+        self.user = self.make_user(password='password')
+        self.machine = self._make_machine()
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.client = Client()
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151)
+        assert self.client.login(username=self.user.username,
+                                 password='password')
+
+    def test_render(self):
+        """Test that the flow cell delete POST works"""
+        # Check precondition
+        self.assertEqual(FlowCell.objects.all().count(), 1)
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('instrument_delete', kwargs={'pk': self.machine.pk}))
+
+        # Check resulting database state
+        self.assertEqual(FlowCell.objects.all().count(), 0)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('flowcell_list'))
+
+
+# SequencingMachine related ---------------------------------------------------
+
+
+class TestSequencingMachineListView(TestCase, SequencingMachineMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.machine = self._make_machine()
+        self.client = Client()
+
+    def test_render(self):
+        """Simply test that rendering the list view works"""
+        response = self.client.get(reverse('instrument_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 1)
+
+
+class TestSequencingMachineCreateView(TestCase):
+
+    def setUp(self):
+        self.user = self.make_user(password='password')
+        assert self.client.login(username=self.user.username,
+                                 password='password')
+
+    def test_render(self):
+        """Simply test that post inserts a new flow cell and redirects to the
+        list view
+        """
+        # Check precondition
+        self.assertEqual(SequencingMachine.objects.all().count(), 0)
+
+        # Simulate POST request
+        values = {
+            'vendor_id': 'NS5001234',
+            'label': 'NextSeq#1',
+            'description': 'In corner of lab 101',
+            'machine_model': models.MACHINE_MODEL_NEXTSEQ500,
+            'slot_count': 1,
+            'dual_index_workflow': models.INDEX_WORKFLOW_A,
+        }
+
+        # Simulate the POST
+        response = self.client.post(reverse('instrument_create'), values)
+
+        # Check resulting database state
+        self.assertEqual(SequencingMachine.objects.all().count(), 1)
+        instrument = SequencingMachine.objects.all()[0]
+        self.assertIsNotNone(instrument)
+        EXPECTED = {
+            'id': instrument.pk,
+            'vendor_id': 'NS5001234',
+            'label': 'NextSeq#1',
+            'description': 'In corner of lab 101',
+            'machine_model': models.MACHINE_MODEL_NEXTSEQ500,
+            'slot_count': 1,
+            'dual_index_workflow': models.INDEX_WORKFLOW_A,
+        }
+        self.assertEqual(model_to_dict(instrument), EXPECTED)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('instrument_view', kwargs={'pk': instrument.pk}))
+
+
+class TestSequencingMachineDetailView(TestCase, SequencingMachineMixin):
+
+    def setUp(self):
+        self.user = self.make_user(password='password')
+        self.machine = self._make_machine()
+        self.client = Client()
+        assert self.client.login(username=self.user.username,
+                                 password='password')
+
+    def test_render(self):
+        """Simply test that rendering the detail view works"""
+        # Simulate the GET
+        response = self.client.get(
+            reverse('instrument_view', kwargs={'pk': self.machine.pk}))
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['object'].pk,
+                         self.machine.pk)
+
+
+class TestSequencingMachineUpdateView(TestCase, SequencingMachineMixin):
+
+    def setUp(self):
+        self.user = self.make_user(password='password')
+        self.machine = self._make_machine()
+        self.client = Client()
+        assert self.client.login(username=self.user.username,
+                                 password='password')
+
+    def test_render(self):
+        """Test that the flow cell update POST works"""
+        # Check precondition
+        self.assertEqual(SequencingMachine.objects.all().count(), 1)
+
+        # Simulate POST request
+        values = model_to_dict(self.machine)
+        values['vendor_id'] = values['vendor_id'] + 'YADAYADAYADA'
+        values['machine_model'] = models.MACHINE_MODEL_HISEQ1000
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('instrument_update', kwargs={'pk': self.machine.pk}),
+            values)
+
+        # Check resulting database state
+        self.assertEqual(SequencingMachine.objects.all().count(), 1)
+        machine = SequencingMachine.objects.all()[0]
+        self.assertIsNotNone(machine)
+        EXPECTED = {
+            'id': machine.pk,
+            'vendor_id': values['vendor_id'],
+            'label': 'NextSeq#1',
+            'description': 'In corner of lab 101',
+            'machine_model': models.MACHINE_MODEL_HISEQ1000,
+            'slot_count': 1,
+            'dual_index_workflow': models.INDEX_WORKFLOW_A,
+        }
+        self.assertEqual(model_to_dict(machine), EXPECTED)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('instrument_view', kwargs={'pk': machine.pk}))
+
+
+class TestSequencingMachineDeleteView(TestCase, SequencingMachineMixin):
+
+    def setUp(self):
+        self.user = self.make_user(password='password')
+        self.machine = self._make_machine()
+        self.client = Client()
+        assert self.client.login(username=self.user.username,
+                                 password='password')
+
+    def test_render(self):
+        """Test that the flow cell delete POST works"""
+        # Check precondition
+        self.assertEqual(SequencingMachine.objects.all().count(), 1)
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('instrument_delete', kwargs={'pk': self.machine.pk}))
+
+        # Check resulting database state
+        self.assertEqual(SequencingMachine.objects.all().count(), 0)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('instrument_list'))

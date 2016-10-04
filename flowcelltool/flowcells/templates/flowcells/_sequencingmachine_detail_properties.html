@@ -1,0 +1,27 @@
+{% load markdown_deux_tags %}
+
+<dl class="row">
+  <dt class="col-sm-2">Created</dt>
+  <dd class="col-sm-10">{{ object.created_at }}</dd>
+
+  <dt class="col-sm-2">Updated</dt>
+  <dd class="col-sm-10">{{ object.updated_at }}</dd>
+
+  <dt class="col-sm-2">Vendor ID</dt>
+  <dd class="col-sm-10">{{ object.vendor_id }}</dd>
+
+  <dt class="col-sm-2">Label</dt>
+  <dd class="col-sm-10">{{ object.label }}</dd>
+
+  <dt class="col-sm-2">Description</dt>
+  <dd class="col-sm-10">{{ object.description|default:"-"|markdown }}</dd>
+
+  <dt class="col-sm-2">Machine model</dt>
+  <dd class="col-sm-10">{{ object.machine_model }}</dd>
+
+  <dt class="col-sm-2">Slot count</dt>
+  <dd class="col-sm-10">{{ object.slot_count }}</dd>
+
+  <dt class="col-sm-2">Dual index workflow</dt>
+  <dd class="col-sm-10">{{ object.dual_index_workflow }}</dd>
+</dl>

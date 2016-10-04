@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% load markdown_deux_tags %}
+
+{% block title %}Sequencing Machines{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Sequencing Machines</h2>
+
+  {% include "flowcells/_sequencingmachine_list_buttons.html" %}
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th class="col-sm-2">
+          Vendor ID
+        </th>
+        <th class="col-sm-2">
+          Model
+        </th>
+        <th class="col-sm-8">
+          Short Description
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for machine in object_list %}
+      <tr>
+        <td>
+          <a href="{% url 'instrument_view' pk=machine.pk %}">
+            {{ machine.vendor_id }}
+          </a>
+        </td>
+        <td>
+          {{ machine.machine_model }}
+        </td>
+        <td>
+          {{ machine.description|markdown }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% include "flowcells/_sequencingmachine_list_buttons.html" %}
+</div>
+{% endblock %}

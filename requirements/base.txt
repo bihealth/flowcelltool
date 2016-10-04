@@ -45,3 +45,4 @@ redis>=2.10.5
 
 
 # Your custom requirements go here
+django-markdown-deux==1.0.5

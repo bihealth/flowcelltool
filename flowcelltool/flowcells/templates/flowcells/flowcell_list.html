@@ -25,11 +25,16 @@
         </tr>
       </thead>
       <tbody>
-        {% for flowcell in flowcell_list %}
+        {% for flowcell in object_list %}
           <tr>
             <td>{{ flowcell.token_date }}</td>
             <td>{{ flowcell.status }}</td>
-            <td>{{ flowcell.sequencing_machine.vendor_id }}</td>
+            <td>
+              <a href="{% url 'instrument_view' pk=flowcell.sequencing_machine.pk %}"
+                 title="Show sequencing machine {{ flowcell.sequencing_machine.vendor_id }}">
+                {{ flowcell.sequencing_machine.vendor_id }}
+              </a>
+              </td>
             <td>
               <a href="{% url 'flowcell_view' pk=flowcell.pk %}"
                  title="Show flow cell {{ flowcell.token_vendor_id }} details">

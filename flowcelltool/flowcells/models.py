@@ -92,7 +92,7 @@ class SequencingMachine(models.Model):
         blank=True,
         null=True,
         help_text=(
-            'Short description regarding the machine' +
+            'Short description of the machine. ' +
             markdown_allowed()))
 
     #: The machine model to use
@@ -110,6 +110,9 @@ class SequencingMachine(models.Model):
         choices=INDEX_WORKFLOWS,
         default=INDEX_WORKFLOW_A,
         help_text='Workflow to use for dual indexing')
+
+    def get_absolute_url(self):
+        return reverse('instrument_view', kwargs={'pk': self.pk})
 
     def __str__(self):
         tpl = 'SequencingMachine({})'
@@ -146,7 +149,7 @@ class BarcodeSet(models.Model):
     #: notices etc.
     description = models.TextField(
         blank=True, null=True,
-        help_text=('Short description of the barcode set' +
+        help_text=('Short description of the barcode set. ' +
                    markdown_allowed()))
 
     def __str__(self):
