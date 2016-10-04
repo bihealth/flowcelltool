@@ -7,13 +7,19 @@
     </a>
     <a class="btn btn-danger" role="button"
         href="{% url 'barcodeset_delete' pk=object.pk %}"
-        title="Delete flow cell {{ object.token_vendor_id }}">
+        title="Delete barcode set {{ object.token_vendor_id }}">
       <i class="fa fa-eraser" aria-hidden="true"></i>
       Delete
     </a>
     <a class="btn btn-primary" role="button"
+        href="{% url 'barcodeset_updateentries' pk=object.pk %}"
+        title="Update barcode set {{ object.token_vendor_id }}">
+      <i class="fa fa-table" aria-hidden="true"></i>
+      Barcodes
+    </a>
+    <a class="btn btn-primary" role="button"
         href="{% url 'barcodeset_update' pk=object.pk %}"
-        title="Update flow cell {{ object.token_vendor_id }}">
+        title="Update barcode set entries {{ object.token_vendor_id }}">
       <i class="fa fa-pencil" aria-hidden="true"></i>
       Update
     </a>

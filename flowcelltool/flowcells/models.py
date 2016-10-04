@@ -173,7 +173,7 @@ class BarcodeSetEntry(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     #: The barcode set that this barcode belongs to
-    barcode_set = models.ForeignKey(BarcodeSet, related_name='barcodes',
+    barcode_set = models.ForeignKey(BarcodeSet, related_name='entries',
                                     on_delete=models.CASCADE)
 
     #: The identifier of the adapter, e.g., 'AR001'.  This has to be unique
@@ -198,6 +198,8 @@ class BarcodeSetEntry(models.Model):
         # check for unique name
         for key in ('name', 'sequence'):
             qs = BarcodeSetEntry.objects.filter(**{key: getattr(self, key)})
+            if self.pk is not None:
+                qs = qs.exclude(pk=self.pk)
             if qs.filter(barcode_set=self.barcode_set).exists():
                 raise ValidationError(
                     'Barcode {} must be unique in barcode set!'.format(key))

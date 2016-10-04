@@ -1,0 +1,2 @@
+- properly handle display ValidationError results in forms
+- use TimeStampedModels everywhere

@@ -5,7 +5,9 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from . import models
+from crispy_forms.helper import FormHelper
+
+from . import models, forms
 
 
 # SeqeuencingMachine Views ----------------------------------------------------
@@ -88,6 +90,67 @@ class BarcodeSetDeleteView(DeleteView):
 
     #: URL to redirect to on success
     success_url = reverse_lazy('barcodeset_list')
+
+
+# BarcodeSetEntry Views -------------------------------------------------------
+
+
+class BarcodeSetEntryUpdateView(UpdateView):
+    """Form for updating all adapter barcode set entries of a barcode set
+    """
+
+    model = models.BarcodeSet
+
+    #: Fields to allow in update form
+    fields = ['name', 'short_name', 'description']
+
+    #: Template to use for the form
+    template_name = 'flowcells/barcodeset_updateentries.html'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        barcode_set_entry_form = self._construct_formset(**kwargs)
+        return self.render_to_response(
+            self.get_context_data(self.object.id,
+                                  formset=barcode_set_entry_form))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        barcode_set_entry_form = self._construct_formset(request.POST, **kwargs)
+        if barcode_set_entry_form.is_valid():
+            return self.form_valid(request, barcode_set_entry_form)
+        else:
+            return self.form_invalid(barcode_set_entry_form)
+
+    def _construct_formset(self, data=None, **kwargs):
+        barcode_set_entry_form = forms.BarcodeSetEntryFormSet(
+            data=data, barcode_set=self.object)
+        return barcode_set_entry_form
+
+    def form_valid(self, request, barcode_set_entry_form):
+        for form in barcode_set_entry_form:
+            form.instance.barcode_set = self.object
+        barcode_set_entry_form.save()
+        if request.POST.get('submit_more'):
+            return redirect(request.get_full_path())
+        else:
+            return redirect(self.get_success_url())
+
+    def form_invalid(self, barcode_set_entry_form):
+        return self.render_to_response(
+            self.get_context_data(self.object.id,
+                                  formset=barcode_set_entry_form))
+
+    def get_context_data(self, pk, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.object = models.BarcodeSet.objects.get(pk=pk)
+        context['object'] = self.object
+        context['formset'] = kwargs['formset']
+        context['helper'] = FormHelper()
+        context['helper'].form_tag = False
+        context['helper'].template = \
+            'bootstrap4/table_inline_formset.html'
+        return context
 
 
 # FlowCell Views --------------------------------------------------------------

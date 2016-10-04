@@ -529,3 +529,165 @@ class TestBarcodeSetDeleteView(
         # Check resulting response
         self.assertRedirects(
             response, reverse('barcodeset_list'))
+
+
+class TestBarcodeSetUpdateEntriesView(
+        TestCase, BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATAAA')
+        self.client = Client()
+
+    def _test_update(self, more_values):
+        """Helper for testing the update functionality"""
+        # Check precondition
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 66)
+
+        values = {
+            'form-TOTAL_FORMS': '2',
+            'form-INITIAL_FORMS': '2',
+            'form-MIN_NUM_FORMS': '0',
+            'form-MAX_NUM_FORMS': '1',
+            'form-0-id': self.barcode1.pk,
+            'form-0-name': 'UPDATED',
+            'form-0-sequence': 'GATTACA',
+            'form-1-id': self.barcode2.pk,
+            'form-1-name': self.barcode2.name,
+            'form-1-sequence': self.barcode2.sequence,
+        }
+        values.update(more_values)
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('barcodeset_updateentries',
+                    kwargs={'pk': self.barcode_set.pk}),
+            values)
+
+        # Check resulting database state
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 66)
+
+        barcode1 = BarcodeSetEntry.objects.get(pk=self.barcode1.pk)
+        self.assertEquals(barcode1.name, 'UPDATED')
+        self.assertEquals(barcode1.sequence, 'GATTACA')
+        barcode2 = BarcodeSetEntry.objects.get(pk=self.barcode2.pk)
+        self.assertEquals(barcode2.name, self.barcode2.name)
+        self.assertEquals(barcode2.sequence, self.barcode2.sequence)
+
+        return response
+
+    def test_update(self):
+        """Test that updating barcode set entries works correctly"""
+        response = self._test_update({'submit': 'submit'})
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('barcodeset_view',
+                              kwargs={'pk': self.barcode_set.pk}))
+
+    def test_update_more(self):
+        """Test that updating barcode set entries works correctly"""
+        response = self._test_update({'submit_more': 'submit_more'})
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('barcodeset_updateentries',
+                              kwargs={'pk': self.barcode_set.pk}))
+
+    def test_add(self):
+        """Test that adding barcode set entries works correctly"""
+        # Check precondition
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 66)
+
+        values = {
+            'form-TOTAL_FORMS': '3',
+            'form-INITIAL_FORMS': '2',
+            'form-MIN_NUM_FORMS': '0',
+            'form-MAX_NUM_FORMS': '2',
+            'form-0-id': self.barcode1.pk,
+            'form-0-name': 'UPDATED',
+            'form-0-sequence': 'GATTACA',
+            'form-1-id': self.barcode2.pk,
+            'form-1-name': self.barcode2.name,
+            'form-1-sequence': self.barcode2.sequence,
+            'form-2-id': '',
+            'form-2-name': 'AR03',
+            'form-2-sequence': 'TAAATAAA',
+        }
+
+        # Ensure that no such barcode exists yet
+        self.assertEquals(
+            BarcodeSetEntry.objects.filter(sequence='TAAATAAA').count(), 0)
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('barcodeset_updateentries',
+                    kwargs={'pk': self.barcode_set.pk}),
+            values)
+
+        # Check resulting database state
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 67)
+
+        barcode1 = BarcodeSetEntry.objects.get(pk=self.barcode1.pk)
+        self.assertEquals(barcode1.name, 'UPDATED')
+        self.assertEquals(barcode1.sequence, 'GATTACA')
+        barcode2 = BarcodeSetEntry.objects.get(pk=self.barcode2.pk)
+        self.assertEquals(barcode2.name, self.barcode2.name)
+        self.assertEquals(barcode2.sequence, self.barcode2.sequence)
+        self.assertEquals(
+            BarcodeSetEntry.objects.filter(sequence='TAAATAAA').count(), 1)
+        barcode3 = BarcodeSetEntry.objects.filter(sequence='TAAATAAA')[0]
+        self.assertEquals(barcode3.name, 'AR03')
+        self.assertEquals(barcode3.sequence, 'TAAATAAA')
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('barcodeset_view',
+                              kwargs={'pk': self.barcode_set.pk}))
+
+    def test_delete(self):
+        """Test that deleting barcode set entries works correctly"""
+        # Check precondition
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 66)
+
+        values = {
+            'form-TOTAL_FORMS': '2',
+            'form-INITIAL_FORMS': '2',
+            'form-MIN_NUM_FORMS': '0',
+            'form-MAX_NUM_FORMS': '1',
+            'form-0-id': self.barcode1.pk,
+            'form-0-name': 'UPDATED',
+            'form-0-sequence': 'GATTACA',
+            'form-1-id': self.barcode2.pk,
+            'form-1-name': self.barcode2.name,
+            'form-1-sequence': self.barcode2.sequence,
+            'form-1-DELETE': 'on',
+        }
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('barcodeset_updateentries',
+                    kwargs={'pk': self.barcode_set.pk}),
+            values)
+
+        # Check resulting database state
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 65)
+
+        barcode1 = BarcodeSetEntry.objects.get(pk=self.barcode1.pk)
+        self.assertEquals(barcode1.name, 'UPDATED')
+        self.assertEquals(barcode1.sequence, 'GATTACA')
+        self.assertEquals(
+            BarcodeSetEntry.objects.filter(pk=self.barcode2.pk).count(), 0)
+
+        # Check resulting response
+        self.assertRedirects(
+            response, reverse('barcodeset_view',
+                              kwargs={'pk': self.barcode_set.pk}))

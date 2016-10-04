@@ -53,6 +53,11 @@ urlpatterns = [
         name='barcodeset_update',
     ),
     url(
+        regex=r'^barcodeset/updateentries/(?P<pk>\d+)$',
+        view=views.BarcodeSetEntryUpdateView.as_view(),
+        name='barcodeset_updateentries',
+    ),
+    url(
         regex=r'^barcodeset/delete/(?P<pk>\d+)$',
         view=views.BarcodeSetDeleteView.as_view(),
         name='barcodeset_delete',
