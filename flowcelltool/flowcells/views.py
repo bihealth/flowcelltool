@@ -46,3 +46,14 @@ class FlowCellDetailView(DetailView):
     #: Fields to show in the create view, the rest is auto-filled
     fields = ('name', 'num_lanes', 'status', 'operator', 'is_paired',
               'index_read_count', 'rta_version', 'read_length')
+
+
+class FlowCellUpdateView(UpdateView):
+    """Show the view for updating a flow cell"""
+
+    #: The model type to create
+    model = models.FlowCell
+
+    #: Fields to show in the create view, the rest is auto-filled
+    fields = ('name', 'num_lanes', 'status', 'operator', 'is_paired',
+              'index_read_count', 'rta_version', 'read_length')

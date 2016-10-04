@@ -20,4 +20,9 @@ urlpatterns = [
         view=views.FlowCellDetailView.as_view(),
         name='flowcell_view',
     ),
+    url(
+        regex=r'^update/(?P<pk>\d+)$',
+        view=views.FlowCellUpdateView.as_view(),
+        name='flowcell_update',
+    ),
 ]

@@ -5,19 +5,35 @@
 {% block title %}Create Flow Cell{% endblock %}
 
 {% block content %}
+
+{% if object.pk %}
+<h2>Update Flow Cell {{ object.token_vendor_id }}</h2>
+{% else %}
 <h2>Create Flow Cell</h2>
+{% endif %}
 
 <form method="post">
   {% csrf_token %}
   {{ form | crispy }}
 
   <div class="text-xs-right mt-t-1 m-b-1">
-    <a role="button" class="btn btn-secondary"
-      href="{% url 'flowcell_list' %}">
-      Cancel
-    </a>
+      <a role="button" class="btn btn-secondary"
+        {% if object.pk %}
+          href="{% url 'flowcell_view' pk=object.pk %}">
+        <i class="fa fa-times" aria-hidden="true"></i>
+        {% else %}
+          href="{% url 'flowcell_list' %}">
+        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+        {% endif %}
+        Cancel
+      </a>
     <button type="submit" class="btn btn-primary">
-      Create
+      <i class="fa fa-check" aria-hidden="true"></i>
+      {% if object.pk %}
+        Update
+      {% else %}
+        Create
+      {% endif %}
     </button>
   </div>
 </form>

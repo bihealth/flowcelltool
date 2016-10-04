@@ -12,7 +12,7 @@
       Delete
     </a>
     <a class="btn btn-primary" role="button"
-        href="#"
+        href="{% url 'flowcell_update' pk=object.pk %}"
         title="Update flow cell {{ object.token_vendor_id }}">
       <i class="fa fa-pencil" aria-hidden="true"></i>
       Update
