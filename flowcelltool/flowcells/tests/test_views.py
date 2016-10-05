@@ -2,6 +2,7 @@
 """Tests for the views from the flowcelltools Django app
 """
 
+import io
 import textwrap
 
 from test_plus.test import TestCase
@@ -734,3 +735,50 @@ class TestBarcodeSetExportView(
             }
             """).lstrip()
         self.assertEqual(response.content.decode('utf-8'), EXPECTED)
+
+
+class TestBarcodeSetImportView(TestCase):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.client = Client()
+
+    def test_render(self):
+        """Simply test that rendering the detail view works"""
+        # Prepare payload to post
+        payload = io.StringIO(textwrap.dedent(r"""
+            {
+              "name": "Agilent SureSelect XT Test",
+              "short_name": "SureSelectTest",
+              "description": null,
+              "entries": [
+                {
+                  "name": "AR01",
+                  "sequence": "CGATCGAT"
+                },
+                {
+                  "name": "AR02",
+                  "sequence": "ATTATAAA"
+                }
+              ]
+            }
+            """).lstrip())
+
+        # Check precondition
+        self.assertEqual(BarcodeSet.objects.all().count(), 4)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 64)
+
+        # Simulate the POST
+        response = self.client.post(
+            reverse('barcodeset_import'),
+            {'json_file': payload})
+
+        # Check response
+        barcodeset = BarcodeSet.objects.order_by('-created_at')[0]
+        self.assertRedirects(
+            response, reverse('barcodeset_view',
+                              kwargs={'pk': barcodeset.pk}))
+
+        # Check database state afterwards
+        self.assertEqual(BarcodeSet.objects.all().count(), 5)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 66)

@@ -2,11 +2,26 @@ from django import forms
 from django.db import transaction
 from django.forms.models import BaseModelFormSet, modelformset_factory
 
+from crispy_forms.helper import FormHelper
+
 from . import models
 
 
 #: Number of additional barcode set entry forms (= table rows) to create
 EXTRA_BARCODE_FORMS = 10
+
+
+class BarcodeSetImportForm(forms.Form):
+    """The form used for uploading serialized barcode sets from JSON"""
+
+    #: File upload field
+    json_file = forms.FileField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.template_pack = 'bootstrap4'
+        self.helper.form_tag = False
 
 
 class BarcodeSetEntryForm(forms.ModelForm):

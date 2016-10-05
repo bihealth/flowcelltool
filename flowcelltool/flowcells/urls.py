@@ -63,6 +63,11 @@ urlpatterns = [
         name='barcodeset_delete',
     ),
     url(
+        regex=r'^barcodeset/import$',
+        view=views.BarcodeSetImportView.as_view(),
+        name='barcodeset_import',
+    ),
+    url(
         regex=r'^barcodeset/export/(?P<pk>\d+)$',
         view=views.BarcodeSetExportView.as_view(),
         name='barcodeset_export',

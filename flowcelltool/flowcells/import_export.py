@@ -4,6 +4,11 @@
 from collections import OrderedDict
 import json
 
+from django.db import transaction
+
+from .models import BarcodeSet
+
+
 __author__ = 'Manuel Holtgrewe <manuel.holtgrewe@bihealth.de>'
 
 
@@ -29,3 +34,27 @@ class BarcodeSetDumper:
                     ('sequence', entry.sequence),
                 ]))
         return json.dumps(result, indent=2) + '\n'
+
+
+class BarcodeSetLoader:
+    """Helper class loading BarcodeSet objects from JSON and storing them
+    in the database
+
+    BarcodeSet objects can be serialized using BarcodeSetDumper
+    """
+
+    @classmethod
+    def run(klass, json_string):
+        """Load BarcodeSet object form json_string"""
+        deserialized = json.loads(json_string)
+        with transaction.atomic():
+            barcode_set = BarcodeSet(
+                name=deserialized['name'],
+                short_name=deserialized['short_name'],
+                description=deserialized['description'])
+            barcode_set.save()
+            for entry in deserialized['entries']:
+                barcode_set.entries.create(
+                    name=entry['name'],
+                    sequence=entry['sequence']).save()
+            return barcode_set

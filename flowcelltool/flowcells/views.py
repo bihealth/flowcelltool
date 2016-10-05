@@ -8,7 +8,8 @@ from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, \
+    FormView
 
 from crispy_forms.helper import FormHelper
 
@@ -108,8 +109,26 @@ class BarcodeSetExportView(View):
                                 content_type='text/plain')
         fname = re.sub('[^a-zA-Z0-9_-]', '_', barcode_set.name)
         response['Content-Disposition'] = (
-            'attachment; filename="{}.json"'.format(fname))
+            'attachment; filename="barcode_set_{}.json"'.format(fname))
         return response
+
+
+class BarcodeSetImportView(FormView):
+    """Importing of BarcodeSet objects from JSON"""
+
+    #: The template with the form to render
+    template_name = 'flowcells/barcodeset_import.html'
+
+    #: The form to use for importing JSON files
+    form_class = forms.BarcodeSetImportForm
+
+    def form_valid(self, form):
+        """Redirect to barcode set view if the form validated"""
+        payload = self.request.FILES['json_file'].read().decode('utf-8')
+        loader = import_export.BarcodeSetLoader()
+        barcode_set = loader.run(payload)
+        return redirect(reverse('barcodeset_view',
+                                kwargs={'pk': barcode_set.pk}))
 
 
 # BarcodeSetEntry Views -------------------------------------------------------
