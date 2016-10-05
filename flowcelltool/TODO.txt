@@ -1,4 +1,6 @@
 - properly handle display ValidationError results in forms
 - use TimeStampedModels everywhere
-
-- import/export of barcode sets
+- completely cut out built-in barcode sets
+- make libraries on flowcell sortable
+- enforce login
+- make login through LDAP possible
