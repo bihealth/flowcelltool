@@ -16,6 +16,23 @@ from crispy_forms.helper import FormHelper
 from . import models, forms, import_export
 
 
+# Home View -------------------------------------------------------------------
+
+
+class HomeView(TemplateView):
+    """For displaying the home screen"""
+
+    #: The template with the form to render
+    template_name = 'flowcells/home.html'
+
+    def get_context_data(self, *args, **kwargs):
+        result = super().get_context_data(*args, **kwargs)
+        result['num_flow_cells'] = models.FlowCell.objects.count()
+        result['num_libraries'] = models.FlowCell.objects.count()
+        result['num_barcode_sets'] = models.BarcodeSet.objects.count()
+        return result
+
+
 # SequencingMachine Views -----------------------------------------------------
 
 
