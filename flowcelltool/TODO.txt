@@ -1,2 +1,4 @@
 - properly handle display ValidationError results in forms
 - use TimeStampedModels everywhere
+
+- import/export of barcode sets

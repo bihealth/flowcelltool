@@ -2,6 +2,8 @@
 """Tests for the views from the flowcelltools Django app
 """
 
+import textwrap
+
 from test_plus.test import TestCase
 
 from django.core.urlresolvers import reverse
@@ -691,3 +693,44 @@ class TestBarcodeSetUpdateEntriesView(
         self.assertRedirects(
             response, reverse('barcodeset_view',
                               kwargs={'pk': self.barcode_set.pk}))
+
+
+class TestBarcodeSetExportView(
+        TestCase, BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATAAA')
+        self.client = Client()
+
+    def test_render(self):
+        """Simply test that rendering the detail view works"""
+        # Simulate the GET
+        response = self.client.get(
+            reverse('barcodeset_export',
+                    kwargs={'pk': self.barcode_set.pk}))
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        EXPECTED = textwrap.dedent(r"""
+            {
+              "name": "Agilent SureSelect XT Test",
+              "short_name": "SureSelectTest",
+              "description": null,
+              "entries": [
+                {
+                  "name": "AR01",
+                  "sequence": "CGATCGAT"
+                },
+                {
+                  "name": "AR02",
+                  "sequence": "ATTATAAA"
+                }
+              ]
+            }
+            """).lstrip()
+        self.assertEqual(response.content.decode('utf-8'), EXPECTED)

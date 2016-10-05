@@ -1,5 +1,10 @@
+import re
+
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import render, redirect
+from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -7,10 +12,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from crispy_forms.helper import FormHelper
 
-from . import models, forms
+from . import models, forms, import_export
 
 
-# SeqeuencingMachine Views ----------------------------------------------------
+# SequencingMachine Views -----------------------------------------------------
 
 
 class SequencingMachineListView(ListView):
@@ -90,6 +95,21 @@ class BarcodeSetDeleteView(DeleteView):
 
     #: URL to redirect to on success
     success_url = reverse_lazy('barcodeset_list')
+
+
+class BarcodeSetExportView(View):
+    """Exporting of BarcodeSet objects to JSON"""
+
+    def dispatch(self, request, *args, **kwargs):
+        barcode_set = get_object_or_404(
+            models.BarcodeSet, pk=kwargs['pk'])
+        dumper = import_export.BarcodeSetDumper()
+        response = HttpResponse(dumper.run(barcode_set),
+                                content_type='text/plain')
+        fname = re.sub('[^a-zA-Z0-9_-]', '_', barcode_set.name)
+        response['Content-Disposition'] = (
+            'attachment; filename="{}.json"'.format(fname))
+        return response
 
 
 # BarcodeSetEntry Views -------------------------------------------------------

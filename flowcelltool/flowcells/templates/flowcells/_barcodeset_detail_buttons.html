@@ -5,6 +5,12 @@
       <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
       Back to List
     </a>
+    <a class="btn btn-secondary" role="button"
+        href="{% url 'barcodeset_export' pk=object.pk %}"
+        title="Export barcode set to JSON">
+      <i class="fa fa-download" aria-hidden="true"></i>
+      Export
+    </a>
     <a class="btn btn-danger" role="button"
         href="{% url 'barcodeset_delete' pk=object.pk %}"
         title="Delete barcode set {{ object.token_vendor_id }}">

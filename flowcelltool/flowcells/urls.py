@@ -62,6 +62,11 @@ urlpatterns = [
         view=views.BarcodeSetDeleteView.as_view(),
         name='barcodeset_delete',
     ),
+    url(
+        regex=r'^barcodeset/export/(?P<pk>\d+)$',
+        view=views.BarcodeSetExportView.as_view(),
+        name='barcodeset_export',
+    ),
 
     # FlowCell related --------------------------------------------------------
     url(
