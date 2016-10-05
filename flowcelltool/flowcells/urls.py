@@ -75,27 +75,27 @@ urlpatterns = [
 
     # FlowCell related --------------------------------------------------------
     url(
-        regex=r'^$',
+        regex=r'^flowcell/list$',
         view=views.FlowCellListView.as_view(),
         name='flowcell_list',
     ),
     url(
-        regex=r'^create$',
+        regex=r'^flowcell/create$',
         view=views.FlowCellCreateView.as_view(),
         name='flowcell_create',
     ),
     url(
-        regex=r'^view/(?P<pk>\d+)$',
+        regex=r'^flowcell/view/(?P<pk>\d+)$',
         view=views.FlowCellDetailView.as_view(),
         name='flowcell_view',
     ),
     url(
-        regex=r'^update/(?P<pk>\d+)$',
+        regex=r'^flowcell/update/(?P<pk>\d+)$',
         view=views.FlowCellUpdateView.as_view(),
         name='flowcell_update',
     ),
     url(
-        regex=r'^delete/(?P<pk>\d+)$',
+        regex=r'^flowcell/delete/(?P<pk>\d+)$',
         view=views.FlowCellDeleteView.as_view(),
         name='flowcell_delete',
     ),
