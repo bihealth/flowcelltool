@@ -22,6 +22,7 @@
         <th class="col-sm-8">
           Short Description
         </th>
+        <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
@@ -37,6 +38,20 @@
         </td>
         <td>
           {{ machine.description|markdown }}
+        </td>
+        <td>
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm dropdown-toggle"
+                type="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+              Actions
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'instrument_view' pk=machine.pk %}">View</a>
+              <a class="dropdown-item" href="{% url 'instrument_update' pk=machine.pk %}">Update</a>
+              <a class="dropdown-item" href="{% url 'instrument_delete' pk=machine.pk %}">Delete</a>
+            </div>
+          </div>
         </td>
       </tr>
       {% endfor %}

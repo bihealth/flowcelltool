@@ -17,6 +17,7 @@
             <th class="col-md-4">Name</th>
             <th class="col-md-2">Short Name</th>
             <th class="col-md-6">Description</th>
+            <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
@@ -33,6 +34,22 @@
               </a>
             </td>
             <td>{{ barcode_set.description|default:"-"|markdown }}</td>
+
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-secondary btn-sm dropdown-toggle"
+                    type="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                  Actions
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{% url 'barcodeset_view' pk=barcode_set.pk %}">View</a>
+                  <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">Update</a>
+                  <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">Update Entries</a>
+                  <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">Delete</a>
+                </div>
+              </div>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

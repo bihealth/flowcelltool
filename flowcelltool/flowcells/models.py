@@ -33,7 +33,7 @@ MACHINE_MODEL_HISEQ1500 = 'HiSeq1500'
 MACHINE_MODEL_HISEQ3000 = 'HiSeq3000'
 
 #: Key value for machine model HiSeq4000
-MACHINE_MODEL_HISEQ4000 = 'HiSeqHiSeq40001000'
+MACHINE_MODEL_HISEQ4000 = 'HiSeq4000'
 
 #: Key value for "other" machine models
 MACHINE_MODEL_OTHER = 'other'
