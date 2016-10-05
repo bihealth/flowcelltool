@@ -11,7 +11,7 @@
 <div class="row">
   <h3>Details</h3>
 
-  {% include "flowcells/_flowcell_detail_properties.html" %}
+  {% include "flowcells/_flowcell_detail_properties.html" with location="top" %}
 </div>
 
 <div class="row">
@@ -32,6 +32,8 @@
 </div>
 -->
 
-{% include "flowcells/_flowcell_detail_buttons.html" %}
+<div class="row">
+  {% include "flowcells/_flowcell_detail_buttons.html" with location="bottom" %}
+</div>
 
 {% endblock %}

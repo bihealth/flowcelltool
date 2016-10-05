@@ -1,3 +1,4 @@
+import logging
 import re
 
 from django.shortcuts import get_object_or_404
@@ -14,6 +15,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, \
 from crispy_forms.helper import FormHelper
 
 from . import models, forms, import_export
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 # Home View -------------------------------------------------------------------
@@ -246,6 +250,19 @@ class FlowCellDetailView(DetailView):
     fields = ('name', 'num_lanes', 'status', 'operator', 'is_paired',
               'index_read_count', 'rta_version', 'read_length')
 
+    def get_context_data(self, *args, **kwargs):
+        """Overwritten version for retrievin template values
+
+        Injecting the prefill barcode set form into the template with the
+        django-crispy-forms helper object.
+        """
+        context = super().get_context_data(*args, **kwargs)
+        context['prefill_form'] = forms.LibrariesPrefillForm()
+        context['helper'] = FormHelper()
+        context['helper'].form_tag = False
+        context['helper'].form_method = 'GET'
+        return context
+
 
 class FlowCellUpdateView(UpdateView):
     """Show the view for updating a flow cell"""
@@ -265,3 +282,75 @@ class FlowCellDeleteView(DeleteView):
 
     #: URL to redirect to on success
     success_url = reverse_lazy('flowcell_list')
+
+
+# Library Views ---------------------------------------------------------------
+
+
+class LibraryUpdateView(UpdateView):
+    """Form for updating all libraries on a flowcell
+    """
+
+    model = models.FlowCell
+
+    #: Base form class to use
+    form_class = forms.FlowCellForm
+
+    #: Template to use for the form
+    template_name = 'flowcells/flowcell_updatelibraries.html'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        library_form = self._construct_formset(**kwargs)
+        return self.render_to_response(
+            self.get_context_data(self.object.id,
+                                  formset=library_form))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        library_form = self._construct_formset(request.POST, **kwargs)
+        if library_form.is_valid():
+            return self.form_valid(request, library_form)
+        else:
+            return self.form_invalid(library_form)
+
+    def _construct_formset(self, data=None, **kwargs):
+        if self.request.GET.get('barcode1'):
+            barcode_set1 = get_object_or_404(
+                models.BarcodeSet, pk=self.request.GET['barcode1'])
+        else:
+            barcode_set1 = None
+        if self.request.GET.get('barcode2'):
+            barcode_set2 = get_object_or_404(
+                models.BarcodeSet, pk=self.request.GET['barcode2'])
+        else:
+            barcode_set2 = None
+        initial = {'barcode_set': barcode_set1,
+                   'barcode_set2': barcode_set2}
+        library_form = forms.LibraryFormSet(
+            data=data, flow_cell=self.object,
+            initial=[initial] * forms.EXTRA_LIBRARY_FORMS)
+        return library_form
+
+    def form_valid(self, request, library_form):
+        library_form.save()
+        if request.POST.get('submit_more'):
+            return redirect(request.get_full_path())
+        else:
+            return redirect(self.get_success_url())
+
+    def form_invalid(self, library_form):
+        return self.render_to_response(
+            self.get_context_data(self.object.id,
+                                  formset=library_form))
+
+    def get_context_data(self, pk, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.object = models.FlowCell.objects.get(pk=pk)
+        context['object'] = self.object
+        context['formset'] = kwargs['formset']
+        context['helper'] = FormHelper()
+        context['helper'].form_tag = False
+        context['helper'].template = \
+            'bootstrap4/table_inline_formset.html'
+        return context

@@ -1,3 +1,5 @@
+{% load crispy_forms_filters %}
+
 <div class="row">
   <div class="text-xs-right mt-t-1 m-b-1">
     <a class="btn btn-secondary" role="button"
@@ -13,9 +15,15 @@
     </a>
     <a class="btn btn-primary" role="button"
         href="{% url 'flowcell_updatelibraries' pk=object.pk %}"
-        title="Update librareis {{ object.token_vendor_id }}">
+        title="Update libraries {{ object.token_vendor_id }}">
       <i class="fa fa-table" aria-hidden="true"></i>
       Update Libraries
+    </a>
+    <a class="btn btn-primary" data-toggle="collapse"
+        href="#collapse-{{ location }}"
+        aria-haspopup="true" aria-expanded="false">
+      <i class="fa fa-arrow-circle-down" aria-hidden="true"></i>
+      Prefilled Update Libraries
     </a>
     <a class="btn btn-primary" role="button"
         href="{% url 'flowcell_update' pk=object.pk %}"
@@ -23,5 +31,19 @@
       <i class="fa fa-pencil" aria-hidden="true"></i>
       Update
     </a>
+  </div>
+</div>
+<div class="row">
+  <div class="collapse" id="collapse-{{ location }}">
+    <div class="card card-block">
+      <form action="{% url 'flowcell_updatelibraries' pk=object.pk %}"
+          method="get">
+        {% crispy prefill_form helper %}
+        <button type="submit" class="btn btn-sm btn-primary">
+          <i class="fa fa-table" aria-hidden="true"></i>
+          Prefilled Update Libraries Form
+        </button>
+      </form>
+    </div>
   </div>
 </div>

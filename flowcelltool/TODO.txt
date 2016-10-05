@@ -1,6 +1,21 @@
-- properly handle display ValidationError results in forms
+## ASAP
+
+- test updating of libraries in flow cells
+- test prefill form
+- import and export of single flow cells
+- search and filter functionality
+- generation of sample sheets
 - use TimeStampedModels everywhere
 - completely cut out built-in barcode sets
-- make libraries on flowcell sortable
 - enforce login
 - make login through LDAP possible
+- add back messages/attachment feature
+
+## Mid-term
+
+- properly handle display ValidationError results in forms
+
+## long-term
+
+- make libraries on flowcell sortable
+- make login screen prettier

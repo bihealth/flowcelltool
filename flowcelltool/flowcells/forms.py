@@ -1,14 +1,14 @@
 from django import forms
 from django.db import transaction
+from django.utils.functional import lazy
 from django.forms.models import BaseModelFormSet, modelformset_factory
+from django.contrib.postgres.forms import SimpleArrayField
 
 from crispy_forms.helper import FormHelper
 
 from . import models
 
-
-#: Number of additional barcode set entry forms (= table rows) to create
-EXTRA_BARCODE_FORMS = 10
+# Form for importing BarcodeSet from JSON -------------------------------------
 
 
 class BarcodeSetImportForm(forms.Form):
@@ -24,12 +24,21 @@ class BarcodeSetImportForm(forms.Form):
         self.helper.form_tag = False
 
 
+# BarcodeSetEntry multi-edit related ------------------------------------------
+
+#: Number of additional barcode set entry forms (= table rows) to create
+EXTRA_BARCODE_FORMS = 10
+
+#: Fields to use for the barcode set forms (= table rows)
+BARCODE_SET_ENTRY_FIELDS = ('name', 'sequence')
+
+
 class BarcodeSetEntryForm(forms.ModelForm):
     """Form for handling barcode entries (table rows in the form set)"""
 
     class Meta:
         model = models.BarcodeSetEntry
-        fields = ('name', 'sequence')
+        fields = BARCODE_SET_ENTRY_FIELDS
 
 
 class BaseBarcodeSetEntryFormSet(BaseModelFormSet):
@@ -58,6 +67,103 @@ class BaseBarcodeSetEntryFormSet(BaseModelFormSet):
 BarcodeSetEntryFormSet = modelformset_factory(
     models.BarcodeSetEntry,
     can_delete=True,
-    form=BarcodeSetEntryForm, formset=BaseBarcodeSetEntryFormSet,
-    fields=('name', 'sequence'),
+    form=BarcodeSetEntryForm,
+    formset=BaseBarcodeSetEntryFormSet,
+    fields=BARCODE_SET_ENTRY_FIELDS,
     extra=EXTRA_BARCODE_FORMS)
+
+
+# FlowCell related ------------------------------------------------------------
+
+
+class FlowCellForm(forms.ModelForm):
+
+    class Meta:
+
+        model = models.FlowCell
+
+        fields = ('name', 'description', 'num_lanes', 'status', 'operator',
+                  'is_paired', 'index_read_count', 'rta_version',
+                  'read_length')
+
+
+def barcode_set_choices():
+    """Return values for a select field"""
+    result = [('', '-----')]
+    for barcode_set in models.BarcodeSet.objects.order_by('name').all():
+        result.append((barcode_set.pk, barcode_set.name))
+    return result
+
+
+class LibrariesPrefillForm(forms.Form):
+    """Helper form for filling out forms with barcodes"""
+
+    #: Choice field for selecting first barcode
+    barcode1 = forms.ChoiceField(
+        required=False,
+        choices=lazy(barcode_set_choices, tuple)())
+
+    #: Choice field for selecting second barcode
+    barcode2 = forms.ChoiceField(
+        required=False,
+        choices=lazy(barcode_set_choices, tuple)())
+
+
+# Library multi-edit related -------------------------------------------------
+
+#: Number of additional barcode set entry forms (= table rows) to create
+EXTRA_LIBRARY_FORMS = 10
+
+#: Fields to use for the library forms (= table rows)
+LIBRARY_FIELDS = ('name', 'reference', 'barcode_set', 'barcode',
+                  'barcode_set2', 'barcode2', 'lane_numbers')
+
+
+class LibraryForm(forms.ModelForm):
+    """Form for handling library entries (table rows in the form set)"""
+
+    def __init__(self, *args, **kwargs):
+        # Pre-set the lane numbers, required for Django Formsets to work
+        # with uninitialized values
+        kwargs.setdefault('initial', {})
+        if 'instance' in kwargs:
+            kwargs['initial']['lane_numbers'] = kwargs['instance'].lane_numbers
+        else:
+            kwargs['initial']['lane_numbers'] = []
+        return super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = models.Library
+        fields = LIBRARY_FIELDS
+
+
+class BaseLibraryFormSet(BaseModelFormSet):
+    """Base class for the form set to create"""
+
+    def __init__(self, *args, **kwargs):
+        self.flow_cell = kwargs.pop('flow_cell')
+        super().__init__(*args, **kwargs)
+        self.queryset = self.flow_cell.libraries.order_by('name').all()
+
+    def save(self):
+        """Handle saving of form set, including support for deleting barcode
+        set entries
+        """
+        with transaction.atomic():
+            entries = super().save(commit=False)
+            for entry in entries:
+                entry.flow_cell = self.flow_cell
+                entry.save()
+            for entry in self.deleted_objects:
+                entry.delete()
+            return entries
+
+
+#: Form set for barcodes, constructed with factory function
+LibraryFormSet = modelformset_factory(
+    models.Library,
+    can_delete=True,
+    form=LibraryForm,
+    formset=BaseLibraryFormSet,
+    fields=LIBRARY_FIELDS,
+    extra=EXTRA_LIBRARY_FORMS)

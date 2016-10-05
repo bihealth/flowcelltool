@@ -95,6 +95,11 @@ urlpatterns = [
         name='flowcell_update',
     ),
     url(
+        regex=r'^flowcell/updatelibraries/(?P<pk>\d+)$',
+        view=views.LibraryUpdateView.as_view(),
+        name='flowcell_updatelibraries',
+    ),
+    url(
         regex=r'^flowcell/delete/(?P<pk>\d+)$',
         view=views.FlowCellDeleteView.as_view(),
         name='flowcell_delete',

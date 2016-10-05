@@ -290,7 +290,8 @@ class FlowCell(models.Model):
     #: Owner of the flow cell.  Set to NULL when the user is deleted to
     #: circumvent any possible data loss.  Users should be deactivated
     #: instead of being deleted anyway
-    owner = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(User, null=True, blank=True,
+                              on_delete=models.SET_NULL)
 
     #: Full name of the flow cell, fulfilling the pattern
     #: "YYMMDD_MACHINE_RUNNUMBER_SLOT_FLOWCELLID_LABEL"
@@ -313,7 +314,7 @@ class FlowCell(models.Model):
     # TODO: rename to instrument?
     #: The sequencer used for processing this flow cell
     sequencing_machine = models.ForeignKey(
-        SequencingMachine, null=True, on_delete=models.SET_NULL)
+        SequencingMachine, null=True, blank=True, on_delete=models.SET_NULL)
 
     #: Number of lanes on the flow cell
     num_lanes = models.IntegerField(
@@ -490,20 +491,20 @@ class Library(models.Model):
 
     #: The barcode set used for first barcode index of this library
     barcode_set = models.ForeignKey(
-        BarcodeSet, null=True, on_delete=models.SET_NULL)
+        BarcodeSet, null=True, blank=True,on_delete=models.SET_NULL)
 
     #: The barcode used for first barcode index this library
     barcode = models.ForeignKey(
-        BarcodeSetEntry, null=True, on_delete=models.SET_NULL)
+        BarcodeSetEntry, null=True, blank=True,on_delete=models.SET_NULL)
 
     #: The barcode set used for second barcode index of this library
     barcode_set2 = models.ForeignKey(
-        BarcodeSet, null=True, on_delete=models.SET_NULL,
+        BarcodeSet, null=True, blank=True,on_delete=models.SET_NULL,
         related_name='barcode_sets2')
 
     #: The barcode used for second barcode index this library
     barcode2 = models.ForeignKey(
-        BarcodeSetEntry, null=True, on_delete=models.SET_NULL,
+        BarcodeSetEntry, null=True, blank=True, on_delete=models.SET_NULL,
         related_name='barcodes2')
 
     #: The lanes that the library was sequenced on on the flow cell
