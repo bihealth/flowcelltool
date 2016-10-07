@@ -284,6 +284,39 @@ class FlowCellDeleteView(DeleteView):
     success_url = reverse_lazy('flowcell_list')
 
 
+class FlowCellExportView(View):
+    """Exporting of FlowCell objects to JSON"""
+
+    def dispatch(self, request, *args, **kwargs):
+        flow_cell = get_object_or_404(
+            models.FlowCell, pk=kwargs['pk'])
+        dumper = import_export.FlowCellDumper()
+        response = HttpResponse(dumper.run(flow_cell),
+                                content_type='text/plain')
+        response['Content-Disposition'] = (
+            'attachment; filename="flowcell_{}.json"'.format(
+                flow_cell.token_vendor_id()))
+        return response
+
+
+class FlowCellImportView(FormView):
+    """Importing of FlowCell objects from JSON"""
+
+    #: The template with the form to render
+    template_name = 'flowcells/flowcell_import.html'
+
+    #: The form to use for importing JSON files
+    form_class = forms.FlowCellImportForm
+
+    def form_valid(self, form):
+        """Redirect to barcode set view if the form validated"""
+        payload = self.request.FILES['json_file'].read().decode('utf-8')
+        loader = import_export.FlowCellLoader()
+        flow_cell = loader.run(payload)
+        return redirect(reverse('flowcell_view',
+                                kwargs={'pk': flow_cell.pk}))
+
+
 # Library Views ---------------------------------------------------------------
 
 

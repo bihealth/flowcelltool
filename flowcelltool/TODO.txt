@@ -2,8 +2,7 @@
 
 - test updating of libraries in flow cells
 - test prefill form
-- import and export of single flow cells
-- search and filter functionality
+- test import and export of single flow cells
 - generation of sample sheets
 - use TimeStampedModels everywhere
 - completely cut out built-in barcode sets
@@ -13,6 +12,7 @@
 
 ## Mid-term
 
+- search and filter functionality
 - properly handle display ValidationError results in forms
 
 ## long-term

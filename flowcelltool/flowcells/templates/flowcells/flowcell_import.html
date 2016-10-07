@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Import Flow Cell{% endblock %}
+
+{% block content %}
+<div class="row">
+  <h2>Import Flow Cell</h2>
+
+  <p>
+    Please provide the JSON file that is to be uploaded below.
+  </p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% crispy form %}
+
+    <div class="mt-t-1 m-b-1">
+      <a role="button" class="btn btn-secondary"
+          href="{% url 'flowcell_list' %}">
+        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+        Cancel
+      </a>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-upload" aria-hidden="true"></i>
+          Import
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

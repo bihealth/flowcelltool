@@ -2,16 +2,10 @@
   <div class="text-xs-right mt-t-1 m-b-1">
     <div class="btn-group" role="group">
       <a class="btn btn-secondary" role="button"
-         href="#"
+         href="{% url 'flowcell_import' %}"
          title="Import flow cells from YAML">
         <i class="fa fa-upload" aria-hidden="true"></i>
         Import
-      </a>
-      <a class="btn btn-secondary" role="button"
-         href="#"
-         title="Export flow cells to YAML">
-        <i class="fa fa-download" aria-hidden="true"></i>
-        Export
       </a>
       <a class="btn btn-primary" role="button"
          href="{% url 'flowcell_create' %}"

@@ -104,4 +104,14 @@ urlpatterns = [
         view=views.FlowCellDeleteView.as_view(),
         name='flowcell_delete',
     ),
+    url(
+        regex=r'^flowcell/export/(?P<pk>\d+)$',
+        view=views.FlowCellExportView.as_view(),
+        name='flowcell_export',
+    ),
+    url(
+        regex=r'^flowcell/import$',
+        view=views.FlowCellImportView.as_view(),
+        name='flowcell_import',
+    ),
 ]

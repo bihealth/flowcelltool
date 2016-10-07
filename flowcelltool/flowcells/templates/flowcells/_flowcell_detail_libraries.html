@@ -16,10 +16,9 @@
       <td>{{ lib.reference }}</td>
       <td>
         {% if object.index_read_count %}
+          {{ lib.barcode_set.name }}
           {% if object.index_read_count > 1 %}
-            {{ lib.barcode_set.name }}
-          {% else %}
-            / {{ lib.barcode_set.name }}
+            / {{ lib.barcode_set2.name }}
           {% endif %}
         {% else %}
         -
@@ -27,17 +26,16 @@
       </td>
       <td>
         {% if object.index_read_count %}
+          {{ lib.barcode.name }}
           {% if object.index_read_count > 1 %}
-            {{ lib.barcode.name }}
-          {% else %}
-            / {{ lib.barcode.name }}
+            / {{ lib.barcode2.name }}
           {% endif %}
         {% else %}
         -
         {% endif %}
       </td>
       <td>{{ lib.barcode.sequence }}</td>
-      <td>{{ lib.get_lane_nos_pretty }}</td>
+      <td>{{ lib.lane_numbers }}</td>
     </tr>
     {% endfor %}
   </tbody>

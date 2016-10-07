@@ -73,6 +73,22 @@ BarcodeSetEntryFormSet = modelformset_factory(
     extra=EXTRA_BARCODE_FORMS)
 
 
+# Form for importing FlowCell from JSON ---------------------------------------
+
+
+class FlowCellImportForm(forms.Form):
+    """The form used for uploading serialized flow cells from JSON"""
+
+    #: File upload field
+    json_file = forms.FileField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.template_pack = 'bootstrap4'
+        self.helper.form_tag = False
+
+
 # FlowCell related ------------------------------------------------------------
 
 

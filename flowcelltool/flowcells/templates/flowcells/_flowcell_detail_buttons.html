@@ -7,8 +7,14 @@
       <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
       Back to List
     </a>
+    <a class="btn btn-secondary" role="button"
+        href="{% url 'flowcell_export' pk=object.pk %}"
+        title="Export flow cell {{ object.token_vendor_id }}">
+      <i class="fa fa-download" aria-hidden="true"></i>
+      Export
+    </a>
     <a class="btn btn-danger" role="button"
-        href="#"
+        href="{% url 'flowcell_delete' pk=object.pk %}"
         title="Delete flow cell {{ object.token_vendor_id }}">
       <i class="fa fa-eraser" aria-hidden="true"></i>
       Delete
