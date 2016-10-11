@@ -3,6 +3,9 @@
 .AppleDouble
 .LSOverride
 
+### Pytest
+.cache
+
 ### SublimeText ###
 # cache files for sublime text
 *.tmlanguage.cache
