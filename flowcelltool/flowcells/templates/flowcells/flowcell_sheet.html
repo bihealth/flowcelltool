@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Flow Cell Sheet for {{ object.token_vendor_id }}{% endblock %}
+
+{% block content %}
+<h2>Flow Cell Sheet for {{ object.token_vendor_id }}</h2>
+
+{% include "flowcells/_flowcell_sheet_buttons.html" %}
+
+<div class="row">
+  <h3>Sample Sheet</h3>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#yaml" role="tab">YAML</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#csv_v1" role="tab">v1 Sheet</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#csv_v2" role="tab">v2 Sheet</a>
+    </li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div class="tab-pane active" id="yaml" role="tabpanel">
+      <div style="position: relative; float: right;">
+        <button class="btn btn-secondary btn-copy" data-clipboard-action="copy" data-clipboard-target="#texarea-yaml" style="position: absolute; top: 8px; right: 20px;">
+          <i class="fa fa-clipboard" aria-hidden="true"></i>
+          Copy to Clipboard
+        </button>
+      </div>
+      <textarea id="texarea-yaml" class="form-control" rows="20" style="font-family: Monospace;">{{ yaml }}</textarea>
+    </div>
+    <div class="tab-pane" id="csv_v1" role="tabpanel">
+      <div style="position: relative; float: right;">
+        <button class="btn btn-secondary btn-copy" data-clipboard-action="copy" data-clipboard-target="#texarea-csv_v1" style="position: absolute; top: 8px; right: 20px;">
+          <i class="fa fa-clipboard" aria-hidden="true"></i>
+          Copy to Clipboard
+        </button>
+      </div>
+      <textarea id="texarea-csv_v1" class="form-control" rows="20" style="font-family: Monospace;">{{ csv_v1 }}</textarea>
+    </div>
+    <div class="tab-pane" id="csv_v2" role="tabpanel">
+      <div style="position: relative; float: right;">
+        <button class="btn btn-secondary btn-copy" data-clipboard-action="copy" data-clipboard-target="#texarea-csv_v2" style="position: absolute; top: 8px; right: 20px;">
+          <i class="fa fa-clipboard" aria-hidden="true"></i>
+          Copy to Clipboard
+        </button>
+      </div>
+      <textarea id="texarea-csv_v2" class="form-control" rows="20" style="font-family: Monospace;">{{ csv_v2 }}</textarea>
+    </div>
+  </div>
+</div>
+
+
+<div class="row" style="margin-top: 20px;">
+  {% include "flowcells/_flowcell_sheet_buttons.html" %}
+</div>
+
+{% endblock %}

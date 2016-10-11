@@ -246,10 +246,6 @@ class FlowCellDetailView(DetailView):
     #: The model type to create
     model = models.FlowCell
 
-    #: Fields to show in the create view, the rest is auto-filled
-    fields = ('name', 'num_lanes', 'status', 'operator', 'is_paired',
-              'index_read_count', 'rta_version', 'read_length')
-
     def get_context_data(self, *args, **kwargs):
         """Overwritten version for retrievin template values
 
@@ -315,6 +311,24 @@ class FlowCellImportView(FormView):
         flow_cell = loader.run(payload)
         return redirect(reverse('flowcell_view',
                                 kwargs={'pk': flow_cell.pk}))
+
+
+class FlowCellSampleSheetView(DetailView):
+    """Display of flow cell as sample sheet"""
+
+    #: The model type to create
+    model = models.FlowCell
+
+    #: The template
+    template_name = 'flowcells/flowcell_sheet.html'
+
+    def get_context_data(self, *args, **kwargs):
+        gen = import_export.FlowCellSampleSheetGenerator(self.object)
+        context = super().get_context_data(*args, **kwargs)
+        context['csv_v1'] = gen.build_v1()
+        context['csv_v2'] = gen.build_v2()
+        context['yaml'] = gen.build_yaml()
+        return context
 
 
 # Library Views ---------------------------------------------------------------

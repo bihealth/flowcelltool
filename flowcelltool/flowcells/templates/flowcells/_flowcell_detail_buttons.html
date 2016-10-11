@@ -13,6 +13,12 @@
       <i class="fa fa-download" aria-hidden="true"></i>
       Export
     </a>
+    <a class="btn btn-secondary" role="button"
+        href="{% url 'flowcell_sheet' pk=object.pk %}"
+        title="Export sample sheet for {{ object.token_vendor_id }}">
+      <i class="fa fa-wpforms" aria-hidden="true"></i>
+      Sheet Export
+    </a>
     <a class="btn btn-danger" role="button"
         href="{% url 'flowcell_delete' pk=object.pk %}"
         title="Delete flow cell {{ object.token_vendor_id }}">

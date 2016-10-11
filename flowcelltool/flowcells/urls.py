@@ -114,4 +114,9 @@ urlpatterns = [
         view=views.FlowCellImportView.as_view(),
         name='flowcell_import',
     ),
+    url(
+        regex=r'^flowcell/sheet/(?P<pk>\d+)$',
+        view=views.FlowCellSampleSheetView.as_view(),
+        name='flowcell_sheet',
+    ),
 ]

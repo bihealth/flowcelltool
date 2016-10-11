@@ -166,3 +166,109 @@ class FlowCellLoader:
                     barcode_set2=barcode_set2,
                     barcode2=barcode2)
             return flow_cell
+
+
+class FlowCellSampleSheetGenerator:
+    """Helper class for generating sample sheet from FlowCell instance"""
+
+    def __init__(self, flow_cell):
+        #: The flow cell to dump
+        self.flow_cell = flow_cell
+
+    def build_yaml(self):
+        """Return YAML representation of sample sheet"""
+        rows = [
+            '# CUBI Flow Cell YAML',
+            '- name: {}'.format(repr(self.flow_cell.name)),
+            '  num_lanes: {}'.format(self.flow_cell.num_lanes),
+            '  operator: {}'.format(repr(self.flow_cell.operator)),
+            '  rta_version: {}'.format(self.flow_cell.rta_version),
+            '  is_paired: {}'.format(
+                'true' if self.flow_cell.is_paired else 'false'),
+            '  status: {}'.format(self.flow_cell.status),
+            '  read_length: {}'.format(self.flow_cell.read_length),
+        ]
+        if not self.flow_cell.libraries.count():
+            rows.append('  libraries: []')
+            return '\n'.join(rows)
+        rows.append('  libraries:')
+        for lib in self.flow_cell.libraries.order_by('name'):
+            rows += [
+                '    - name: {}'.format(repr(lib.name)),
+                '      reference: {}'.format(repr(lib.reference)),
+                '      barcode_set: {}'.format(repr(
+                    lib.barcode_set.short_name)),
+                '      barcode: ',
+                '        name: {}'.format(repr(lib.barcode.name)),
+                '        seq: {}'.format(repr(lib.barcode.sequence)),
+                '      lanes: {}'.format(list(sorted(lib.lane_numbers))),
+            ]
+        return '\n'.join(rows)
+
+    def build_v1(self):
+        """To bcl2fastq v1 sample sheet CSV file"""
+        rows = [['FCID', 'Lane', 'SampleID', 'SampleRef', 'Index',
+                 'Description', 'Control', 'Recipe', 'Operator',
+                 'SampleProject']]
+        if self.flow_cell.is_paired:
+            recipe = 'PE_indexing'
+        else:
+            recipe = 'SE_indexing'
+        for lib in self.flow_cell.libraries.order_by('name'):
+            for lane_no in sorted(lib.lane_numbers):
+                rows.append([
+                    self.flow_cell.token_vendor_id(),
+                    lane_no,
+                    lib.name,
+                    lib.reference,
+                    lib.barcode.sequence,
+                    '',
+                    'N',  # not PhiX
+                    recipe,
+                    self.flow_cell.operator,
+                    'Project',
+                ])
+        return '\n'.join([','.join(map(str, row)) for row in rows]) + '\n'
+
+    def build_v2(self):
+        """To bcl2fastq v2 sample sheet CSV file"""
+        date = '{}/{}/{}'.format(
+            self.flow_cell.token_date()[0:2],
+            self.flow_cell.token_date()[2:4],
+            self.flow_cell.token_date()[4:6])
+        rows = [
+            ['[Header]'],
+            ['IEMFileVersion', '4'],
+            ['Investigator Name', self.flow_cell.operator],
+            ['Experiment Name', 'Project'],
+            ['Date', date],
+            ['Workflow', 'GenerateFASTQ'],
+            ['Applications', 'FASTQ Only'],
+            ['Assay', 'TruSeq HT'],
+            ['Description', ''],
+            [],
+            ['[Reads]'],
+            [str(self.flow_cell.read_length)],
+        ]
+        if self.flow_cell.is_paired:
+            rows.append([str(self.flow_cell.read_length)])
+        rows += [
+            [],
+            ['Data'],
+            ['Lane', 'Sample_ID', 'Sample_Name', 'Sample_Plate', 'Sample_Well',
+             'i7_Index_ID', 'index', 'Sample_Project', 'Description'],
+        ]
+        for lib in self.flow_cell.libraries.order_by('name'):
+            for lane_no in sorted(lib.lane_numbers):
+                rows.append([
+                    lane_no,
+                    lib.name,
+                    '',
+                    '',
+                    '',
+                    lib.barcode.name,
+                    lib.barcode.sequence,
+                    'Project',
+                    '',  # TODO XXX
+                ])
+        return '\n'.join([','.join(map(str, row)) for row in rows]) + '\n'

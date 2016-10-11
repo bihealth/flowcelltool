@@ -1,0 +1,14 @@
+<div class="row">
+  <div class="text-xs-right mt-t-1 m-b-1">
+    <a class="btn btn-secondary" role="button"
+        href="{% url 'barcodeset_list' %}">
+      <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+      Back to List
+    </a>
+    <a class="btn btn-secondary" role="button"
+        href="{% url 'flowcell_view' pk=object.pk %}">
+      <i class="fa fa-arrow-left" aria-hidden="true"></i>
+      Back to FlowCell
+    </a>
+  </div>
+</div>
