@@ -52,7 +52,23 @@
             <td>{{ flowcell.rta_version }}</td>
             <td>{{ flowcell.operator }}</td>
             <td>{{ flowcell.libraries.count }}</td>
-            <td>-</td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-secondary btn-sm dropdown-toggle"
+                    type="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                  Actions
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{% url 'flowcell_view' pk=flowcell.pk %}">View</a>
+                  <a class="dropdown-item" href="{% url 'flowcell_export' pk=flowcell.pk %}">Export</a>
+                  <a class="dropdown-item" href="{% url 'flowcell_sheet' pk=flowcell.pk %}">Create Sheet</a>
+                  <a class="dropdown-item" href="{% url 'flowcell_update' pk=flowcell.pk %}">Update</a>
+                  <a class="dropdown-item" href="{% url 'flowcell_updatelibraries' pk=flowcell.pk %}">Update Libraries</a>
+                  <a class="dropdown-item" href="{% url 'flowcell_delete' pk=flowcell.pk %}">Delete</a>
+                </div>
+              </div>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

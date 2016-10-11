@@ -254,7 +254,7 @@ class FlowCellSampleSheetGenerator:
             rows.append([str(self.flow_cell.read_length)])
         rows += [
             [],
-            ['Data'],
+            ['[Data]'],
             ['Lane', 'Sample_ID', 'Sample_Name', 'Sample_Plate', 'Sample_Well',
              'i7_Index_ID', 'index', 'Sample_Project', 'Description'],
         ]
