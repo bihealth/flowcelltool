@@ -44,6 +44,7 @@
                 </button>
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="{% url 'barcodeset_view' pk=barcode_set.pk %}">View</a>
+                  <a class="dropdown-item" href="{% url 'barcodeset_export' pk=barcode_set.pk %}">Export</a>
                   <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">Update</a>
                   <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">Update Entries</a>
                   <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">Delete</a>

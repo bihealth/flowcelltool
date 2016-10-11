@@ -12,7 +12,23 @@ from django.core.validators import MinValueValidator, MaxValueValidator, \
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
 
-# SequencingMachine and related ----------------------------------------------
+# TimeStampedModel ------------------------------------------------------------
+
+
+class TimeStampedModel(models.Model):
+    """Base class that adds the created_ad and updated_add field"""
+
+    #: Timestamp for creation time
+    created_at = models.DateTimeField(auto_now_add=True)
+    #: Timestamp for last update
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        abstract = True
+
+
+# SequencingMachine and related -----------------------------------------------
 
 #: Key value for machine model MiSeq
 MACHINE_MODEL_MISEQ = 'MiSeq'
@@ -66,14 +82,9 @@ INDEX_WORKFLOWS = (
 )
 
 
-class SequencingMachine(models.Model):
+class SequencingMachine(TimeStampedModel):
     """Represent a sequencing machine instance
     """
-
-    #: Timestamp for creation time
-    created_at = models.DateTimeField(auto_now_add=True)
-    #: Timestamp for last update
-    updated_at = models.DateTimeField(auto_now=True)
 
     #: Vendor ID of the machine, reflected in file names and read names later
     #: on
@@ -127,13 +138,8 @@ class SequencingMachine(models.Model):
 # BarcodeSet and related -----------------------------------------------------
 
 
-class BarcodeSet(models.Model):
+class BarcodeSet(TimeStampedModel):
     """A set of barcodes with id => sequence mapping"""
-
-    #: Timestamp for creation time
-    created_at = models.DateTimeField(auto_now_add=True)
-    #: Timestamp for last update
-    updated_at = models.DateTimeField(auto_now=True)
 
     #: Full name of the index set
     name = models.CharField(
@@ -164,13 +170,8 @@ class BarcodeSet(models.Model):
         return tpl.format(', '.join(map(repr, values)))
 
 
-class BarcodeSetEntry(models.Model):
+class BarcodeSetEntry(TimeStampedModel):
     """A barcode sequence with an id"""
-
-    #: Timestamp for creation time
-    created_at = models.DateTimeField(auto_now_add=True)
-    #: Timestamp for last update
-    updated_at = models.DateTimeField(auto_now=True)
 
     #: The barcode set that this barcode belongs to
     barcode_set = models.ForeignKey(BarcodeSet, related_name='entries',
@@ -279,13 +280,8 @@ FLOW_CELL_NAME_RE = (
     r'(_(?P<label>.+))?$')
 
 
-class FlowCell(models.Model):
+class FlowCell(TimeStampedModel):
     """Information stored for each flow cell"""
-
-    #: Timestamp for creation time
-    created_at = models.DateTimeField(auto_now_add=True)
-    #: Timestamp for last update
-    updated_at = models.DateTimeField(auto_now=True)
 
     #: Owner of the flow cell.  Set to NULL when the user is deleted to
     #: circumvent any possible data loss.  Users should be deactivated
@@ -469,14 +465,9 @@ def try_helper(f, arg, exc=AttributeError, default=''):
         return default
 
 
-class Library(models.Model):
+class Library(TimeStampedModel):
     """The data stored for each library that is to be sequenced
     """
-
-    #: Timestamp for creation time
-    created_at = models.DateTimeField(auto_now_add=True)
-    #: Timestamp for last update
-    updated_at = models.DateTimeField(auto_now=True)
 
     #: The flow cell that this library has been sequenced on
     flow_cell = models.ForeignKey(FlowCell, related_name='libraries',

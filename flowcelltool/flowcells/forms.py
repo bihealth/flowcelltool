@@ -103,26 +103,18 @@ class FlowCellForm(forms.ModelForm):
                   'read_length')
 
 
-def barcode_set_choices():
-    """Return values for a select field"""
-    result = [('', '-----')]
-    for barcode_set in models.BarcodeSet.objects.order_by('name').all():
-        result.append((barcode_set.pk, barcode_set.name))
-    return result
-
-
 class LibrariesPrefillForm(forms.Form):
     """Helper form for filling out forms with barcodes"""
 
     #: Choice field for selecting first barcode
-    barcode1 = forms.ChoiceField(
+    barcode1 = forms.ModelChoiceField(
         required=False,
-        choices=lazy(barcode_set_choices, tuple)())
+        queryset=models.BarcodeSet.objects.order_by('name').all())
 
     #: Choice field for selecting second barcode
-    barcode2 = forms.ChoiceField(
+    barcode2 = forms.ModelChoiceField(
         required=False,
-        choices=lazy(barcode_set_choices, tuple)())
+        queryset=models.BarcodeSet.objects.order_by('name').all())
 
 
 # Library multi-edit related -------------------------------------------------
