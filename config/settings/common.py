@@ -32,6 +32,9 @@ DJANGO_APPS = (
     # Useful template tags:
     'django.contrib.humanize',
 
+    # For Postgres full-text-search:
+    'django.contrib.postgres',
+
     # Admin
     'django.contrib.admin',
 )

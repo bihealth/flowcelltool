@@ -453,3 +453,21 @@ class LibraryUpdateView(
         context['helper'].template = \
             'bootstrap4/table_inline_formset.html'
         return context
+
+
+# Search-Related Views --------------------------------------------------------
+
+
+class SearchView(LoginRequiredMixin, TemplateView):
+    """Shows a list of sequencing machines"""
+
+    template_name = 'flowcells/search.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        query = self.request.GET.get('q')
+        results = []
+        context['is_search'] = True
+        context['results'] = models.Library.objects.filter(name__contains=query)
+        context['query'] = query
+        return context

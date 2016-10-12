@@ -543,6 +543,17 @@ class Library(TimeStampedModel):
                      'same secondary barcode as {}: {}'.format(
                         self.name, self.barcode2)))
 
+    def get_absolute_url(self):
+        return self.flow_cell.get_absolute_url()
+
+    def get_search_result(self):
+        return {
+            'type': 'Library',
+            'title': self.name,
+            'description': 'on flow cell {}'.format(
+                self.flow_cell.token_vendor_id())
+        }
+
     def __str__(self):
         values = (
             self.name,

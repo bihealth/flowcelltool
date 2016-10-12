@@ -119,4 +119,11 @@ urlpatterns = [
         view=views.FlowCellSampleSheetView.as_view(),
         name='flowcell_sheet',
     ),
+
+    # Cross-Data Type Query ---------------------------------------------------
+    url(
+        regex=r'^search$',
+        view=views.SearchView.as_view(),
+        name='search',
+    ),
 ]

@@ -97,6 +97,18 @@
             </ul>
 
             <ul class="nav navbar-nav pull-xs-right">
+              {% if not is_search %}
+              <li class="nav-item">
+                <form action="{% url 'search' %}" method="GET">
+                  <div class="input-group">
+                    <input type="text" class="form-control" name="q" placeholder="Search Term">
+                    <span class="input-group-btn">
+                      <button class="btn btn-primary" type="submit">Go!</button>
+                    </span>
+                  </div>
+                </form>
+              </li>
+              {% endif %}
               {% if request.user.is_superuser %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'admin:index' %}">
