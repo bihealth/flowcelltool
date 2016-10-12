@@ -5,6 +5,7 @@
 
 ### Pytest
 .cache
+coverage.xml
 
 ### Sphinx
 docs/_build
