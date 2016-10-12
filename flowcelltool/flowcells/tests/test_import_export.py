@@ -48,8 +48,8 @@ class TestBarcodeSetLoader(TestCase):
 
     def test_run(self):
         # Check precondition
-        self.assertEquals(BarcodeSet.objects.count(), 4)
-        self.assertEquals(BarcodeSetEntry.objects.count(), 64)
+        self.assertEquals(BarcodeSet.objects.count(), 0)
+        self.assertEquals(BarcodeSetEntry.objects.count(), 0)
 
         # Run barcode set loader
         loader = import_export.BarcodeSetLoader()
@@ -73,8 +73,8 @@ class TestBarcodeSetLoader(TestCase):
         barcode_set = loader.run(JSON)
 
         # Check resulting database state
-        self.assertEquals(BarcodeSet.objects.count(), 5)
-        self.assertEquals(BarcodeSetEntry.objects.count(), 66)
+        self.assertEquals(BarcodeSet.objects.count(), 1)
+        self.assertEquals(BarcodeSetEntry.objects.count(), 2)
         self.assertEquals(barcode_set.name, 'Agilent SureSelect XT Test')
         self.assertEquals(barcode_set.short_name, 'SureSelectTest')
         self.assertEquals(barcode_set.entries.count(), 2)
