@@ -1,6 +1,7 @@
 import logging
 import re
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
@@ -23,7 +24,7 @@ LOGGER = logging.getLogger(__name__)
 # Home View -------------------------------------------------------------------
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     """For displaying the home screen"""
 
     #: The template with the form to render
@@ -40,13 +41,13 @@ class HomeView(TemplateView):
 # SequencingMachine Views -----------------------------------------------------
 
 
-class SequencingMachineListView(ListView):
+class SequencingMachineListView(LoginRequiredMixin, ListView):
     """Shows a list of sequencing machines"""
 
     model = models.SequencingMachine
 
 
-class SequencingMachineCreateView(CreateView):
+class SequencingMachineCreateView(LoginRequiredMixin, CreateView):
     """View for creating sequencing machine"""
 
     model = models.SequencingMachine
@@ -55,13 +56,13 @@ class SequencingMachineCreateView(CreateView):
               'slot_count', 'dual_index_workflow']
 
 
-class SequencingMachineDetailView(DetailView):
+class SequencingMachineDetailView(LoginRequiredMixin, DetailView):
     """View detail of sequencing machine"""
 
     model = models.SequencingMachine
 
 
-class SequencingMachineUpdateView(UpdateView):
+class SequencingMachineUpdateView(LoginRequiredMixin, UpdateView):
     """View for updating sequencing machines"""
 
     model = models.SequencingMachine
@@ -70,7 +71,7 @@ class SequencingMachineUpdateView(UpdateView):
               'slot_count', 'dual_index_workflow']
 
 
-class SequencingMachineDeleteView(DeleteView):
+class SequencingMachineDeleteView(LoginRequiredMixin, DeleteView):
     """View for deleting sequencing machines"""
 
     model = models.SequencingMachine
@@ -80,13 +81,13 @@ class SequencingMachineDeleteView(DeleteView):
 # SeqeuencingMachine Views ----------------------------------------------------
 
 
-class BarcodeSetListView(ListView):
+class BarcodeSetListView(LoginRequiredMixin, ListView):
     """Shows a list of sequencing machines"""
 
     model = models.BarcodeSet
 
 
-class BarcodeSetCreateView(CreateView):
+class BarcodeSetCreateView(LoginRequiredMixin, CreateView):
     """View for creating sequencing machine"""
 
     model = models.BarcodeSet
@@ -95,13 +96,13 @@ class BarcodeSetCreateView(CreateView):
     fields = ['name', 'short_name', 'description']
 
 
-class BarcodeSetDetailView(DetailView):
+class BarcodeSetDetailView(LoginRequiredMixin, DetailView):
     """View detail of sequencing machine"""
 
     model = models.BarcodeSet
 
 
-class BarcodeSetUpdateView(UpdateView):
+class BarcodeSetUpdateView(LoginRequiredMixin, UpdateView):
     """View for updating sequencing machines"""
 
     model = models.BarcodeSet
@@ -110,7 +111,7 @@ class BarcodeSetUpdateView(UpdateView):
     fields = ['name', 'short_name', 'description']
 
 
-class BarcodeSetDeleteView(DeleteView):
+class BarcodeSetDeleteView(LoginRequiredMixin, DeleteView):
     """View for deleting sequencing machines"""
 
     model = models.BarcodeSet
@@ -119,7 +120,7 @@ class BarcodeSetDeleteView(DeleteView):
     success_url = reverse_lazy('barcodeset_list')
 
 
-class BarcodeSetExportView(View):
+class BarcodeSetExportView(LoginRequiredMixin, View):
     """Exporting of BarcodeSet objects to JSON"""
 
     def dispatch(self, request, *args, **kwargs):
@@ -134,7 +135,7 @@ class BarcodeSetExportView(View):
         return response
 
 
-class BarcodeSetImportView(FormView):
+class BarcodeSetImportView(LoginRequiredMixin, FormView):
     """Importing of BarcodeSet objects from JSON"""
 
     #: The template with the form to render
@@ -155,7 +156,7 @@ class BarcodeSetImportView(FormView):
 # BarcodeSetEntry Views -------------------------------------------------------
 
 
-class BarcodeSetEntryUpdateView(UpdateView):
+class BarcodeSetEntryUpdateView(LoginRequiredMixin, UpdateView):
     """Form for updating all adapter barcode set entries of a barcode set
     """
 
@@ -216,13 +217,13 @@ class BarcodeSetEntryUpdateView(UpdateView):
 # FlowCell Views --------------------------------------------------------------
 
 
-class FlowCellListView(ListView):
+class FlowCellListView(LoginRequiredMixin, ListView):
     """Shows a list of flow cells, this is the index page"""
 
     model = models.FlowCell
 
 
-class FlowCellCreateView(CreateView):
+class FlowCellCreateView(LoginRequiredMixin, CreateView):
     """Show the view for creating a flow cell"""
 
     #: The model type to create
@@ -240,7 +241,7 @@ class FlowCellCreateView(CreateView):
             'flowcell_view', kwargs={'pk': self.object.pk}))
 
 
-class FlowCellDetailView(DetailView):
+class FlowCellDetailView(LoginRequiredMixin, DetailView):
     """Show the view for creating a flow cell"""
 
     #: The model type to create
@@ -260,7 +261,7 @@ class FlowCellDetailView(DetailView):
         return context
 
 
-class FlowCellUpdateView(UpdateView):
+class FlowCellUpdateView(LoginRequiredMixin, UpdateView):
     """Show the view for updating a flow cell"""
 
     #: The model type to create
@@ -271,7 +272,7 @@ class FlowCellUpdateView(UpdateView):
               'index_read_count', 'rta_version', 'read_length')
 
 
-class FlowCellDeleteView(DeleteView):
+class FlowCellDeleteView(LoginRequiredMixin, DeleteView):
     """View for deleting flow cell"""
 
     model = models.FlowCell
@@ -280,7 +281,7 @@ class FlowCellDeleteView(DeleteView):
     success_url = reverse_lazy('flowcell_list')
 
 
-class FlowCellExportView(View):
+class FlowCellExportView(LoginRequiredMixin, View):
     """Exporting of FlowCell objects to JSON"""
 
     def dispatch(self, request, *args, **kwargs):
@@ -295,7 +296,7 @@ class FlowCellExportView(View):
         return response
 
 
-class FlowCellImportView(FormView):
+class FlowCellImportView(LoginRequiredMixin, FormView):
     """Importing of FlowCell objects from JSON"""
 
     #: The template with the form to render
@@ -313,7 +314,7 @@ class FlowCellImportView(FormView):
                                 kwargs={'pk': flow_cell.pk}))
 
 
-class FlowCellSampleSheetView(DetailView):
+class FlowCellSampleSheetView(LoginRequiredMixin, DetailView):
     """Display of flow cell as sample sheet"""
 
     #: The model type to create
@@ -334,7 +335,7 @@ class FlowCellSampleSheetView(DetailView):
 # Library Views ---------------------------------------------------------------
 
 
-class LibraryUpdateView(UpdateView):
+class LibraryUpdateView(LoginRequiredMixin, UpdateView):
     """Form for updating all libraries on a flowcell
     """
 
