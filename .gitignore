@@ -6,6 +6,9 @@
 ### Pytest
 .cache
 
+### Sphinx
+docs/_build
+
 ### SublimeText ###
 # cache files for sublime text
 *.tmlanguage.cache

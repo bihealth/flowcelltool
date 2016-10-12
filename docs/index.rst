@@ -1,26 +1,78 @@
-.. Flowcell Tool documentation master file, created by
-   sphinx-quickstart.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Welcome to Flowcelltool's documentation!
+=========================================
 
-Welcome to Flowcell Tool's documentation!
-====================================================================
+.. warning::
 
-Contents:
+   Flowcelltool is currently not stable and under active development.
+   Things will change and break, at least until the first v0.1 release.
+
+Flowcelltool is a Django web application for the management of Illumina flow cells.
+The documentation is split into three parts (accessible through the navigation on the left):
+
+Installation & Getting Started
+    Instructions for the installation of the web application and its deployment
+
+Manual
+    This section contains the user documentation
+
+Project Info
+    More information on the project, including the changelog, list of contributing authors, and contribution instructions.
+
+Screenshot
+----------
+
+* TODO
+
+Dependencies
+------------
+
+* Python 3
+* Django 1.10
+* PostgreSQL
+
+Features
+--------
+
+* Graphical management of flow cells and libraries
+* Automated generation of bcl2fastq (both v1.x and v2.x) sample sheets
+* Authentication via LDAP/ActiveDirectory or local users
+* Easily deployable to Heroku/Flynn.io/Docker (12 factor app), follows Two Scoops of Python best pratice
 
 .. toctree::
-   :maxdepth: 2
+    :caption: Installation & Getting Started
+    :name: getting-started
+    :hidden:
+    :maxdepth: 1
 
-   install
-   deploy
-   docker_ec2
-   tests
+    installation
+    getting_started
 
+.. toctree::
+    :caption: User Manual
+    :name: user-manual
+    :hidden:
+    :maxdepth: 1
+    :titlesonly:
 
+    import_barcodes
+    create_sequencers
+    add_flowcells
+    admin_users
 
-Indices and tables
-==================
+.. toctree::
+    :caption: Project Info
+    :name: project-info
+    :hidden:
+    :maxdepth: 1
+    :titlesonly:
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    contributing
+    authors
+    history
+    license
+
+.. Generated pages, should not appear
+
+    * :ref:`genindex`
+    * :ref:`modindex`
+    * :ref:`search`

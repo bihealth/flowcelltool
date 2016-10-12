@@ -10,6 +10,8 @@ Simple management of HTS Flowcells for demultiplexing
 
 :License: MIT
 
+:Status: ALPHA
+
 
 Settings
 --------
