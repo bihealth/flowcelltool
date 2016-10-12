@@ -32,10 +32,6 @@ awesome-slugify==1.6.5
 # Time zones support
 pytz==2016.7
 
-# Redis support
-django-redis==4.5.0
-redis>=2.10.5
-
 # Your custom requirements go here
 
 # Support for rendering Markdown
