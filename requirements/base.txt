@@ -5,7 +5,7 @@
 wheel==0.29.0
 
 # Bleeding edge Django
-django==1.10.1
+django==1.10.2
 
 # Configuration
 django-environ==0.4.0
@@ -20,7 +20,7 @@ django-crispy-forms==1.6.0
 django-model-utils==2.6
 
 # Images
-Pillow==3.3.1
+Pillow==3.4.1
 
 
 # Python-PostgreSQL Database Adapter
@@ -30,7 +30,7 @@ psycopg2==2.6.2
 awesome-slugify==1.6.5
 
 # Time zones support
-pytz==2016.6.1
+pytz==2016.7
 
 # Redis support
 django-redis==4.5.0
