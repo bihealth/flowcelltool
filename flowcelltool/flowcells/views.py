@@ -14,6 +14,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, \
     FormView
 
 from crispy_forms.helper import FormHelper
+from rules.contrib.views import PermissionRequiredMixin
 
 from . import models, forms, import_export
 
@@ -41,14 +42,18 @@ class HomeView(LoginRequiredMixin, TemplateView):
 # SequencingMachine Views -----------------------------------------------------
 
 
-class SequencingMachineListView(LoginRequiredMixin, ListView):
+class SequencingMachineListView(
+        LoginRequiredMixin, ListView):
     """Shows a list of sequencing machines"""
 
     model = models.SequencingMachine
 
 
-class SequencingMachineCreateView(LoginRequiredMixin, CreateView):
+class SequencingMachineCreateView(
+        LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """View for creating sequencing machine"""
+
+    permission_required = 'flowcells.add_sequencingmachine'
 
     model = models.SequencingMachine
 
@@ -56,14 +61,18 @@ class SequencingMachineCreateView(LoginRequiredMixin, CreateView):
               'slot_count', 'dual_index_workflow']
 
 
-class SequencingMachineDetailView(LoginRequiredMixin, DetailView):
+class SequencingMachineDetailView(
+        LoginRequiredMixin, DetailView):
     """View detail of sequencing machine"""
 
     model = models.SequencingMachine
 
 
-class SequencingMachineUpdateView(LoginRequiredMixin, UpdateView):
+class SequencingMachineUpdateView(
+        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """View for updating sequencing machines"""
+
+    permission_required = 'flowcells.change_sequencingmachine'
 
     model = models.SequencingMachine
 
@@ -71,24 +80,32 @@ class SequencingMachineUpdateView(LoginRequiredMixin, UpdateView):
               'slot_count', 'dual_index_workflow']
 
 
-class SequencingMachineDeleteView(LoginRequiredMixin, DeleteView):
+class SequencingMachineDeleteView(
+    LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """View for deleting sequencing machines"""
 
+    permission_required = 'flowcells.delete_sequencingmachine'
+
     model = models.SequencingMachine
+
     success_url = reverse_lazy('instrument_list')
 
 
 # SeqeuencingMachine Views ----------------------------------------------------
 
 
-class BarcodeSetListView(LoginRequiredMixin, ListView):
+class BarcodeSetListView(
+        LoginRequiredMixin, ListView):
     """Shows a list of sequencing machines"""
 
     model = models.BarcodeSet
 
 
-class BarcodeSetCreateView(LoginRequiredMixin, CreateView):
+class BarcodeSetCreateView(
+        LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """View for creating sequencing machine"""
+
+    permission_required = 'flowcells.add_barcodeset'
 
     model = models.BarcodeSet
 
@@ -96,14 +113,18 @@ class BarcodeSetCreateView(LoginRequiredMixin, CreateView):
     fields = ['name', 'short_name', 'description']
 
 
-class BarcodeSetDetailView(LoginRequiredMixin, DetailView):
+class BarcodeSetDetailView(
+        LoginRequiredMixin, DetailView):
     """View detail of sequencing machine"""
 
     model = models.BarcodeSet
 
 
-class BarcodeSetUpdateView(LoginRequiredMixin, UpdateView):
+class BarcodeSetUpdateView(
+        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """View for updating sequencing machines"""
+
+    permission_required = 'flowcells.change_barcodeset'
 
     model = models.BarcodeSet
 
@@ -111,8 +132,11 @@ class BarcodeSetUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['name', 'short_name', 'description']
 
 
-class BarcodeSetDeleteView(LoginRequiredMixin, DeleteView):
+class BarcodeSetDeleteView(
+        LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """View for deleting sequencing machines"""
+
+    permission_required = 'flowcells.delete_barcodeset'
 
     model = models.BarcodeSet
 
@@ -120,7 +144,8 @@ class BarcodeSetDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('barcodeset_list')
 
 
-class BarcodeSetExportView(LoginRequiredMixin, View):
+class BarcodeSetExportView(
+        LoginRequiredMixin, View):
     """Exporting of BarcodeSet objects to JSON"""
 
     def dispatch(self, request, *args, **kwargs):
@@ -135,8 +160,11 @@ class BarcodeSetExportView(LoginRequiredMixin, View):
         return response
 
 
-class BarcodeSetImportView(LoginRequiredMixin, FormView):
+class BarcodeSetImportView(
+        LoginRequiredMixin, PermissionRequiredMixin, FormView):
     """Importing of BarcodeSet objects from JSON"""
+
+    permission_required = 'flowcells.add_barcodeset'
 
     #: The template with the form to render
     template_name = 'flowcells/barcodeset_import.html'
@@ -156,9 +184,12 @@ class BarcodeSetImportView(LoginRequiredMixin, FormView):
 # BarcodeSetEntry Views -------------------------------------------------------
 
 
-class BarcodeSetEntryUpdateView(LoginRequiredMixin, UpdateView):
+class BarcodeSetEntryUpdateView(
+        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Form for updating all adapter barcode set entries of a barcode set
     """
+
+    permission_required = 'flowcells.change_barcodeset'
 
     model = models.BarcodeSet
 
@@ -217,14 +248,18 @@ class BarcodeSetEntryUpdateView(LoginRequiredMixin, UpdateView):
 # FlowCell Views --------------------------------------------------------------
 
 
-class FlowCellListView(LoginRequiredMixin, ListView):
+class FlowCellListView(
+        LoginRequiredMixin, ListView):
     """Shows a list of flow cells, this is the index page"""
 
     model = models.FlowCell
 
 
-class FlowCellCreateView(LoginRequiredMixin, CreateView):
+class FlowCellCreateView(
+        LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Show the view for creating a flow cell"""
+
+    permission_required = 'flowcells.add_flowcell'
 
     #: The model type to create
     model = models.FlowCell
@@ -241,7 +276,8 @@ class FlowCellCreateView(LoginRequiredMixin, CreateView):
             'flowcell_view', kwargs={'pk': self.object.pk}))
 
 
-class FlowCellDetailView(LoginRequiredMixin, DetailView):
+class FlowCellDetailView(
+        LoginRequiredMixin, DetailView):
     """Show the view for creating a flow cell"""
 
     #: The model type to create
@@ -261,8 +297,11 @@ class FlowCellDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class FlowCellUpdateView(LoginRequiredMixin, UpdateView):
+class FlowCellUpdateView(
+        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Show the view for updating a flow cell"""
+
+    permission_required = 'flowcells.change_flowcell'
 
     #: The model type to create
     model = models.FlowCell
@@ -272,16 +311,21 @@ class FlowCellUpdateView(LoginRequiredMixin, UpdateView):
               'index_read_count', 'rta_version', 'read_length')
 
 
-class FlowCellDeleteView(LoginRequiredMixin, DeleteView):
+class FlowCellDeleteView(
+        LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """View for deleting flow cell"""
 
+    permission_required = 'flowcells.delete_flowcell'
+
+    #: The model type to delete
     model = models.FlowCell
 
     #: URL to redirect to on success
     success_url = reverse_lazy('flowcell_list')
 
 
-class FlowCellExportView(LoginRequiredMixin, View):
+class FlowCellExportView(
+        LoginRequiredMixin, View):
     """Exporting of FlowCell objects to JSON"""
 
     def dispatch(self, request, *args, **kwargs):
@@ -296,8 +340,11 @@ class FlowCellExportView(LoginRequiredMixin, View):
         return response
 
 
-class FlowCellImportView(LoginRequiredMixin, FormView):
+class FlowCellImportView(
+        LoginRequiredMixin, PermissionRequiredMixin, FormView):
     """Importing of FlowCell objects from JSON"""
+
+    permission_required = 'flowcells.add_flowcell'
 
     #: The template with the form to render
     template_name = 'flowcells/flowcell_import.html'
@@ -314,7 +361,8 @@ class FlowCellImportView(LoginRequiredMixin, FormView):
                                 kwargs={'pk': flow_cell.pk}))
 
 
-class FlowCellSampleSheetView(LoginRequiredMixin, DetailView):
+class FlowCellSampleSheetView(
+        LoginRequiredMixin, DetailView):
     """Display of flow cell as sample sheet"""
 
     #: The model type to create
@@ -335,9 +383,12 @@ class FlowCellSampleSheetView(LoginRequiredMixin, DetailView):
 # Library Views ---------------------------------------------------------------
 
 
-class LibraryUpdateView(LoginRequiredMixin, UpdateView):
+class LibraryUpdateView(
+        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Form for updating all libraries on a flowcell
     """
+
+    permission_required = 'flowcells.change_flowcell'
 
     model = models.FlowCell
 

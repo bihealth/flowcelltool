@@ -38,6 +38,7 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     'crispy_forms',  # Form layouts
     'markdown_deux',  # Markdown support
+    'rules.apps.AutodiscoverRulesConfig',  # django rules engine
 )
 
 # Apps specific for this project go here.
@@ -223,6 +224,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
+    'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 

@@ -1,4 +1,7 @@
 {% load crispy_forms_filters %}
+{% load rules %}
+{% has_perm 'flowcells.update_flowcell' request.user as can_change_flowcell %}
+{% has_perm 'flowcells.delete_flowcell' request.user as can_delete_flowcell %}
 
 <div class="row">
   <div class="text-xs-right mt-t-1 m-b-1">
@@ -19,12 +22,15 @@
       <i class="fa fa-wpforms" aria-hidden="true"></i>
       Sheet Export
     </a>
+    {% if can_delete_flowcell %}
     <a class="btn btn-danger" role="button"
         href="{% url 'flowcell_delete' pk=object.pk %}"
         title="Delete flow cell {{ object.token_vendor_id }}">
       <i class="fa fa-eraser" aria-hidden="true"></i>
       Delete
     </a>
+    {% endif %}
+    {% if can_change_flowcell %}
     <a class="btn btn-primary" role="button"
         href="{% url 'flowcell_updatelibraries' pk=object.pk %}"
         title="Update libraries {{ object.token_vendor_id }}">
@@ -43,8 +49,10 @@
       <i class="fa fa-pencil" aria-hidden="true"></i>
       Update
     </a>
+    {% endif %}
   </div>
 </div>
+{% if can_change_flowcell %}
 <div class="row">
   <div class="collapse" id="collapse-{{ location }}">
     <div class="card card-block">
@@ -59,3 +67,4 @@
     </div>
   </div>
 </div>
+{% endif %}

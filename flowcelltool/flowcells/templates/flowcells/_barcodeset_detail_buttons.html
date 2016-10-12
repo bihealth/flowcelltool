@@ -1,3 +1,7 @@
+{% load rules %}
+{% has_perm 'flowcells.update_barcodeset' request.user as can_change_barcodeset %}
+{% has_perm 'flowcells.delete_barcodeset' request.user as can_delete_barcodeset %}
+
 <div class="row">
   <div class="text-xs-right mt-t-1 m-b-1">
     <a class="btn btn-secondary" role="button"
@@ -11,12 +15,15 @@
       <i class="fa fa-download" aria-hidden="true"></i>
       Export
     </a>
+    {% if can_delete_barcodeset %}
     <a class="btn btn-danger" role="button"
         href="{% url 'barcodeset_delete' pk=object.pk %}"
         title="Delete barcode set {{ object.token_vendor_id }}">
       <i class="fa fa-eraser" aria-hidden="true"></i>
       Delete
     </a>
+    {% endif %}
+    {% if can_change_barcodeset %}
     <a class="btn btn-primary" role="button"
         href="{% url 'barcodeset_updateentries' pk=object.pk %}"
         title="Update barcode set {{ object.token_vendor_id }}">
@@ -29,5 +36,6 @@
       <i class="fa fa-pencil" aria-hidden="true"></i>
       Update
     </a>
+    {% endif %}
   </div>
 </div>

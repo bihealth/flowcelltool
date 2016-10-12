@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load markdown_deux_tags %}
+{% load rules %}
 
 {% block title %}Sequencing Machines{% endblock %}
 
@@ -8,7 +9,10 @@
 <div class="row">
   <h2>Sequencing Machines</h2>
 
-  {% include "flowcells/_sequencingmachine_list_buttons.html" %}
+  {% has_perm 'flowcells.add_sequencingmachine' request.user as can_add_sequencingmachine %}
+  {% if can_add_sequencingmachine %}
+    {% include "flowcells/_sequencingmachine_list_buttons.html" %}
+  {% endif %}
 
   <table class="table table-striped table-hover">
     <thead>
@@ -48,8 +52,14 @@
             </button>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="{% url 'instrument_view' pk=machine.pk %}">View</a>
-              <a class="dropdown-item" href="{% url 'instrument_update' pk=machine.pk %}">Update</a>
-              <a class="dropdown-item" href="{% url 'instrument_delete' pk=machine.pk %}">Delete</a>
+              {% has_perm 'flowcells.change_sequencingmachine' request.user barcode_set as can_change_sequencingmachine %}
+              {% if can_change_sequencingmachine %}
+                <a class="dropdown-item" href="{% url 'instrument_update' pk=machine.pk %}">Update</a>
+              {% endif %}
+              {% has_perm 'flowcells.delete_sequencingmachine' request.user barcode_set as can_delete_sequencingmachine %}
+              {% if can_delete_sequencingmachine %}
+                <a class="dropdown-item" href="{% url 'instrument_delete' pk=machine.pk %}">Delete</a>
+              {% endif %}
             </div>
           </div>
         </td>
@@ -58,6 +68,8 @@
     </tbody>
   </table>
 
-  {% include "flowcells/_sequencingmachine_list_buttons.html" %}
+  {% if can_add_sequencingmachine %}
+    {% include "flowcells/_sequencingmachine_list_buttons.html" %}
+  {% endif %}
 </div>
 {% endblock %}

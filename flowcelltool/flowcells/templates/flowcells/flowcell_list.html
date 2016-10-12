@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load rules %}
 
 {% block title %}Flow Cells{% endblock %}
 
@@ -7,7 +8,10 @@
 <div class="row">
   <h2>Flow Cells</h2>
 
-  {% include "flowcells/_flowcell_list_buttons.html" %}
+  {% has_perm 'flowcells.add_flowcell' request.user as can_add_flowcell %}
+  {% if can_add_flowcell %}
+    {% include "flowcells/_flowcell_list_buttons.html" %}
+  {% endif %}
 
   <div class="list-group">
     <table class="table table-hover table-striped">
@@ -63,9 +67,15 @@
                   <a class="dropdown-item" href="{% url 'flowcell_view' pk=flowcell.pk %}">View</a>
                   <a class="dropdown-item" href="{% url 'flowcell_export' pk=flowcell.pk %}">Export</a>
                   <a class="dropdown-item" href="{% url 'flowcell_sheet' pk=flowcell.pk %}">Create Sheet</a>
-                  <a class="dropdown-item" href="{% url 'flowcell_update' pk=flowcell.pk %}">Update</a>
-                  <a class="dropdown-item" href="{% url 'flowcell_updatelibraries' pk=flowcell.pk %}">Update Libraries</a>
-                  <a class="dropdown-item" href="{% url 'flowcell_delete' pk=flowcell.pk %}">Delete</a>
+                  {% has_perm 'flowcells.change_flowcell' request.user flowcell as can_change_flowcell %}
+                  {% if can_change_flowcell %}
+                    <a class="dropdown-item" href="{% url 'flowcell_update' pk=flowcell.pk %}">Update</a>
+                  {% endif %}
+                  {% has_perm 'flowcells.delete_flowcell' request.user flowcell as can_delete_flowcell %}
+                  {% if can_delete_flowcell %}
+                    <a class="dropdown-item" href="{% url 'flowcell_updatelibraries' pk=flowcell.pk %}">Update Libraries</a>
+                    <a class="dropdown-item" href="{% url 'flowcell_delete' pk=flowcell.pk %}">Delete</a>
+                  {% endif %}
                 </div>
               </div>
             </td>
@@ -75,7 +85,9 @@
     </table>
   </div>
 
-  {% include "flowcells/_flowcell_list_buttons.html" %}
+  {% if can_add_flowcell %}
+    {% include "flowcells/_flowcell_list_buttons.html" %}
+  {% endif %}
 
 </div>
 {% endblock content %}

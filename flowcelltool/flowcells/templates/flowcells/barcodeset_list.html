@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load markdown_deux_tags %}
+{% load rules %}
 
 {% block title %}Barcode Sets{% endblock %}
 
@@ -8,7 +9,10 @@
 <div class="row">
   <h2>Barcode Sets</h2>
 
-  {% include "flowcells/_barcodeset_list_buttons.html" %}
+  {% has_perm 'flowcells.add_barcodeset' request.user as can_add_barcodeset %}
+  {% if can_add_barcodeset %}
+    {% include "flowcells/_barcodeset_list_buttons.html" %}
+  {% endif %}
 
   <div class="list-group">
     <table class="table table-hover table-striped">
@@ -45,9 +49,15 @@
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="{% url 'barcodeset_view' pk=barcode_set.pk %}">View</a>
                   <a class="dropdown-item" href="{% url 'barcodeset_export' pk=barcode_set.pk %}">Export</a>
-                  <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">Update</a>
-                  <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">Update Entries</a>
-                  <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">Delete</a>
+                  {% has_perm 'flowcells.change_barcodeset' request.user barcode_set as can_change_barcodeset %}
+                  {% if can_change_barcodeset %}
+                    <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">Update</a>
+                    <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">Update Entries</a>
+                  {% endif %}
+                  {% has_perm 'flowcells.delete_barcodeset' request.user barcode_set as can_delete_barcodeset %}
+                  {% if can_delete_barcodeset %}
+                    <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">Delete</a>
+                  {% endif %}
                 </div>
               </div>
             </td>
@@ -57,7 +67,9 @@
     </table>
   </div>
 
-  {% include "flowcells/_barcodeset_list_buttons.html" %}
+  {% if can_add_barcodeset %}
+    {% include "flowcells/_barcodeset_list_buttons.html" %}
+  {% endif %}
 
 </div>
 {% endblock content %}

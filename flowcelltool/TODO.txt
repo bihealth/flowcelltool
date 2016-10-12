@@ -4,7 +4,7 @@
 - test prefill form
 - test import and export of single flow cells
 - test generation of sample sheets
-- enforce login
+- test login and permissions
 - add back messages/attachment feature
 
 ## Mid-term
