@@ -3,10 +3,28 @@ Flowcell Tool
 
 Simple management of HTS Flowcells for demultiplexing
 
-.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
-     :target: https://github.com/pydanny/cookiecutter-django/
-     :alt: Built with Cookiecutter Django
+.. image:: https://img.shields.io/travis/bihealth/flowcelltool.svg
+        :target: https://travis-ci.org/bihealth/flowcelltool
 
+.. image:: https://readthedocs.org/projects/flowcelltool/badge/?version=latest
+        :target: https://vcfpy.readthedocs.io/en/flowcelltool/?badge=latest
+        :alt: Documentation Status
+
+.. image:: https://pyup.io/repos/github/bihealth/flowcelltool/shield.svg
+        :target: https://pyup.io/repos/github/bihealth/flowcelltool/
+        :alt: Updates
+
+.. image:: https://api.codacy.com/project/badge/Grade/2272054a44fd41a6a8075f5d1bd44901
+        :target: https://www.codacy.com/app/manuel-holtgrewe/flowcelltool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bihealth/flowcelltool&amp;utm_campaign=Badge_Grade
+        :alt: Codacy Analysis
+
+.. image:: https://api.codacy.com/project/badge/Coverage/2272054a44fd41a6a8075f5d1bd44901
+        :alt: Codacy Coverage
+        :target: https://www.codacy.com/app/manuel-holtgrewe/vcfpy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bihealth/flowcelltool&amp;utm_campaign=Badge_Coverage
+
+.. image:: https://landscape.io/github/bihealth/flowcelltool/master/landscape.svg?style=flat
+        :alt: Landscape Health
+        :target: https://landscape.io/github/bihealth/flowcelltool
 
 :License: MIT
 
