@@ -18,9 +18,9 @@ Simple management of HTS Flowcells for demultiplexing
         :target: https://www.codacy.com/app/manuel-holtgrewe/flowcelltool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bihealth/flowcelltool&amp;utm_campaign=Badge_Grade
         :alt: Codacy Analysis
 
-.. image:: https://api.codacy.com/project/badge/Coverage/2272054a44fd41a6a8075f5d1bd44901
+.. image:: https://api.codacy.com/project/badge/Coverage/cfe741307ec34e8fb90dfe37e84a2519
         :alt: Codacy Coverage
-        :target: https://www.codacy.com/app/manuel-holtgrewe/vcfpy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bihealth/flowcelltool&amp;utm_campaign=Badge_Coverage
+        :target: https://www.codacy.com/app/manuel-holtgrewe/vcfpy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bihealth/vcfpy&amp;utm_campaign=Badge_Coverage
 
 .. image:: https://landscape.io/github/bihealth/flowcelltool/master/landscape.svg?style=flat
         :alt: Landscape Health
