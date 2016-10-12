@@ -22,10 +22,6 @@ django-model-utils==2.6
 # Images
 Pillow==3.3.1
 
-# For user registration, either via email or social
-# Well-built with regular release cycles!
-django-allauth==0.27.0
-
 
 # Python-PostgreSQL Database Adapter
 psycopg2==2.6.2
@@ -40,9 +36,15 @@ pytz==2016.6.1
 django-redis==4.5.0
 redis>=2.10.5
 
-
-
-
-
 # Your custom requirements go here
+
+# Support for rendering Markdown
 django-markdown-deux==1.0.5
+
+# Packages for LDAP/AD authentication
+#
+# We need our own fork of pyldap such that deployment to Flynn.io works
+#
+# Depends on https://github.com/pyldap/pyldap/pull/40
+django-auth-ldap==1.2.8
+-e git://github.com/holtgrewe/pyldap.git@fce3b934e9b2d7d1a538fc37d7c4ed4cfe18fae1#egg=pyldap

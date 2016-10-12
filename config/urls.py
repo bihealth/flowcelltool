@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
@@ -14,12 +15,12 @@ urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 
+    # Stock login and logout
+    url(r'^login/$', auth_views.login, name='login'),
+    url(r'^logout/$', auth_views.logout_then_login, name='logout'),
+
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, admin.site.urls),
-
-    # User management
-    url(r'^users/', include('flowcelltool.users.urls', namespace='users')),
-    url(r'^accounts/', include('allauth.urls')),
 
     # Flow cell management
     url(r'^flowcells/', include('flowcelltool.flowcells.urls')),

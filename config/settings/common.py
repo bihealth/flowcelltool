@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
+import itertools
 
 ROOT_DIR = environ.Path(__file__) - 3  # (flowcelltool/config/settings/common.py - 3 = flowcelltool/)
 APPS_DIR = ROOT_DIR.path('flowcelltool')
@@ -37,9 +38,6 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     'crispy_forms',  # Form layouts
     'markdown_deux',  # Markdown support
-    'allauth',  # registration
-    'allauth.account',  # registration
-    'allauth.socialaccount',  # registration
 )
 
 # Apps specific for this project go here.
@@ -226,7 +224,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 # Some really nice defaults
@@ -241,8 +238,8 @@ SOCIALACCOUNT_ADAPTER = 'flowcelltool.users.adapters.SocialAccountAdapter'
 # Custom user app defaults
 # Select the correct user model
 AUTH_USER_MODEL = 'users.User'
-LOGIN_REDIRECT_URL = 'users:redirect'
-LOGIN_URL = 'account_login'
+LOGIN_REDIRECT_URL = 'flowcell_list'
+LOGIN_URL = 'login'
 
 # SLUGLIFIER
 AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
@@ -253,3 +250,29 @@ ADMIN_URL = r'^admin/'
 
 # Your common stuff: Below this line define 3rd party library settings
 # ------------------------------------------------------------------------------
+
+# LDAP configuration
+# ------------------------------------------------------------------------------
+
+# Enable LDAP if configured
+if env.str('AUTH_LDAP_SERVER_URI', None):
+    import ldap
+    from django_auth_ldap.config import LDAPSearch
+    AUTH_LDAP_SERVER_URI = env.str('AUTH_LDAP_SERVER_URI')
+    AUTH_LDAP_BIND_DN = env.str('AUTH_LDAP_BIND_DN')
+    AUTH_LDAP_BIND_PASSWORD = env.str('AUTH_LDAP_BIND_PASSWORD')
+    AUTH_LDAP_CONNECTION_OPTIONS = {
+        ldap.OPT_REFERRALS: 0
+    }
+    AUTHENTICATION_BACKENDS = tuple(itertools.chain(
+        ('django_auth_ldap.backend.LDAPBackend',),
+        AUTHENTICATION_BACKENDS,
+    ))
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(
+        env.str('AUTH_LDAP_USER_SEARCH_BASE'),
+        ldap.SCOPE_SUBTREE, '(sAMAccountName=%(user)s)')
+    AUTH_LDAP_USER_ATTR_MAP = {
+        'first_name': 'givenName',
+        'last_name': 'sn',
+        'email': 'mail',
+    }
