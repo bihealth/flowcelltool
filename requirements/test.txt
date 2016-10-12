@@ -4,6 +4,7 @@
 
 
 coverage==4.2
+django-coverage-plugin==1.3.1
 flake8==3.0.4 # pyup: != 2.6.0
 django-test-plus==1.0.15
 factory_boy==2.7.0
@@ -11,3 +12,7 @@ factory_boy==2.7.0
 # pytest
 pytest-django==3.0.0
 pytest-sugar==0.7.1
+
+# Codacy and coverage support
+codacy-coverage==1.3.2
+coverage==4.2

@@ -20,4 +20,4 @@ pytest-django==3.0.0
 pytest-sugar==0.7.1
 
 # Sphinx ReadTheDocs theme
-sphinx_rtd_theme=0.1.9
+sphinx_rtd_theme==0.1.9
