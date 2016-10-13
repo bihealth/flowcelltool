@@ -584,4 +584,4 @@ class Library(TimeStampedModel):
         tpl = 'Library({})'
         values = (self.flow_cell.name, self.reference, self.barcode_set,
                   self.barcode, self.lane_numbers)
-        return tpl.format(', '.join(map(repr, values)))
+        return tpl.format(', '.join(map(repr, values)))  # noqa

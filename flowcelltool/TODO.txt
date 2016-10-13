@@ -1,10 +1,11 @@
 ## ASAP
 
-- test updating of libraries in flow cells
 - test prefill form
 - test import and export of single flow cells
 - test login and permissions
 - test messages/attachment feature
+- JavaScript for easier library selection
+- Deployment on Flynn.io
 
 ## Mid-term
 

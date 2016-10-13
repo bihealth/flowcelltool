@@ -112,7 +112,6 @@ class Library(TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
 
     def test_build_yaml(self):
         RESULT = self.generator.build_yaml()
-        self.maxDiff = None
         EXPECTED = textwrap.dedent(r"""
             # CUBI Flow Cell YAML
             - name: '160303_NS5001234_0815_A_BCDEFGHIXX_LABEL'

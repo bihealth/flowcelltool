@@ -13,7 +13,8 @@ from django.test import Client
 
 from .. import views
 from .. import models
-from ..models import SequencingMachine, FlowCell, BarcodeSet, BarcodeSetEntry
+from ..models import SequencingMachine, FlowCell, BarcodeSet, \
+    BarcodeSetEntry, Library
 
 from .test_models import SequencingMachineMixin, FlowCellMixin, \
     BarcodeSetMixin, BarcodeSetEntryMixin, LibraryMixin
@@ -230,6 +231,245 @@ class TestFlowCellDeleteView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_list'))
+
+
+class TestLibraryUpdateView(
+    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+    BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.client = Client()
+        # Create Machine
+        self.machine = self._make_machine()
+        # Create Barcode set
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATATA')
+        # Create Flow cell
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+        self.library1 = self._make_library(
+            self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode1, [1, 2], None, None)
+        self.library2 = self._make_library(
+            self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode2, [1, 2], None, None)
+
+    def _test_update(self, more_values):
+        """Helper for testing the update functionality"""
+        # Check precondition
+        self.assertEqual(FlowCell.objects.all().count(), 1)
+        self.assertEqual(Library.objects.all().count(), 2)
+
+        values = {
+            'form-TOTAL_FORMS': '2',
+            'form-INITIAL_FORMS': '2',
+            'form-MIN_NUM_FORMS': '0',
+            'form-MAX_NUM_FORMS': '1',
+            'form-0-id': self.library1.pk,
+            'form-0-name': 'UPDATED',
+            'form-0-reference': 'mm9',
+            'form-0-barcode_set': self.library1.barcode_set.pk,
+            'form-0-barcode': self.library1.barcode.pk,
+            'form-0-barcode_set2': '',
+            'form-0-barcode2': '',
+            'form-0-lane_numbers': ','.join(
+                map(str, self.library1.lane_numbers)),
+            'form-1-id': self.library2.pk,
+            'form-1-name': 'UPDATED_2',
+            'form-1-reference': self.library2.reference,
+            'form-1-barcode_set': self.library2.barcode_set.pk,
+            'form-1-barcode': self.library2.barcode.pk,
+            'form-1-barcode_set2': '',
+            'form-1-barcode2': '',
+            'form-1-lane_numbers': ','.join(
+                map(str, self.library2.lane_numbers)),
+        }
+        values.update(more_values)
+
+        # Simulate the POST
+        with self.login(self.user):
+            response = self.client.post(
+                reverse('flowcell_updatelibraries',
+                        kwargs={'pk': self.flow_cell.pk}),
+                values)
+
+        # Check resulting database state
+        self.assertEqual(BarcodeSet.objects.all().count(), 1)
+        self.assertEqual(BarcodeSetEntry.objects.all().count(), 2)
+
+        library1 = Library.objects.get(pk=self.library1.pk)
+        self.assertEquals(library1.name, 'UPDATED')
+        self.assertEquals(library1.reference, 'mm9')
+        self.assertEquals(library1.barcode_set, self.barcode_set)
+        self.assertEquals(library1.barcode, self.barcode1)
+        self.assertEquals(library1.barcode_set2, None)
+        self.assertEquals(library1.barcode2, None)
+        self.assertEquals(library1.lane_numbers, [1, 2])
+        library2 = Library.objects.get(pk=self.library2.pk)
+        self.assertEquals(library2.name, 'UPDATED_2')
+        self.assertEquals(library2.reference, self.library2.reference)
+        self.assertEquals(library2.barcode_set, self.barcode_set)
+        self.assertEquals(library2.barcode, self.barcode2)
+        self.assertEquals(library2.barcode_set2, None)
+        self.assertEquals(library2.barcode2, None)
+        self.assertEquals(library2.lane_numbers, [1, 2])
+
+        return response
+
+    def test_update(self):
+        """Test that updating library entries works correctly"""
+        response = self._test_update({'submit': 'submit'})
+        # Check resulting response
+        with self.login(self.user):
+            self.assertRedirects(
+                response, reverse('flowcell_view',
+                                kwargs={'pk': self.flow_cell.pk}))
+
+    def test_update_more(self):
+        """Test that updating library entries works correctly (submit more)"""
+        response = self._test_update({'submit_more': 'submit_more'})
+        # Check resulting response
+        with self.login(self.user):
+            self.assertRedirects(
+                response, reverse('flowcell_updatelibraries',
+                                kwargs={'pk': self.flow_cell.pk}))
+
+    def test_add(self):
+        """Test that adding libraries works correctly"""
+        # Check precondition
+        self.assertEqual(FlowCell.objects.all().count(), 1)
+        self.assertEqual(Library.objects.all().count(), 2)
+
+        values = {
+            'form-TOTAL_FORMS': '3',
+            'form-INITIAL_FORMS': '2',
+            'form-MIN_NUM_FORMS': '0',
+            'form-MAX_NUM_FORMS': '2',
+            'form-0-id': self.library1.pk,
+            'form-0-name': self.library1.name,
+            'form-0-reference': self.library1.reference,
+            'form-0-barcode_set': self.library1.barcode_set.pk,
+            'form-0-barcode': self.library1.barcode.pk,
+            'form-0-barcode_set2': '',
+            'form-0-barcode2': '',
+            'form-0-lane_numbers': ','.join(
+                map(str, self.library1.lane_numbers)),
+            'form-1-id': self.library2.pk,
+            'form-1-name': self.library2.name,
+            'form-1-reference': self.library2.reference,
+            'form-1-barcode_set': self.library2.barcode_set.pk,
+            'form-1-barcode': self.library2.barcode.pk,
+            'form-1-barcode_set2': '',
+            'form-1-barcode2': '',
+            'form-1-lane_numbers': ','.join(
+                map(str, self.library2.lane_numbers)),
+            'form-2-name': 'LIB_003',
+            'form-2-reference': 'hg19',
+            'form-2-barcode_set': self.library2.barcode_set.pk,
+            'form-2-barcode': self.library2.barcode.pk,
+            'form-2-barcode_set2': '',
+            'form-2-barcode2': '',
+            'form-2-lane_numbers': '5,6',
+        }
+
+        # Ensure that no such barcode exists yet
+        self.assertEquals(
+            Library.objects.filter(name='LIB_003').count(), 0)
+
+        # Simulate the POST
+        with self.login(self.user):
+            response = self.client.post(
+                reverse('flowcell_updatelibraries',
+                        kwargs={'pk': self.flow_cell.pk}),
+                values)
+
+        # Check resulting database state
+        self.assertEqual(FlowCell.objects.all().count(), 1)
+        self.assertEqual(Library.objects.all().count(), 3)
+
+        library1 = Library.objects.get(pk=self.library1.pk)
+        self.assertEquals(library1.name, self.library1.name)
+        library2 = Library.objects.get(pk=self.library2.pk)
+        self.assertEquals(library2.name, self.library2.name)
+        # Newly created library
+        self.assertEquals(
+            Library.objects.filter(name='LIB_003').count(), 1)
+        library3 = Library.objects.filter(name='LIB_003')[0]
+        self.assertEquals(library3.name, 'LIB_003')
+        self.assertEquals(library3.reference, 'hg19')
+        self.assertEquals(library3.barcode_set, self.barcode_set)
+        self.assertEquals(library3.barcode, self.barcode2)
+        self.assertEquals(library3.barcode_set2, None)
+        self.assertEquals(library3.barcode2, None)
+        self.assertEquals(library3.lane_numbers, [5, 6])
+
+        # Check resulting response
+        with self.login(self.user):
+            self.assertRedirects(
+                response, reverse('flowcell_view',
+                                kwargs={'pk': self.flow_cell.pk}))
+
+    def test_delete(self):
+        """Test that deleting libraries works correctly"""
+        # Check precondition
+        self.assertEqual(FlowCell.objects.all().count(), 1)
+        self.assertEqual(Library.objects.all().count(), 2)
+
+        values = {
+            'form-TOTAL_FORMS': '2',
+            'form-INITIAL_FORMS': '2',
+            'form-MIN_NUM_FORMS': '0',
+            'form-MAX_NUM_FORMS': '1',
+            'form-0-id': self.library1.pk,
+            'form-0-name': 'UPDATED',
+            'form-0-reference': 'mm9',
+            'form-0-barcode_set': self.library1.barcode_set.pk,
+            'form-0-barcode': self.library1.barcode.pk,
+            'form-0-barcode_set2': '',
+            'form-0-barcode2': '',
+            'form-0-lane_numbers': ','.join(
+                map(str, self.library1.lane_numbers)),
+            'form-1-id': self.library2.pk,
+            'form-1-name': 'UPDATED_2',
+            'form-1-reference': self.library2.reference,
+            'form-1-barcode_set': self.library2.barcode_set.pk,
+            'form-1-barcode': '',
+            'form-1-barcode_set2': '',
+            'form-1-barcode2': '',
+            'form-1-lane_numbers': ','.join(
+                map(str, self.library2.lane_numbers)),
+            'form-1-DELETE': 'on',
+        }
+
+        # Simulate the POST
+        with self.login(self.user):
+            response = self.client.post(
+                reverse('flowcell_updatelibraries',
+                        kwargs={'pk': self.flow_cell.pk}),
+                values)
+
+        # Check resulting database state
+        self.assertEqual(FlowCell.objects.all().count(), 1)
+        self.assertEqual(Library.objects.all().count(), 1)
+
+        library1 = Library.objects.get(pk=self.library1.pk)
+        self.assertEquals(library1.name, 'UPDATED')
+        self.assertEquals(
+            Library.objects.filter(pk=self.library2.pk).count(), 0)
+
+        # Check resulting response
+        with self.login(self.user):
+            self.assertRedirects(
+                response, reverse('flowcell_view',
+                                kwargs={'pk': self.flow_cell.pk}))
 
 
 # SequencingMachine related ---------------------------------------------------
