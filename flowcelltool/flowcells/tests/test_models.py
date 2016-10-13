@@ -251,8 +251,9 @@ class LibraryMixin:
         return result
 
 
-class Library(TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
-              BarcodeSetEntryMixin, BarcodeSetMixin):
+class TestLibrary(
+        TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
+        BarcodeSetEntryMixin, BarcodeSetMixin):
 
     def setUp(self):
         self.user = self.make_user()

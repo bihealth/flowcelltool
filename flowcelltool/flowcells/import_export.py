@@ -198,12 +198,12 @@ class FlowCellSampleSheetGenerator:
                 '      reference: {}'.format(repr(lib.reference)),
                 '      barcode_set: {}'.format(repr(
                     lib.barcode_set.short_name)),
-                '      barcode: ',
+                '      barcode:',
                 '        name: {}'.format(repr(lib.barcode.name)),
                 '        seq: {}'.format(repr(lib.barcode.sequence)),
                 '      lanes: {}'.format(list(sorted(lib.lane_numbers))),
             ]
-        return '\n'.join(rows)
+        return '\n'.join(rows) + '\n'
 
     def build_v1(self):
         """To bcl2fastq v1 sample sheet CSV file"""
@@ -228,7 +228,7 @@ class FlowCellSampleSheetGenerator:
                     self.flow_cell.operator,
                     'Project',
                 ])
-        return '\n'.join(','.join(str(r) for row in rows for r in row)) + '\n'
+        return '\n'.join(','.join(map(str, row)) for row in rows) + '\n'  # noqa
 
     def build_v2(self):
         """To bcl2fastq v2 sample sheet CSV file"""
@@ -271,4 +271,4 @@ class FlowCellSampleSheetGenerator:
                     'Project',
                     '',
                 ])
-        return '\n'.join(','.join(str(r) for row in rows for r in row)) + '\n'
+        return '\n'.join(','.join(map(str, row)) for row in rows) + '\n'  # noqa
