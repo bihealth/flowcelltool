@@ -6,15 +6,16 @@
 - test generation of sample sheets
 - test login and permissions
 - test search
-- add back messages/attachment feature
+- test messages/attachment feature
 
 ## Mid-term
 
 - properly handle display ValidationError results in forms
 - add REST interface
+- improvements to messages module
+    - handle permissions in a better way
 
 ## long-term
 
 - make libraries on flowcell sortable
-- make login screen prettier
 - filter functionality

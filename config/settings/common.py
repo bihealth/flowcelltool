@@ -42,6 +42,7 @@ THIRD_PARTY_APPS = (
     'crispy_forms',  # Form layouts
     'markdown_deux',  # Markdown support
     'rules.apps.AutodiscoverRulesConfig',  # django rules engine
+    'db_file_storage',  # storing files in database
 )
 
 # Apps specific for this project go here.
@@ -50,6 +51,8 @@ LOCAL_APPS = (
     'flowcelltool.users.apps.UsersConfig',
     # flowcell management
     'flowcelltool.flowcells',
+    # messages with attachments
+    'flowcelltool.threads',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -255,6 +258,10 @@ ADMIN_URL = r'^admin/'
 
 # Your common stuff: Below this line define 3rd party library settings
 # ------------------------------------------------------------------------------
+
+# File storage configuration
+# ------------------------------------------------------------------------------
+DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 
 # LDAP configuration
 # ------------------------------------------------------------------------------
