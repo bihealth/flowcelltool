@@ -1,9 +1,13 @@
 from django.db import models
+import django.contrib.auth.models as auth_models
 from django.contrib.contenttypes.fields import GenericForeignKey, \
     GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
 from db_file_storage.model_utils import delete_file, delete_file_if_needed
+
+from django.conf import settings
+
 
 # TimeStampedModel ------------------------------------------------------------
 
@@ -26,7 +30,7 @@ class TimeStampedModel(models.Model):
 #: MIME type for Markdown
 MARKDOWN = 'text/markdown'
 #: MIME type for plain text
-PLAIN_TEXT = 'text/plain''
+PLAIN_TEXT = 'text/plain'
 #: Choices for Message formats
 FORMAT_CHOICES = (
     (MARKDOWN, 'Markdown'),
@@ -37,15 +41,12 @@ FORMAT_CHOICES = (
 class Message(TimeStampedModel):
     """A message that is written by a user"""
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # Messages related to a "thread" items on
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
-    # Messages related to a "thread" item, e.g., a FlowCell
-    thread_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    thread_id = models.PositiveIntegerField()
-    thread_object = GenericForeignKey('thread_type', 'thread_id')
-
-    author = models.ForeignKey(auth_models.User)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     title = models.CharField(
         blank=True, null=True, max_length=200,
@@ -64,8 +65,6 @@ class Message(TimeStampedModel):
 
 
 class AttachmentFile(TimeStampedModel):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     bytes = models.TextField()
     filename = models.CharField(max_length=255)
@@ -75,7 +74,7 @@ class AttachmentFile(TimeStampedModel):
 class Attachment(TimeStampedModel):
     message = models.ForeignKey(Message, related_name='attachments')
     payload = models.FileField(
-        upload_to='flowcelltool.models.AttachmentFile/bytes/filename/mimetype')
+        upload_to='threads.AttachmentFile/bytes/filename/mimetype')
 
     def save(self, *args, **kwargs):
         delete_file_if_needed(self, 'payload')

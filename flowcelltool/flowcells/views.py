@@ -18,6 +18,8 @@ from crispy_forms.helper import FormHelper
 from rules.contrib.views import PermissionRequiredMixin
 
 from . import models, forms, import_export
+from ..threads.views import MessageCreateView, MessageUpdateView, \
+    MessageDeleteView
 
 
 LOGGER = logging.getLogger(__name__)
@@ -272,8 +274,8 @@ class FlowCellCreateView(
     model = models.FlowCell
 
     #: Fields to show in the create view, the rest is auto-filled
-    fields = ('name', 'num_lanes', 'status', 'operator', 'is_paired',
-              'index_read_count', 'rta_version', 'read_length')
+    fields = ('name', 'description', 'num_lanes', 'status', 'operator',
+              'is_paired', 'index_read_count', 'rta_version', 'read_length')
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -314,8 +316,8 @@ class FlowCellUpdateView(
     model = models.FlowCell
 
     #: Fields to show in the create view, the rest is auto-filled
-    fields = ('name', 'num_lanes', 'status', 'operator', 'is_paired',
-              'index_read_count', 'rta_version', 'read_length')
+    fields = ('name', 'description', 'num_lanes', 'status', 'operator',
+              'is_paired', 'index_read_count', 'rta_version', 'read_length')
 
 
 class FlowCellDeleteView(
@@ -389,6 +391,31 @@ class FlowCellSampleSheetView(
         context['csv_v2'] = gen.build_v2()
         context['yaml'] = gen.build_yaml()
         return context
+
+
+# FlowCell-Message related ----------------------------------------------------
+
+
+class FlowCellAddMessageView(
+        LoginRequiredMixin, PermissionRequiredMixin, MessageCreateView):
+
+    permission_required = 'flowcells.add_message'
+
+    #: The type of the related object on which to "thread" the messages
+    related_model = models.FlowCell
+
+
+class FlowCellUpdateMessageView(
+        LoginRequiredMixin, PermissionRequiredMixin, MessageUpdateView):
+
+    permission_required = 'flowcells.change_message'
+
+
+class FlowCellDeleteMessageView(
+        LoginRequiredMixin, PermissionRequiredMixin, MessageDeleteView):
+
+    permission_required = 'flowcells.delete_message'
+
 
 
 # Library Views ---------------------------------------------------------------

@@ -19,12 +19,13 @@
         <tr class="row">
             <th class="col-md-1">Date</th>
             <th class="col-md-1">Status</th>
-            <th class="col-md-2">Instrument</th>
+            <th class="col-md-1">Instrument</th>
             <th class="col-md-2">Flow Cell</th>
             <th class="col-md-1">Mode</th>
             <th class="col-md-1" title="RTA version 1.x/2.x">RTAv</th>
             <th class="col-md-2">Operator</th>
             <th class="col-md-1 text-right">Libraries</th>
+            <th class="col-md-1">&nbsp;</th>
             <th class="col-md-1">&nbsp;</th>
         </tr>
       </thead>
@@ -56,25 +57,63 @@
             <td>{{ flowcell.rta_version }}</td>
             <td>{{ flowcell.operator }}</td>
             <td>{{ flowcell.libraries.count }}</td>
-            <td>
+            <td class="text-xs-right">
+              {% if flowcell.description %}
+                <i class="fa fa-comment-o" aria-hidden="true" title="{{ flowcell.description }}"></i>
+              {% endif %}
+              {% if flowcell.messages.all %}
+                <i class="fa fa-envelope-o" aria-hidden="true" title="{{ flowcell.messages.all|length }} message(s)"></i>
+              {% endif %}
+              {% if flowcell.count_files %}
+                <i class="fa fa-files-o" aria-hidden="true" title="{{ flowcell.count_files }} file(s)"></i>
+              {% endif %}
+            </td>
+            <td class="text-xs-right">
               <div class="btn-group">
                 <button class="btn btn-secondary btn-sm dropdown-toggle"
                     type="button" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
-                  Actions
+                  <i class="fa fa-cog" aria-hidden="true"></i>
                 </button>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{% url 'flowcell_view' pk=flowcell.pk %}">View</a>
-                  <a class="dropdown-item" href="{% url 'flowcell_export' pk=flowcell.pk %}">Export</a>
-                  <a class="dropdown-item" href="{% url 'flowcell_sheet' pk=flowcell.pk %}">Create Sheet</a>
+                  <a class="dropdown-item" href="{% url 'flowcell_view' pk=flowcell.pk %}">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    View
+                  </a>
+                  <a class="dropdown-item" href="{% url 'flowcell_export' pk=flowcell.pk %}">
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    Export
+                  </a>
+                  <a class="dropdown-item" href="{% url 'flowcell_sheet' pk=flowcell.pk %}">
+                    <i class="fa fa-wpforms" aria-hidden="true"></i>
+                    Sheet Export
+                  </a>
+                  {% has_perm 'flowcells.add_message' request.user as can_add_message %}
+                  {% if can_add_message %}
+                  <a class="dropdown-item"
+                      href="{% url 'flowcell_add_message' related_pk=flowcell.pk %}"
+                      title="Add message to {{ object.token_vendor_id }}">
+                    <i class="fa fa-reply" aria-hidden="true"></i>
+                    Add Message
+                  </a>
+                  {% endif %}
                   {% has_perm 'flowcells.change_flowcell' request.user flowcell as can_change_flowcell %}
                   {% if can_change_flowcell %}
-                    <a class="dropdown-item" href="{% url 'flowcell_update' pk=flowcell.pk %}">Update</a>
+                    <a class="dropdown-item" href="{% url 'flowcell_update' pk=flowcell.pk %}">\
+                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                      Update
+                    </a>
+                    <a class="dropdown-item" href="{% url 'flowcell_updatelibraries' pk=flowcell.pk %}">
+                      <i class="fa fa-table" aria-hidden="true"></i>
+                      Update Libraries
+                    </a>
                   {% endif %}
                   {% has_perm 'flowcells.delete_flowcell' request.user flowcell as can_delete_flowcell %}
                   {% if can_delete_flowcell %}
-                    <a class="dropdown-item" href="{% url 'flowcell_updatelibraries' pk=flowcell.pk %}">Update Libraries</a>
-                    <a class="dropdown-item" href="{% url 'flowcell_delete' pk=flowcell.pk %}">Delete</a>
+                    <a class="dropdown-item" href="{% url 'flowcell_delete' pk=flowcell.pk %}">
+                      <i class="fa fa-eraser" aria-hidden="true"></i>
+                      Delete
+                    </a>
                   {% endif %}
                 </div>
               </div>

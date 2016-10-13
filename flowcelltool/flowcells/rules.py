@@ -27,6 +27,15 @@ def is_librarys_flow_cell_owner(user, library):
         return library.flow_cell.owner == user
 
 
+@rules.predicate
+def is_message_author(user, message):
+    """Whether or not the user created the message"""
+    if not message or not message.author:
+        return False
+    else:
+        return message.author == user
+
+
 #: Whether or not has the "Instrument Operator" group
 is_instrument_operator = rules.is_group_member(INSTRUMENT_OPERATOR)
 
@@ -108,4 +117,19 @@ rules.add_perm(
     'flowcells.delete_library',
     is_librarys_flow_cell_owner | is_demux_admin
     | is_import_bot | rules.is_superuser
+)
+
+# Attaching messages to flow cells and modifying messages
+rules.add_perm(
+    'flowcells.add_message',
+    is_instrument_operator | is_demux_operator | is_demux_admin
+    | is_import_bot | rules.is_superuser
+)
+rules.add_perm(
+    'flowcells.change_message',
+    is_message_author | is_demux_admin | rules.is_superuser
+)
+rules.add_perm(
+    'flowcells.delete_message',
+    is_message_author | is_demux_admin | rules.is_superuser
 )

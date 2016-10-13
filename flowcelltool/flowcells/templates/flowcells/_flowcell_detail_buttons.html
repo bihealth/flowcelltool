@@ -2,58 +2,72 @@
 {% load rules %}
 {% has_perm 'flowcells.update_flowcell' request.user as can_change_flowcell %}
 {% has_perm 'flowcells.delete_flowcell' request.user as can_delete_flowcell %}
+{% has_perm 'flowcells.add_message' request.user as can_add_message %}
+
 
 <div class="row">
-  <div class="text-xs-right mt-t-1 m-b-1">
+  <div class="btn-group pull-right">
     <a class="btn btn-secondary" role="button"
         href="{% url 'flowcell_list' %}">
       <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
       Back to List
     </a>
-    <a class="btn btn-secondary" role="button"
-        href="{% url 'flowcell_export' pk=object.pk %}"
-        title="Export flow cell {{ object.token_vendor_id }}">
-      <i class="fa fa-download" aria-hidden="true"></i>
-      Export
-    </a>
-    <a class="btn btn-secondary" role="button"
-        href="{% url 'flowcell_sheet' pk=object.pk %}"
-        title="Export sample sheet for {{ object.token_vendor_id }}">
-      <i class="fa fa-wpforms" aria-hidden="true"></i>
-      Sheet Export
-    </a>
-    {% if can_delete_flowcell %}
-    <a class="btn btn-danger" role="button"
-        href="{% url 'flowcell_delete' pk=object.pk %}"
-        title="Delete flow cell {{ object.token_vendor_id }}">
-      <i class="fa fa-eraser" aria-hidden="true"></i>
-      Delete
-    </a>
-    {% endif %}
-    {% if can_change_flowcell %}
-    <a class="btn btn-primary" role="button"
-        href="{% url 'flowcell_updatelibraries' pk=object.pk %}"
-        title="Update libraries {{ object.token_vendor_id }}">
-      <i class="fa fa-table" aria-hidden="true"></i>
-      Update Libraries
-    </a>
-    <a class="btn btn-primary" data-toggle="collapse"
-        href="#collapse-{{ location }}"
-        aria-haspopup="true" aria-expanded="false">
-      <i class="fa fa-arrow-circle-down" aria-hidden="true"></i>
-      Prefilled Update Libraries
-    </a>
-    <a class="btn btn-primary" role="button"
-        href="{% url 'flowcell_update' pk=object.pk %}"
-        title="Update flow cell {{ object.token_vendor_id }}">
-      <i class="fa fa-pencil" aria-hidden="true"></i>
-      Update
-    </a>
-    {% endif %}
+    <div class="btn-group">
+      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton-{{ location }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Actions
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-{{ location }}">
+        <a class="dropdown-item" href="{% url 'flowcell_export' pk=object.pk %}">
+          <i class="fa fa-download" aria-hidden="true"></i>
+          Export
+        </a>
+        <a class="dropdown-item" href="{% url 'flowcell_sheet' pk=object.pk %}">
+          <i class="fa fa-wpforms" aria-hidden="true"></i>
+          Sheet Export
+        </a>
+        {% if can_add_message %}
+        <a class="dropdown-item"
+            href="{% url 'flowcell_add_message' related_pk=object.pk %}"
+            title="Add message to {{ object.token_vendor_id }}">
+          <i class="fa fa-reply" aria-hidden="true"></i>
+          Add Message
+        </a>
+        {% endif %}
+        {% if can_change_flowcell %}
+        <a class="dropdown-item"
+            href="{% url 'flowcell_updatelibraries' pk=object.pk %}"
+            title="Update libraries {{ object.token_vendor_id }}">
+          <i class="fa fa-table" aria-hidden="true"></i>
+          Update Libraries
+        </a>
+        <a class="dropdown-item" data-toggle="collapse"
+            href="#collapse-{{ location }}"
+            aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-arrow-circle-down" aria-hidden="true"></i>
+          Prefilled Update Libraries
+        </a>
+        <a class="dropdown-item"
+            href="{% url 'flowcell_update' pk=object.pk %}"
+            title="Update flow cell {{ object.token_vendor_id }}">
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+          Update
+        </a>
+        {% endif %}
+        {% if can_delete_flowcell %}
+        <a class="dropdown-item"
+            href="{% url 'flowcell_delete' pk=object.pk %}"
+            title="Delete flow cell {{ object.token_vendor_id }}">
+          <i class="fa fa-eraser" aria-hidden="true"></i>
+          Delete
+        </a>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>
+
 {% if can_change_flowcell %}
-<div class="row">
+<div class="row" style="margin-top: 12px">
   <div class="collapse" id="collapse-{{ location }}">
     <div class="card card-block">
       <form action="{% url 'flowcell_updatelibraries' pk=object.pk %}"

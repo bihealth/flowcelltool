@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^flowcells/', include('flowcelltool.flowcells.urls')),
 
     # Messages with attachments
-    url(r'^messages/', include('messages.urls', namespace='messages')),
+    url(r'^threads/', include('flowcelltool.threads.urls', namespace='threads')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

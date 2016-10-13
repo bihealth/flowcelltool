@@ -4,7 +4,10 @@ from django.contrib.contenttypes.admin import GenericStackedInline
 
 from .models import Message
 
-class AttachmentInlines(GenericStackedInline):
-    model = Attachment
+
+class MessageInlines(GenericStackedInline):
+    model = Message
     exclude = ()
+
+
 extra = 1

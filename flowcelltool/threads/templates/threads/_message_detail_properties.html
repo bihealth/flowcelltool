@@ -1,0 +1,40 @@
+{% load markdown_deux_tags %}
+{% load flowcells_tags %}
+
+<dl class="row">
+  <dt class="col-sm-2">Created</dt>
+  <dd class="col-sm-10">{{ object.created_at }}</dd>
+
+  <dt class="col-sm-2">Last update</dt>
+  <dd class="col-sm-10">{{ object.updated_at }}</dd>
+
+  <dt class="col-sm-2">Author</dt>
+  <dd class="col-sm-10">{{ object.author.username|default:object.author }}</dd>
+
+  <dt class="col-sm-2">Title</dt>
+  <dd class="col-sm-10">{{ object.title }}</dd>
+
+  <dt class="col-sm-2">Body</dt>
+  <dd class="col-sm-10">
+    {% if object.mime_type == "text/markdown" %}
+      {{ object.body|markdown }}
+    {% else %}
+      {{ object.body|linebreaksbr }}
+    {% endif %}
+  </dd>
+
+  <dt class="col-sm-2">Attachments</dt>
+  <dd class="col-sm-10">
+    <ul class="list-group list-group-flush">
+      {% for attachment in object.attachments.all %}
+        <li class="list-group-item">
+          <i class="fa fa-{{ attachment.payload.file.mimetype|fa_mime_type }}" aria-hidden="true"></i>
+          <a href="{#% url 'db_file_storage.download_file' %}?name={{ attachment.payload }}#}">
+            {{ attachment.payload.file.filename }}
+          </a>
+          ({{ attachment.payload.file.size|sizify }})
+        </li>
+      {% endfor %}
+    </ul>
+  </dd>
+</dl>

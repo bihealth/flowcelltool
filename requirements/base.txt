@@ -50,3 +50,6 @@ rules==1.1.1
 
 # File Storage
 django-db-file-storage==0.4.1
+
+# Multi-file upload
+django-multiupload==0.5.1

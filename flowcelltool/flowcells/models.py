@@ -5,12 +5,16 @@ from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.contenttypes.fields import GenericRelation
 
 from flowcelltool.users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator, \
     RegexValidator
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
+
+from ..threads.models import Message
+
 
 # TimeStampedModel ------------------------------------------------------------
 
@@ -344,6 +348,11 @@ class FlowCell(TimeStampedModel):
     #: Read length that was configured
     read_length = models.IntegerField(default=151)
 
+    #: Messages attached to this flowcell
+    messages = GenericRelation(
+        Message, content_type_field='content_type',
+        object_id_field='object_id')
+
     def save(self, *args, **kwargs):
         self._validate_sequencer()
         self._validate_num_lanes()
@@ -385,6 +394,13 @@ class FlowCell(TimeStampedModel):
                   self.num_lanes, self.status, self.operator, self.is_paired,
                   self.index_read_count, self.rta_version, self.read_length)
         return tpl.format(', '.join(map(repr, values)))
+
+    def count_files(self):
+        """Return total number of attached files"""
+        result = 0
+        for message in self.messages.all():
+            result += message.attachments.all().count()
+        return result
 
     def get_absolute_url(self):
         return reverse('flowcell_view', kwargs={'pk': self.pk})

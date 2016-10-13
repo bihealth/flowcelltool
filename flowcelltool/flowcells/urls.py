@@ -120,6 +120,23 @@ urlpatterns = [
         name='flowcell_sheet',
     ),
 
+    # FlowCell-Message related ------------------------------------------------
+    url(
+        regex=r'^flowcell/add_message/(?P<related_pk>\d+)$',
+        view=views.FlowCellAddMessageView.as_view(),
+        name='flowcell_add_message',
+    ),
+    url(
+        regex=r'^flowcell/update_message/(?P<pk>\d+)$',
+        view=views.FlowCellUpdateMessageView.as_view(),
+        name='flowcell_update_message',
+    ),
+    url(
+        regex=r'^flowcell/delete_message/(?P<pk>\d+)$',
+        view=views.FlowCellDeleteMessageView.as_view(),
+        name='flowcell_delete_message',
+    ),
+
     # Cross-Data Type Query ---------------------------------------------------
     url(
         regex=r'^search$',

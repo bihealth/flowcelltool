@@ -1,0 +1,71 @@
+{% load rules %}
+{% load markdown_deux_tags %}
+{% load flowcells_tags %}
+
+{% if object.messages.all %}
+<div class="row">
+  <h3>Messages</h3>
+
+  {% for message in object.messages.all %}
+    <div class="card">
+      <div class="card-header">
+          {{ message.title }}
+          <small>
+            by
+            {% if message.author.name %}
+              {{ message.author.name }}
+            {% else %}
+              {{ message.author }}
+            {% endif %}
+            at {{ message.created_at }}
+          </small>
+
+          {% has_perm 'flowcells.change_message' request.user message as can_change_message %}
+          {% has_perm 'flowcells.delete_message' request.user message as can_delete_message %}
+
+          {% if can_change_message or can_delete_message %}
+          <div class="btn-group btn-group-sm pull-right">
+            {% if can_change_message %}
+              <a class="btn btn-secondary" href="{% url 'flowcell_update_message' pk=message.pk %}">
+                Update
+              </a>
+            {% endif %}
+            {% if can_delete_message %}
+              <a class="btn btn-secondary" href="{% url 'flowcell_delete_message' pk=message.pk %}">
+                Delete
+              </a>
+            {% endif %}
+          </div>
+          {% endif %}
+      </div>
+      {% if message.body %}
+        <div class="card-block">
+          <p class="card-text">
+            {% if message.mime_type == "text/markdown" %}
+              {{ message.body|markdown }}
+            {% else %}
+              {{ message.body|linebreaksbr }}
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
+      {% if message.attachments %}
+        <div class="card-block">
+          <h5>Attachments</h5>
+          <ul class="list-group list-group-flush">
+            {% for attachment in message.attachments.all %}
+              <li class="list-group-item">
+                <i class="fa fa-{{ attachment.payload.file.mimetype|fa_mime_type }}" aria-hidden="true"></i>
+                <a href="{#% url 'db_file_storage.download_file' %}?name={{ attachment.payload }}#}">
+                  {{ attachment.payload.file.filename }}
+                </a>
+                ({{ attachment.payload.file.size|sizify }})
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}

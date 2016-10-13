@@ -10,12 +10,13 @@
 
 ## Mid-term
 
-- properly handle display ValidationError results in forms
 - add REST interface
 - improvements to messages module
     - handle permissions in a better way
+    - secure attachments
 
 ## long-term
 
 - make libraries on flowcell sortable
 - filter functionality
+- properly handle display ValidationError results in forms

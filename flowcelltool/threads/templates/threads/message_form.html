@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}
+{% if object.pk %}
+Message
+{% else %}
+Create Message
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  {% if object.pk %}
+    <h2>Update Message</h2>
+  {% else %}
+    <h2>Create Message</h2>
+  {% endif %}
+
+  <form method="post" class="form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% crispy form helper 'bootstrap4' %}
+
+    {#{% bootstrap_field form.attachments field_class='multi-upload' %}#}
+
+    <div class="text-xs-right mt-t-1 m-b-1">
+      <a role="button" class="btn btn-secondary"
+          href="{{ related_object.get_absolute_url }}">
+        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+        Cancel
+      </a>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        {% if object.pk %}
+          Update
+        {% else %}
+          Create
+        {% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<style type="text/css">
+  .multi-upload .fileinput-button {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+  }
+  .file-list input,
+  .multi-upload .fileinput-button input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    font-size: 200px !important;
+    direction: ltr;
+    cursor: pointer;
+  }
+
+  /* Fixes for IE < 8 */
+  @media screen\9 {
+    .fileinput-button input {
+      filter: alpha(opacity=0);
+      font-size: 100%;
+      height: 100%;
+    }
+    .file-list input {
+      filter: alpha(opacity=0);
+      font-size: 100%;
+      height: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+
+<script type="text/javascript">
+    function makeFancyFileSelection(elem) {
+        elem.hide();
+        var parent = elem.parent();
+        var inputTpl = '<input name="attachments" type="file"></input>';
+
+        parent.append(
+                '<div class="multi-upload">' +
+                '<ul class="file-list">' +
+                '</ul>' +
+                '<div><span class="count">0</span> File(s)</div>' +
+                '<span class="btn btn-sm btn-success fileinput-button">' +
+                '<i class="fa fa-plus" aria-hidden="true"></i> ' +
+                '<span>Add files...</span>' +
+                inputTpl +
+                '</span>' +
+                '</div>'
+                );
+        var input = parent.find('input');
+        var fileList = parent.find('ul');
+        var inputLocation = parent.find('span').last();
+
+
+        function handleFileSelection() {
+            var file = $(this).get(0).files[0];
+            var item = fileList.append(
+                    '<li>' +
+                    '<i class="fa fa-file-o" aria-hidden="true"></i> ' +
+                    file.name +
+                    ' (' + (file.size / 1024).toFixed(1) + 'kB)' +
+                    ' <i class="fa fa-remove" aria-hidden="true"></li>' +
+                    '</li>');
+            item.find('.fa-remove').click(function() {
+                $(this).parent().remove();
+                elem.parent().find('.count').html($(fileList).find('li').length);
+            });
+
+            var newLi = fileList.find('li:last');
+            newLi.append($(this));
+
+            inputLocation.after(inputTpl);
+            input = inputLocation.next();
+            input.change(handleFileSelection);
+
+            elem.parent().find('.count').html($(fileList).find('li').length);
+        }
+
+        input.change(handleFileSelection);
+    }
+
+    /* Make our multi-file input fancy
+    */
+    $(document).ready(function() {
+        $('.multi-upload').each(function(x, y) {
+            makeFancyFileSelection($(this));
+        });
+    });
+</script>
+{% endblock %}
