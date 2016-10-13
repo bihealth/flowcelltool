@@ -87,8 +87,120 @@ class TestBarcodeSetLoader(TestCase):
         self.assertEquals(entries[1].sequence, 'CGGC')
 
 
-class Library(TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
-              BarcodeSetEntryMixin, BarcodeSetMixin):
+class TestsFlowCellDumper(
+        TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
+        BarcodeSetEntryMixin, BarcodeSetMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.machine = self._make_machine()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode = self._make_barcode_set_entry(self.barcode_set)
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'CGATATA')
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+        self.library = self._make_library(
+            self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode, [1, 2],
+            self.barcode_set, self.barcode2)
+
+    def test_run(self):
+        RESULT = import_export.FlowCellDumper.run(self.flow_cell)
+        EXPECTED = textwrap.dedent(r"""
+            {
+              "name": "160303_NS5001234_0815_A_BCDEFGHIXX_LABEL",
+              "description": "Description",
+              "num_lanes": 8,
+              "status": "seq_complete",
+              "operator": "John Doe",
+              "is_paired": true,
+              "index_read_count": 1,
+              "rta_version": 2,
+              "read_length": 151,
+              "libraries": [
+                {
+                  "name": "LIB_001",
+                  "reference": "hg19",
+                  "barcode_set": "SureSelectTest",
+                  "barcode_name": "AR01",
+                  "barcode_sequence": "ACGTGTTA",
+                  "barcode_set2": "SureSelectTest",
+                  "barcode_name2": "AR02",
+                  "barcode_sequence2": "CGATATA",
+                  "lane_numbers": [
+                    1,
+                    2
+                  ]
+                }
+              ]
+            }
+            """).lstrip()
+        self.assertEqual(RESULT, EXPECTED)
+
+
+class TestsFlowCellLoader(
+        TestCase, SequencingMachineMixin, BarcodeSetEntryMixin,
+        BarcodeSetMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.machine = self._make_machine()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode = self._make_barcode_set_entry(self.barcode_set)
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'CGATATA')
+
+    def test_run(self):
+        JSON = textwrap.dedent(r"""
+            {
+              "name": "160303_NS5001234_0815_A_BCDEFGHIXX_LABEL",
+              "description": "Description",
+              "num_lanes": 8,
+              "status": "seq_complete",
+              "operator": "John Doe",
+              "is_paired": true,
+              "index_read_count": 1,
+              "rta_version": 2,
+              "read_length": 151,
+              "libraries": [
+                {
+                  "name": "LIB_001",
+                  "reference": "hg19",
+                  "barcode_set": "SureSelectTest",
+                  "barcode_name": "AR01",
+                  "barcode_sequence": "ACGTGTTA",
+                  "barcode_set2": "SureSelectTest",
+                  "barcode_name2": "AR02",
+                  "barcode_sequence2": "CGATATA",
+                  "lane_numbers": [
+                    1,
+                    2
+                  ]
+                }
+              ]
+            }
+            """).lstrip()
+
+        import_export.FlowCellLoader.run(JSON)
+
+        self.assertEquals(models.FlowCell.objects.all().count(), 1)
+        flow_cell = models.FlowCell.objects.all()[0]
+        self.assertEquals(
+            flow_cell.name, '160303_NS5001234_0815_A_BCDEFGHIXX_LABEL')
+
+        self.assertEquals(models.Library.objects.all().count(), 1)
+        library = models.Library.objects.all()[0]
+        self.assertEquals(library.name, 'LIB_001')
+
+
+class TestsSampleSheetGenerator(
+        TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
+        BarcodeSetEntryMixin, BarcodeSetMixin):
 
     def setUp(self):
         self.user = self.make_user()

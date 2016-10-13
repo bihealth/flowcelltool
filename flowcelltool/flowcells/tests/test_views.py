@@ -668,6 +668,131 @@ class TestSequencingMachineDeleteView(
                 response, reverse('instrument_list'))
 
 
+class TestFlowCellSetExportView(
+        SuperUserTestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
+        BarcodeSetEntryMixin, BarcodeSetMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.machine = self._make_machine()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode = self._make_barcode_set_entry(self.barcode_set)
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'CGATATA')
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+        self.library = self._make_library(
+            self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode, [1, 2],
+            self.barcode_set, self.barcode2)
+
+    def test_render(self):
+        # Simulate the GET
+        with self.login(self.user):
+            response = self.client.get(
+                reverse('flowcell_export',
+                        kwargs={'pk': self.flow_cell.pk}))
+
+        # Check response
+        self.assertEqual(response.status_code, 200)
+        EXPECTED = textwrap.dedent(r"""
+            {
+              "name": "160303_NS5001234_0815_A_BCDEFGHIXX_LABEL",
+              "description": "Description",
+              "num_lanes": 8,
+              "status": "seq_complete",
+              "operator": "John Doe",
+              "is_paired": true,
+              "index_read_count": 1,
+              "rta_version": 2,
+              "read_length": 151,
+              "libraries": [
+                {
+                  "name": "LIB_001",
+                  "reference": "hg19",
+                  "barcode_set": "SureSelectTest",
+                  "barcode_name": "AR01",
+                  "barcode_sequence": "ACGTGTTA",
+                  "barcode_set2": "SureSelectTest",
+                  "barcode_name2": "AR02",
+                  "barcode_sequence2": "CGATATA",
+                  "lane_numbers": [
+                    1,
+                    2
+                  ]
+                }
+              ]
+            }
+            """).lstrip()
+        self.assertEqual(response.content.decode('utf-8'), EXPECTED)
+
+
+class TestBarcodeSetImportView(
+        SuperUserTestCase, SequencingMachineMixin,
+        BarcodeSetEntryMixin, BarcodeSetMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.client = Client()
+
+    def test_render(self):
+        # Prepare payload to post
+        payload = io.StringIO(textwrap.dedent(r"""
+            {
+              "name": "160303_NS5001234_0815_A_BCDEFGHIXX_LABEL",
+              "description": "Description",
+              "num_lanes": 8,
+              "status": "seq_complete",
+              "operator": "John Doe",
+              "is_paired": true,
+              "index_read_count": 1,
+              "rta_version": 2,
+              "read_length": 151,
+              "libraries": [
+                {
+                  "name": "LIB_001",
+                  "reference": "hg19",
+                  "barcode_set": "SureSelectTest",
+                  "barcode_name": "AR01",
+                  "barcode_sequence": "ACGTGTTA",
+                  "barcode_set2": "SureSelectTest",
+                  "barcode_name2": "AR02",
+                  "barcode_sequence2": "CGATATA",
+                  "lane_numbers": [
+                    1,
+                    2
+                  ]
+                }
+              ]
+            }
+            """).lstrip())
+
+        # Check precondition
+        self.assertEqual(FlowCell.objects.all().count(), 0)
+        self.assertEqual(Library.objects.all().count(), 0)
+
+        # Simulate the POST
+        with self.login(self.user):
+            response = self.client.post(
+                reverse('flowcell_import'),
+                {'json_file': payload})
+
+        # Check response
+        flowcell = FlowCell.objects.order_by('-created_at')[0]
+        with self.login(self.user):
+            self.assertRedirects(
+                response, reverse('flowcell_view',
+                                kwargs={'pk': flowcell.pk}))
+
+        # Check database state afterwards
+        self.assertEqual(FlowCell.objects.all().count(), 1)
+        self.assertEqual(Library.objects.all().count(), 1)
+
+
 # BarcodeSet related ----------------------------------------------------------
 
 
