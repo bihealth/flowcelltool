@@ -44,19 +44,34 @@
                 <button class="btn btn-secondary btn-sm dropdown-toggle"
                     type="button" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
-                  Actions
+                  <i class="fa fa-cog" aria-hidden="true"></i>
                 </button>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{% url 'barcodeset_view' pk=barcode_set.pk %}">View</a>
-                  <a class="dropdown-item" href="{% url 'barcodeset_export' pk=barcode_set.pk %}">Export</a>
+                  <a class="dropdown-item" href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    View
+                  </a>
+                  <a class="dropdown-item" href="{% url 'barcodeset_export' pk=barcode_set.pk %}">
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    Export
+                  </a>
                   {% has_perm 'flowcells.change_barcodeset' request.user barcode_set as can_change_barcodeset %}
                   {% if can_change_barcodeset %}
-                    <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">Update</a>
-                    <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">Update Entries</a>
+                    <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">
+                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                      Update
+                    </a>
+                    <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">
+                      <i class="fa fa-table" aria-hidden="true"></i>
+                      Update Entries
+                    </a>
                   {% endif %}
                   {% has_perm 'flowcells.delete_barcodeset' request.user barcode_set as can_delete_barcodeset %}
                   {% if can_delete_barcodeset %}
-                    <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">Delete</a>
+                    <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">
+                      <i class="fa fa-eraser" aria-hidden="true"></i>
+                      Delete
+                    </a>
                   {% endif %}
                 </div>
               </div>
