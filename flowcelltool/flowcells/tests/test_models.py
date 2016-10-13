@@ -153,7 +153,7 @@ class FlowCellMixin:
 
     def _make_flow_cell(
             self, owner, name, num_lanes, status, operator, is_paired,
-            index_read_count, rta_version, read_length):
+            index_read_count, rta_version, read_length, description):
         values = {
             'owner': owner,
             'name': name,
@@ -164,6 +164,7 @@ class FlowCellMixin:
             'index_read_count': index_read_count,
             'rta_version': rta_version,
             'read_length': read_length,
+            'description': description
         }
         result = models.FlowCell(**values)
         result.save()
@@ -183,14 +184,14 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
         self.flow_cell = self._make_flow_cell(
             self.user, self.flow_cell_name, 8,
             models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151)
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_initialization(self):
         EXPECTED = {
             'id': self.flow_cell.pk,
             'owner': self.user.pk,
             'name': self.flow_cell_name,
-            'description': None,
+            'description': 'Description',
             'sequencing_machine': self.machine.pk,
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_SEQ_COMPLETE,
@@ -218,7 +219,7 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
         self._make_flow_cell(
             self.user, self.flow_cell_name, 8,
             models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151)
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_tokens(self):
         self.assertEquals(self.flow_cell.token_date(), '160303')
@@ -265,7 +266,7 @@ class Library(TestCase, LibraryMixin, SequencingMachineMixin, FlowCellMixin,
         self.flow_cell = self._make_flow_cell(
             self.user, self.flow_cell_name, 8,
             models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151)
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode, [1, 2],

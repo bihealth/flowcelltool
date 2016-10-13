@@ -47,7 +47,7 @@ class TestFlowCellListView(
         self.flow_cell = self._make_flow_cell(
             self.user, self.flow_cell_name, 8,
             models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151)
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_render(self):
         """Simply test that rendering the list view works"""
@@ -97,7 +97,7 @@ class TestFlowCellCreateView(
         EXPECTED = {
             'id': flow_cell.pk,
             'name': self.flow_cell_name,
-            'description': None,
+            'description': '',
             'owner': self.user.pk,
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_INITIAL,
@@ -128,7 +128,7 @@ class TestFlowCellDetailView(
         self.flow_cell = self._make_flow_cell(
             self.user, self.flow_cell_name, 8,
             models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151)
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_render(self):
         """Simply test that rendering the detail view works"""
@@ -155,7 +155,7 @@ class TestFlowCellUpdateView(
         self.flow_cell = self._make_flow_cell(
             self.user, self.flow_cell_name, 8,
             models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151)
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_render(self):
         """Test that the flow cell update POST works"""
@@ -180,7 +180,7 @@ class TestFlowCellUpdateView(
         EXPECTED = {
             'id': flow_cell.pk,
             'name': values['name'],
-            'description': None,
+            'description': 'Description',
             'owner': self.user.pk,
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_DEMUX_COMPLETE,
@@ -211,7 +211,7 @@ class TestFlowCellDeleteView(
         self.flow_cell = self._make_flow_cell(
             self.user, self.flow_cell_name, 8,
             models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151)
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_render(self):
         """Test that the flow cell delete POST works"""
