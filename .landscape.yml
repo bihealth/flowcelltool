@@ -1,4 +1,6 @@
 strictness: veryhigh
+doc-warnings: no
+test-warnings: yes
 
 python-targets:
   - 3
@@ -11,3 +13,9 @@ requirements:
   - requirements/local.txt
   - requirements/production.txt
   - requirements/test.txt
+
+pep8:
+  full: true
+
+uses:
+  - django
