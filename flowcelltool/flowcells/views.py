@@ -12,6 +12,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, \
     FormView
+from django.db import IntegrityError
 
 from crispy_forms.helper import FormHelper
 from rules.contrib.views import PermissionRequiredMixin
@@ -176,7 +177,13 @@ class BarcodeSetImportView(
         """Redirect to barcode set view if the form validated"""
         payload = self.request.FILES['json_file'].read().decode('utf-8')
         loader = import_export.BarcodeSetLoader()
-        barcode_set = loader.run(payload)
+        try:
+            barcode_set = loader.run(payload)
+        except IntegrityError as e:
+            form.add_error(
+                'json_file',
+                'Problem during import. Is the barcode set name unique?')
+            return self.form_invalid(form)
         return redirect(reverse('barcodeset_view',
                                 kwargs={'pk': barcode_set.pk}))
 
@@ -356,9 +363,13 @@ class FlowCellImportView(
         """Redirect to barcode set view if the form validated"""
         payload = self.request.FILES['json_file'].read().decode('utf-8')
         loader = import_export.FlowCellLoader()
-        flow_cell = loader.run(payload)
-        return redirect(reverse('flowcell_view',
-                                kwargs={'pk': flow_cell.pk}))
+        try:
+            flow_cell = loader.run(payload)
+        except IntegrityError as e:
+            form.add_error(
+                'json_file',
+                'Problem during import. Is the flow cell name unique?')
+            return self.form_invalid(form)
 
 
 class FlowCellSampleSheetView(
