@@ -30,7 +30,6 @@ class TimeStampedModel(models.Model):
     #: Timestamp for last update
     updated_at = models.DateTimeField(auto_now=True)
 
-
     class Meta:
         abstract = True
 
@@ -136,7 +135,7 @@ class SequencingMachine(TimeStampedModel):
         tpl = 'SequencingMachine({})'
         vals = (self.vendor_id, self.label, self.description,
                 self.machine_model, self.slot_count, self.dual_index_workflow)
-        return tpl.format(', '.join(map(repr, vals)))
+        return tpl.format(', '.join(repr(v) for v in vals))
 
     def __repr__(self):
         return str(self)
@@ -174,7 +173,7 @@ class BarcodeSet(TimeStampedModel):
     def __repr__(self):
         tpl = 'BarcodeSet({})'
         values = (self.name, self.short_name)
-        return tpl.format(', '.join(map(repr, values)))
+        return tpl.format(', '.join(repr(v) for v in values))
 
 
 class BarcodeSetEntry(TimeStampedModel):
@@ -218,7 +217,7 @@ class BarcodeSetEntry(TimeStampedModel):
     def __repr__(self):
         tpl = 'BarcodeSetEntry({})'
         values = (self.name, self.sequence)
-        return tpl.format(', '.join(map(repr, values)))
+        return tpl.format(', '.join(repr(v) for v in values))
 
 
 # FlowCell and related -------------------------------------------------------
@@ -395,7 +394,7 @@ class FlowCell(TimeStampedModel):
         values = (self.name, self.sequencing_machine,
                   self.num_lanes, self.status, self.operator, self.is_paired,
                   self.index_read_count, self.rta_version, self.read_length)
-        return tpl.format(', '.join(map(repr, values)))
+        return tpl.format(', '.join(repr(v) for v in values))
 
     def count_files(self):
         """Return total number of attached files"""
@@ -500,15 +499,15 @@ class Library(TimeStampedModel):
 
     #: The barcode set used for first barcode index of this library
     barcode_set = models.ForeignKey(
-        BarcodeSet, null=True, blank=True,on_delete=models.SET_NULL)
+        BarcodeSet, null=True, blank=True, on_delete=models.SET_NULL)
 
     #: The barcode used for first barcode index this library
     barcode = models.ForeignKey(
-        BarcodeSetEntry, null=True, blank=True,on_delete=models.SET_NULL)
+        BarcodeSetEntry, null=True, blank=True, on_delete=models.SET_NULL)
 
     #: The barcode set used for second barcode index of this library
     barcode_set2 = models.ForeignKey(
-        BarcodeSet, null=True, blank=True,on_delete=models.SET_NULL,
+        BarcodeSet, null=True, blank=True, on_delete=models.SET_NULL,
         related_name='barcode_sets2')
 
     #: The barcode used for second barcode index this library
@@ -559,7 +558,7 @@ class Library(TimeStampedModel):
                 raise ValidationError(
                     ('There are libraries sharing flow cell lane with the '
                      'same secondary barcode as {}: {}'.format(
-                        self.name, self.barcode2)))
+                         self.name, self.barcode2)))
 
     def get_absolute_url(self):
         return self.flow_cell.get_absolute_url()
@@ -579,7 +578,7 @@ class Library(TimeStampedModel):
             try_helper(lambda b: b.sequence, self.barcode),
             try_helper(lambda b: b.name, self.barcode2),
             try_helper(lambda b: b.sequence, self.barcode2))
-        return '{} ({}:{}, {}:{})'.format(*map(str, values))
+        return '{} ({}:{}, {}:{})'.format(*map(str, values))  # noqa
 
     def __repr__(self):
         tpl = 'Library({})'

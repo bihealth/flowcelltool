@@ -52,7 +52,7 @@ class SequencingMachineListView(
     model = models.SequencingMachine
 
 
-class SequencingMachineCreateView(
+class SequencingMachineCreateView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """View for creating sequencing machine"""
 
@@ -71,7 +71,7 @@ class SequencingMachineDetailView(
     model = models.SequencingMachine
 
 
-class SequencingMachineUpdateView(
+class SequencingMachineUpdateView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """View for updating sequencing machines"""
 
@@ -83,8 +83,8 @@ class SequencingMachineUpdateView(
               'slot_count', 'dual_index_workflow']
 
 
-class SequencingMachineDeleteView(
-    LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class SequencingMachineDeleteView(  # pylint:disable=too-many-ancenstors
+        LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """View for deleting sequencing machines"""
 
     permission_required = 'flowcells.delete_sequencingmachine'
@@ -104,7 +104,7 @@ class BarcodeSetListView(
     model = models.BarcodeSet
 
 
-class BarcodeSetCreateView(
+class BarcodeSetCreateView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """View for creating sequencing machine"""
 
@@ -123,7 +123,7 @@ class BarcodeSetDetailView(
     model = models.BarcodeSet
 
 
-class BarcodeSetUpdateView(
+class BarcodeSetUpdateView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """View for updating sequencing machines"""
 
@@ -135,7 +135,7 @@ class BarcodeSetUpdateView(
     fields = ['name', 'short_name', 'description']
 
 
-class BarcodeSetDeleteView(
+class BarcodeSetDeleteView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """View for deleting sequencing machines"""
 
@@ -163,7 +163,7 @@ class BarcodeSetExportView(
         return response
 
 
-class BarcodeSetImportView(
+class BarcodeSetImportView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, FormView):
     """Importing of BarcodeSet objects from JSON"""
 
@@ -193,7 +193,7 @@ class BarcodeSetImportView(
 # BarcodeSetEntry Views -------------------------------------------------------
 
 
-class BarcodeSetEntryUpdateView(
+class BarcodeSetEntryUpdateView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Form for updating all adapter barcode set entries of a barcode set
     """
@@ -264,7 +264,7 @@ class FlowCellListView(
     model = models.FlowCell
 
 
-class FlowCellCreateView(
+class FlowCellCreateView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Show the view for creating a flow cell"""
 
@@ -306,7 +306,7 @@ class FlowCellDetailView(
         return context
 
 
-class FlowCellUpdateView(
+class FlowCellUpdateView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Show the view for updating a flow cell"""
 
@@ -320,7 +320,7 @@ class FlowCellUpdateView(
               'is_paired', 'index_read_count', 'rta_version', 'read_length')
 
 
-class FlowCellDeleteView(
+class FlowCellDeleteView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """View for deleting flow cell"""
 
@@ -396,7 +396,7 @@ class FlowCellSampleSheetView(
 # FlowCell-Message related ----------------------------------------------------
 
 
-class FlowCellAddMessageView(
+class FlowCellAddMessageView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, MessageCreateView):
 
     permission_required = 'flowcells.add_message'
@@ -405,13 +405,13 @@ class FlowCellAddMessageView(
     related_model = models.FlowCell
 
 
-class FlowCellUpdateMessageView(
+class FlowCellUpdateMessageView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, MessageUpdateView):
 
     permission_required = 'flowcells.change_message'
 
 
-class FlowCellDeleteMessageView(
+class FlowCellDeleteMessageView(  # pylint:disable=too-many-ancenstors
         LoginRequiredMixin, PermissionRequiredMixin, MessageDeleteView):
 
     permission_required = 'flowcells.delete_message'

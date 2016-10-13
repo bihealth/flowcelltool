@@ -17,14 +17,14 @@ __author__ = 'Manuel Holtgrewe <manuel.holtgrewe@bihealth.de>'
 # BarcodeSet related ----------------------------------------------------------
 
 
-class BarcodeSetDumper:
+class BarcodeSetDumper:  # pylint:disable=too-few-public-methods
     """Helper class for dumping BarcodeSet objects to JSON
 
     They can be imported later with BarcodeSetLoader again.
     """
 
     @classmethod
-    def run(klass, barcode_set):
+    def run(cls, barcode_set):
         """Return JSON dump of BarcodeSet in barcode_set as string"""
         # Get base fields
         result = OrderedDict()
@@ -41,7 +41,7 @@ class BarcodeSetDumper:
         return json.dumps(result, indent=2) + '\n'
 
 
-class BarcodeSetLoader:
+class BarcodeSetLoader:  # pylint:disable=too-few-public-methods
     """Helper class loading BarcodeSet objects from JSON and storing them
     in the database
 
@@ -49,7 +49,7 @@ class BarcodeSetLoader:
     """
 
     @classmethod
-    def run(klass, json_string):
+    def run(cls, json_string):
         """Load BarcodeSet object form json_string"""
         deserialized = json.loads(json_string)
         with transaction.atomic():
@@ -68,21 +68,21 @@ class BarcodeSetLoader:
 # FlowCell related ------------------------------------------------------------
 
 
-class FlowCellDumper:
+class FlowCellDumper:  # pylint:disable=too-few-public-methods
     """Helper class for dumping FlowCell objects to JSON
 
     They can be imported later with FlowCellLoader again.
     """
 
     @classmethod
-    def run(klass, flow_cell):
+    def run(cls, flow_cell):
         """Return JSON dump of FlowCell in flow_cell as string"""
         # Get base fields
         result = OrderedDict()
         for key in ('name', 'description', 'num_lanes',
-                      'status', 'operator', 'is_paired',
-                      'index_read_count', 'rta_version',
-                      'read_length'):
+                    'status', 'operator', 'is_paired',
+                    'index_read_count', 'rta_version',
+                    'read_length'):
             result[key] = getattr(flow_cell, key)
         # Get barcode set entries
         result['libraries'] = []
@@ -115,7 +115,7 @@ class FlowCellDumper:
         return json.dumps(result, indent=2) + '\n'
 
 
-class FlowCellLoader:
+class FlowCellLoader:  # pylint:disable=too-few-public-methods
     """Helper class loading FlowCell objects from JSON and storing them
     in the database
 
@@ -123,7 +123,7 @@ class FlowCellLoader:
     """
 
     @classmethod
-    def run(klass, json_string):
+    def run(cls, json_string):
         """Load FlowCell object form json_string"""
         deserialized = json.loads(json_string)
         with transaction.atomic():
@@ -228,7 +228,7 @@ class FlowCellSampleSheetGenerator:
                     self.flow_cell.operator,
                     'Project',
                 ])
-        return '\n'.join([','.join(map(str, row)) for row in rows]) + '\n'
+        return '\n'.join(','.join(str(r) for row in rows for r in row)) + '\n'
 
     def build_v2(self):
         """To bcl2fastq v2 sample sheet CSV file"""
@@ -271,4 +271,4 @@ class FlowCellSampleSheetGenerator:
                     'Project',
                     '',
                 ])
-        return '\n'.join([','.join(map(str, row)) for row in rows]) + '\n'
+        return '\n'.join(','.join(str(r) for row in rows for r in row)) + '\n'

@@ -12,7 +12,6 @@ def sizify(value):
 
     {{ product.file.size|sizify }}
     """
-    #value = ing(value)
     if value < 512000:
         value = value / 1024.0
         ext = 'kb'
@@ -27,9 +26,9 @@ def sizify(value):
 
 @register.filter('fa_mime_type')
 def fa_mime_type(value):
-    MAP = {
+    mapping = {
         'application/pdf': 'file-pdf-o',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'file-excel-o',
         'text-html': 'file-text-o',
     }
-    return MAP.get(value, 'file-o')
+    return mapping.get(value, 'file-o')
