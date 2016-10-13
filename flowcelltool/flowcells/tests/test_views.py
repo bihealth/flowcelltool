@@ -16,7 +16,7 @@ from .. import models
 from ..models import SequencingMachine, FlowCell, BarcodeSet, BarcodeSetEntry
 
 from .test_models import SequencingMachineMixin, FlowCellMixin, \
-    BarcodeSetMixin, BarcodeSetEntryMixin
+    BarcodeSetMixin, BarcodeSetEntryMixin, LibraryMixin
 
 
 # Helper Classes --------------------------------------------------------------
@@ -822,3 +822,49 @@ class TestBarcodeSetImportView(SuperUserTestCase):
         # Check database state afterwards
         self.assertEqual(BarcodeSet.objects.all().count(), 1)
         self.assertEqual(BarcodeSetEntry.objects.all().count(), 2)
+
+
+class TestSearchView(
+    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+    BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.client = Client()
+        # Create Machine
+        self.machine = self._make_machine()
+        # Create Barcode set
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATATA')
+        # Create Flow cell
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+        self.library1 = self._make_library(
+            self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode1, [1, 2], None, None)
+        self.library2 = self._make_library(
+            self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode2, [1, 2], None, None)
+
+    def test_with_result_of_two(self):
+        with self.login(self.user):
+            response = self.client.get(reverse('search'), {'q': 'LIB_00'})
+        self.assertEqual(len(response.context['results']), 2)
+
+    def test_with_result_of_one(self):
+        with self.login(self.user):
+            response = self.client.get(reverse('search'), {'q': '001'})
+        self.assertEqual(len(response.context['results']), 1)
+        self.assertEqual(response.context['results'][0].name, 'LIB_001')
+
+    def test_without_result(self):
+        with self.login(self.user):
+            response = self.client.get(reverse('search'), {'q': '003'})
+        self.assertEqual(len(response.context['results']), 0)

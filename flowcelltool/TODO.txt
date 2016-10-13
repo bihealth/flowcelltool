@@ -5,7 +5,6 @@
 - test import and export of single flow cells
 - test generation of sample sheets
 - test login and permissions
-- test search
 - test messages/attachment feature
 
 ## Mid-term

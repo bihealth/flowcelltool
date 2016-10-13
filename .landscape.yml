@@ -19,3 +19,7 @@ pep8:
 
 uses:
   - django
+
+pylint:
+  disable:
+    - too-many-ancestors
