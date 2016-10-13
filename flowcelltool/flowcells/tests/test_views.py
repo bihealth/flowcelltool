@@ -471,6 +471,43 @@ class TestLibraryUpdateView(
                 response, reverse('flowcell_view',
                                 kwargs={'pk': self.flow_cell.pk}))
 
+    def test_prefill_form_first(self):
+        """Test that prefilling the form with barcode1 works correctly"""
+        with self.login(self.user):
+            response = self.client.get(
+                reverse('flowcell_updatelibraries',
+                        kwargs={'pk': self.flow_cell.pk}),
+                {'barcode1': self.barcode_set.pk})
+
+        for form in response.context['formset'].forms[2:]:
+            self.assertEquals(form.initial['barcode_set'], self.barcode_set)
+            self.assertEquals(form.initial['barcode_set2'], None)
+
+    def test_prefill_form_second(self):
+        """Test that prefilling the form with barcode2 works correctly"""
+        with self.login(self.user):
+            response = self.client.get(
+                reverse('flowcell_updatelibraries',
+                        kwargs={'pk': self.flow_cell.pk}),
+                {'barcode2': self.barcode_set.pk})
+
+        for form in response.context['formset'].forms[2:]:
+            self.assertEquals(form.initial['barcode_set'], None)
+            self.assertEquals(form.initial['barcode_set2'], self.barcode_set)
+
+    def test_prefill_form_both(self):
+        """Test that prefilling the form with barcode1+2 works correctly"""
+        with self.login(self.user):
+            response = self.client.get(
+                reverse('flowcell_updatelibraries',
+                        kwargs={'pk': self.flow_cell.pk}),
+                {'barcode1': self.barcode_set.pk,
+                 'barcode2': self.barcode_set.pk})
+
+        for form in response.context['formset'].forms[2:]:
+            self.assertEquals(form.initial['barcode_set'], self.barcode_set)
+            self.assertEquals(form.initial['barcode_set2'], self.barcode_set)
+
 
 # SequencingMachine related ---------------------------------------------------
 
