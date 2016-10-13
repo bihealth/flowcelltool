@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import  # for Landscape.io
 import rules
 
 INSTRUMENT_OPERATOR = 'Instrument Operator'

@@ -1,0 +1,13 @@
+strictness: veryhigh
+
+python-targets:
+  - 3
+
+ignore-patterns:
+  - (^|/)docs(/|$)
+
+requirements:
+  - requirements/base.txt
+  - requirements/local.txt
+  - requirements/production.txt
+  - requirements/test.txt
