@@ -4,7 +4,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.core.management.sql import emit_post_migrate_signal
 
 
 INSTRUMENT_OPERATOR = 'Instrument Operator'

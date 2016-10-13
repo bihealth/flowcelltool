@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
@@ -27,7 +27,7 @@ class MessageCreateView(CreateView):
     def dispatch(self, *args, **kwargs):
         if not self.related_model:
             raise ValueError('Missing setting "related_model"')
-        self.related_object = get_object_or_404(
+        self.related_object = get_object_or_404(  # noqa
             self.related_model, pk=kwargs['related_pk'])
         return super().dispatch(*args, **kwargs)
 
@@ -36,7 +36,7 @@ class MessageCreateView(CreateView):
         return self.related_object.get_absolute_url()
 
     def form_valid(self, form):
-        self.object = form.save(self.request, self.related_object)
+        self.object = form.save(self.request, self.related_object)  # noqa
         return redirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):

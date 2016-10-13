@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Models for the flowcells app"""
+
 import functools
 import re
 
@@ -311,7 +314,6 @@ class FlowCell(TimeStampedModel):
             'Short description of the flow cell ' +
             markdown_allowed()))
 
-    # TODO: rename to instrument?
     #: The sequencer used for processing this flow cell
     sequencing_machine = models.ForeignKey(
         SequencingMachine, null=True, blank=True, on_delete=models.SET_NULL)
@@ -398,7 +400,7 @@ class FlowCell(TimeStampedModel):
     def count_files(self):
         """Return total number of attached files"""
         result = 0
-        for message in self.messages.all():
+        for message in self.messages.all():  # pylint:disable=no-member
             result += message.attachments.all().count()
         return result
 

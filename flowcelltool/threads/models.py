@@ -1,7 +1,5 @@
 from django.db import models
-import django.contrib.auth.models as auth_models
-from django.contrib.contenttypes.fields import GenericForeignKey, \
-    GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 from db_file_storage.model_utils import delete_file, delete_file_if_needed

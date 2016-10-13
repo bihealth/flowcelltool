@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Custom template tags for the flowcells app"""
 from django import template
-from django.template.defaultfilters import stringfilter
 
 register = template.Library()
 

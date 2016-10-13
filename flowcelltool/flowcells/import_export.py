@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.core.exceptions import ValidationError
 
-from .models import BarcodeSet, FlowCell, Library
+from .models import BarcodeSet, FlowCell
 
 
 __author__ = 'Manuel Holtgrewe <manuel.holtgrewe@bihealth.de>'
@@ -269,6 +269,6 @@ class FlowCellSampleSheetGenerator:
                     lib.barcode.name,
                     lib.barcode.sequence,
                     'Project',
-                    '',  # TODO XXX
+                    '',
                 ])
         return '\n'.join([','.join(map(str, row)) for row in rows]) + '\n'

@@ -1,8 +1,6 @@
 from django import forms
 from django.db import transaction
-from django.utils.functional import lazy
 from django.forms.models import BaseModelFormSet, modelformset_factory
-from django.contrib.postgres.forms import SimpleArrayField
 
 from crispy_forms.helper import FormHelper
 
@@ -49,12 +47,12 @@ class BaseBarcodeSetEntryFormSet(BaseModelFormSet):
         super().__init__(*args, **kwargs)
         self.queryset = self.barcode_set.entries.order_by('name').all()
 
-    def save(self):
+    def save(self, *args, **kwargs):
         """Handle saving of form set, including support for deleting barcode
         set entries
         """
         with transaction.atomic():
-            entries = super().save(commit=False)
+            entries = super().save(*args, commit=False, **kwargs)
             for entry in entries:
                 entry.barcode_set = self.barcode_set
                 entry.save()
@@ -138,7 +136,7 @@ class LibraryForm(forms.ModelForm):
             kwargs['initial']['lane_numbers'] = kwargs['instance'].lane_numbers
         else:
             kwargs['initial']['lane_numbers'] = []
-        return super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = models.Library
@@ -153,12 +151,12 @@ class BaseLibraryFormSet(BaseModelFormSet):
         super().__init__(*args, **kwargs)
         self.queryset = self.flow_cell.libraries.order_by('name').all()
 
-    def save(self):
+    def save(self, *args, **kwargs):
         """Handle saving of form set, including support for deleting barcode
         set entries
         """
         with transaction.atomic():
-            entries = super().save(commit=False)
+            entries = super().save(*args, commit=False, **kwargs)
             for entry in entries:
                 entry.flow_cell = self.flow_cell
                 entry.save()

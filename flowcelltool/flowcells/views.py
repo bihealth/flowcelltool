@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
@@ -181,7 +181,7 @@ class BarcodeSetImportView(
         loader = import_export.BarcodeSetLoader()
         try:
             barcode_set = loader.run(payload)
-        except IntegrityError as e:
+        except IntegrityError:
             form.add_error(
                 'json_file',
                 'Problem during import. Is the barcode set name unique?')
@@ -209,26 +209,26 @@ class BarcodeSetEntryUpdateView(
     template_name = 'flowcells/barcodeset_updateentries.html'
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        barcode_set_entry_form = self._construct_formset(**kwargs)
+        self.object = self.get_object()  # noqa
+        barcode_set_entry_form = self._construct_formset()
         return self.render_to_response(
             self.get_context_data(self.object.id,
                                   formset=barcode_set_entry_form))
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        barcode_set_entry_form = self._construct_formset(request.POST, **kwargs)
+        barcode_set_entry_form = self._construct_formset(request.POST)
         if barcode_set_entry_form.is_valid():
             return self.form_valid(request, barcode_set_entry_form)
         else:
             return self.form_invalid(barcode_set_entry_form)
 
-    def _construct_formset(self, data=None, **kwargs):
+    def _construct_formset(self, data=None):
         barcode_set_entry_form = forms.BarcodeSetEntryFormSet(
             data=data, barcode_set=self.object)
         return barcode_set_entry_form
 
-    def form_valid(self, request, barcode_set_entry_form):
+    def form_valid(self, request, barcode_set_entry_form, *args, **kwargs):
         for form in barcode_set_entry_form:
             form.instance.barcode_set = self.object
         barcode_set_entry_form.save()
@@ -244,7 +244,7 @@ class BarcodeSetEntryUpdateView(
 
     def get_context_data(self, pk, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.object = models.BarcodeSet.objects.get(pk=pk)
+        self.object = models.BarcodeSet.objects.get(pk=pk)  # noqa
         context['object'] = self.object
         context['formset'] = kwargs['formset']
         context['helper'] = FormHelper()
@@ -278,7 +278,7 @@ class FlowCellCreateView(
               'is_paired', 'index_read_count', 'rta_version', 'read_length')
 
     def form_valid(self, form):
-        self.object = form.save(commit=False)
+        self.object = form.save(commit=False)  # noqa
         self.object.owner = self.request.user
         self.object.save()
         return redirect(reverse(
@@ -366,8 +366,8 @@ class FlowCellImportView(
         payload = self.request.FILES['json_file'].read().decode('utf-8')
         loader = import_export.FlowCellLoader()
         try:
-            flow_cell = loader.run(payload)
-        except IntegrityError as e:
+            loader.run(payload)
+        except IntegrityError:
             form.add_error(
                 'json_file',
                 'Problem during import. Is the flow cell name unique?')
@@ -437,21 +437,21 @@ class LibraryUpdateView(
     template_name = 'flowcells/flowcell_updatelibraries.html'
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        library_form = self._construct_formset(**kwargs)
+        self.object = self.get_object()  # noqa
+        library_form = self._construct_formset()
         return self.render_to_response(
             self.get_context_data(self.object.id,
                                   formset=library_form))
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        library_form = self._construct_formset(request.POST, **kwargs)
+        self.object = self.get_object()  # noqa
+        library_form = self._construct_formset(request.POST)
         if library_form.is_valid():
             return self.form_valid(request, library_form)
         else:
             return self.form_invalid(library_form)
 
-    def _construct_formset(self, data=None, **kwargs):
+    def _construct_formset(self, data=None):
         if self.request.GET.get('barcode1'):
             barcode_set1 = get_object_or_404(
                 models.BarcodeSet, pk=self.request.GET['barcode1'])
@@ -469,21 +469,21 @@ class LibraryUpdateView(
             initial=[initial] * forms.EXTRA_LIBRARY_FORMS)
         return library_form
 
-    def form_valid(self, request, library_form):
+    def form_valid(self, request, library_form, *args, **kwargs):
         library_form.save()
         if request.POST.get('submit_more'):
             return redirect(request.get_full_path())
         else:
             return redirect(self.get_success_url())
 
-    def form_invalid(self, library_form):
+    def form_invalid(self, library_form, *args, **kwargs):
         return self.render_to_response(
             self.get_context_data(self.object.id,
                                   formset=library_form))
 
     def get_context_data(self, pk, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.object = models.FlowCell.objects.get(pk=pk)
+        self.object = models.FlowCell.objects.get(pk=pk)  # noqa
         context['object'] = self.object
         context['formset'] = kwargs['formset']
         context['helper'] = FormHelper()
