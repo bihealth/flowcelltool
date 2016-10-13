@@ -29,6 +29,6 @@ def fa_mime_type(value):
     mapping = {
         'application/pdf': 'file-pdf-o',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'file-excel-o',
-        'text-html': 'file-text-o',
+        'text/html': 'file-text-o',
     }
     return mapping.get(value, 'file-o')
