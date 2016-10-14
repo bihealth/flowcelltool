@@ -10,11 +10,14 @@ from test_plus.test import TestCase
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.test import Client
+from django.contrib.contenttypes.models import ContentType
 
 from .. import views
 from .. import models
 from ..models import SequencingMachine, FlowCell, BarcodeSet, \
     BarcodeSetEntry, Library
+
+from ...threads import models as threads_models
 
 from .test_models import SequencingMachineMixin, FlowCellMixin, \
     BarcodeSetMixin, BarcodeSetEntryMixin, LibraryMixin
@@ -1270,3 +1273,226 @@ class TestSearchView(
         with self.login(self.user):
             response = self.client.get(reverse('search'), {'q': '003'})
         self.assertEqual(len(response.context['results']), 0)
+
+
+# Message Related -------------------------------------------------------------
+
+
+class TestMessageCreateView(
+    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+    BarcodeSetMixin, BarcodeSetEntryMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.client = Client()
+        # Create Machine
+        self.machine = self._make_machine()
+        # Create Barcode set
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATATA')
+        # Create Flow cell
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+        self.library1 = self._make_library(
+            self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode1, [1, 2], None, None)
+        self.library2 = self._make_library(
+            self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode2, [1, 2], None, None)
+
+    def test_get(self):
+        with self.login(self.user):
+            response = self.client.get(reverse(
+                'flowcell_add_message',
+                kwargs={'related_pk': self.flow_cell.pk}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        payload = io.StringIO(textwrap.dedent(r"""
+            Example File Content
+            """).lstrip())
+
+        # Simulate POST request
+        values = {
+            'title': 'Message Title',
+            'body': 'Message Body',
+            'attachments': [payload],
+        }
+
+        self.assertEquals(
+            threads_models.Message.objects.all().count(), 0)
+        self.assertEquals(
+            threads_models.Attachment.objects.all().count(), 0)
+        self.assertEquals(
+            threads_models.AttachmentFile.objects.all().count(), 0)
+
+        # Simulate the POST
+        with self.login(self.user):
+            response = self.client.post(
+                reverse('flowcell_add_message',
+                        kwargs={'related_pk': self.flow_cell.pk}),
+                values)
+            self.assertRedirects(
+                response, reverse(
+                    'flowcell_view', kwargs={'pk': self.flow_cell.pk}))
+
+        self.assertEquals(
+            threads_models.Message.objects.all().count(), 1)
+        self.assertEquals(
+            threads_models.AttachmentFile.objects.all().count(), 1)
+        self.assertEquals(
+            threads_models.AttachmentFile.objects.all().count(), 1)
+
+        EXPECTED = {
+            'object_id': self.flow_cell.pk,
+            'title': values['title'],
+            'body': values['body'],
+            'author': self.user,
+            'mime_type': 'text/plain',
+        }
+        msg = threads_models.Message.objects.all()[0]
+        for key, value in EXPECTED.items():
+            self.assertEquals(getattr(msg, key), value)
+
+        att = threads_models.Attachment.objects.all()[0]
+        self.assertEquals(att.message_id, msg.pk)
+
+        att_file = threads_models.AttachmentFile.objects.all()[0]
+        self.assertEquals(att_file.bytes, 'RXhhbXBsZSBGaWxlIENvbnRlbnQK')
+
+
+class MessageMixin:
+
+    def _make_message(self, user, flow_cell, title, body):
+        msg = threads_models.Message.objects.create(
+            author=user,
+            content_type=ContentType.objects.get_for_model(flow_cell),
+            object_id=flow_cell.pk,
+            title=title,
+            body=body)
+        return msg
+
+
+class TestMessageDeleteView(
+    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+    BarcodeSetMixin, BarcodeSetEntryMixin, MessageMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.client = Client()
+        # Create Machine
+        self.machine = self._make_machine()
+        # Create Barcode set
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATATA')
+        # Create Flow cell
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+        self.library1 = self._make_library(
+            self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode1, [1, 2], None, None)
+        self.library2 = self._make_library(
+            self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode2, [1, 2], None, None)
+        # Create Message
+        self.message = self._make_message(
+            self.user, self.flow_cell, 'Some Title', 'Some Body')
+
+    def test_get(self):
+        with self.login(self.user):
+            response = self.client.get(reverse(
+                'flowcell_delete_message',
+                kwargs={'pk': self.message.pk}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        self.assertEquals(threads_models.Message.objects.all().count(), 1)
+
+        with self.login(self.user):
+            response = self.client.post(reverse(
+                'flowcell_delete_message',
+                kwargs={'pk': self.message.pk}))
+            self.assertRedirects(
+                response,
+                reverse('flowcell_view', kwargs={'pk': self.flow_cell.pk}))
+
+        self.assertEquals(threads_models.Message.objects.all().count(), 0)
+
+
+
+class TestMessageUpdateView(
+    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+    BarcodeSetMixin, BarcodeSetEntryMixin, MessageMixin):
+
+    def setUp(self):
+        self.user = self.make_user()
+        self.client = Client()
+        # Create Machine
+        self.machine = self._make_machine()
+        # Create Barcode set
+        self.barcode_set = self._make_barcode_set()
+        self.barcode1 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR01', 'CGATCGAT')
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'ATTATATA')
+        # Create Flow cell
+        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
+            self.machine.vendor_id)
+        self.flow_cell = self._make_flow_cell(
+            self.user, self.flow_cell_name, 8,
+            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
+            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+        self.library1 = self._make_library(
+            self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode1, [1, 2], None, None)
+        self.library2 = self._make_library(
+            self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode2, [1, 2], None, None)
+        # Create Message
+        self.message = self._make_message(
+            self.user, self.flow_cell, 'Some Title', 'Some Body')
+
+    def test_get(self):
+        with self.login(self.user):
+            response = self.client.get(reverse(
+                'flowcell_update_message',
+                kwargs={'pk': self.message.pk}))
+
+        self.assertEqual(response.context['object'], self.message)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        self.assertEquals(threads_models.Message.objects.all().count(), 1)
+
+        values = {
+            'title': 'Updated Title',
+            'body': 'Updated Body',
+        }
+
+        with self.login(self.user):
+            response = self.client.post(reverse(
+                'flowcell_update_message',
+                kwargs={'pk': self.message.pk}),
+                values)
+            self.assertRedirects(
+                response,
+                reverse('flowcell_view', kwargs={'pk': self.flow_cell.pk}))
+
+        self.assertEquals(threads_models.Message.objects.all().count(), 1)
+        message = threads_models.Message.objects.all()[0]
+        self.assertEquals(message.title, 'Updated Title')
+        self.assertEquals(message.body, 'Updated Body')

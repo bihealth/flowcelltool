@@ -1,7 +1,6 @@
 ## ASAP
 
 - test login and permissions
-- test messages/attachment feature
 - JavaScript for easier library selection
 - Deployment on Flynn.io
 
