@@ -216,7 +216,7 @@ class BarcodeSetEntryUpdateView(
                                   formset=barcode_set_entry_form))
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.object = self.get_object()  # noqa
         barcode_set_entry_form = self._construct_formset(request.POST)
         if barcode_set_entry_form.is_valid():
             return self.form_valid(request, barcode_set_entry_form)
@@ -228,7 +228,7 @@ class BarcodeSetEntryUpdateView(
             data=data, barcode_set=self.object)
         return barcode_set_entry_form
 
-    def form_valid(self, request, barcode_set_entry_form, *args, **kwargs):
+    def form_valid(self, request, barcode_set_entry_form):
         for form in barcode_set_entry_form:
             form.instance.barcode_set = self.object
         barcode_set_entry_form.save()
@@ -469,14 +469,14 @@ class LibraryUpdateView(
             initial=[initial] * forms.EXTRA_LIBRARY_FORMS)
         return library_form
 
-    def form_valid(self, request, library_form, *args, **kwargs):
+    def form_valid(self, request, library_form):
         library_form.save()
         if request.POST.get('submit_more'):
             return redirect(request.get_full_path())
         else:
             return redirect(self.get_success_url())
 
-    def form_invalid(self, library_form, *args, **kwargs):
+    def form_invalid(self, library_form):
         return self.render_to_response(
             self.get_context_data(self.object.id,
                                   formset=library_form))
@@ -504,7 +504,6 @@ class SearchView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         query = self.request.GET.get('q')
-        results = []
         context['is_search'] = True
         context['results'] = models.Library.objects.filter(name__contains=query)
         context['query'] = query
