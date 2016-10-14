@@ -4,10 +4,42 @@ from django.forms.models import BaseModelFormSet, modelformset_factory
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.forms.models import ModelChoiceIterator, ModelChoiceField
+from django.forms.fields import ChoiceField
 
 from crispy_forms.helper import FormHelper
 
 from . import models
+
+
+# Advanced ModelChoice fields -------------------------------------------------
+
+
+class AdvancedModelChoiceIterator(ModelChoiceIterator):
+    def __iter__(self):
+        if self.field.empty_label is not None:
+            yield ("", self.field.empty_label, None)
+        queryset = self.queryset.all()
+        # Can't use iterator() when queryset uses prefetch_related()
+        if not queryset._prefetch_related_lookups:
+            queryset = queryset.iterator()
+        for obj in queryset:
+            yield self.choice(obj)
+
+    def choice(self, obj):
+        return (self.field.prepare_value(obj),
+                self.field.label_from_instance(obj), obj)
+
+
+class AdvancedModelChoiceField(ModelChoiceField):
+    def _get_choices(self):
+        if hasattr(self, '_choices'):
+            return self._choices
+
+        return AdvancedModelChoiceIterator(self)
+
+    choices = property(_get_choices, ChoiceField._set_choices)
+
 
 # Form for importing BarcodeSet from JSON -------------------------------------
 
@@ -135,12 +167,30 @@ class BarcodeSelect(forms.Select):
     barcodes from the given barcode sets.
     """
 
-    def render_option(self, selected_choices, option_value, option_label):
+    def render_options(self, selected_choices):
+        # Normalize to strings.
+        selected_choices = set(force_text(v) for v in selected_choices)
+        output = []
+        for option_value, option_label, option_model in self.choices:
+            if isinstance(option_label, (list, tuple)):
+                output.append(format_html(
+                    '<optgroup label="{}">', force_text(option_value)))
+                for option in option_label:
+                    output.append(self.render_option(
+                        selected_choices, option, option_model))
+                output.append('</optgroup>')
+            else:
+                output.append(self.render_option(
+                    selected_choices, option_value, option_label,
+                    option_model))
+        return '\n'.join(output)
+
+    def render_option(self, selected_choices, option_value, option_label,
+                      option_model):
         if option_value is None:
             option_value = ''
         if option_value:
-            set_id = models.BarcodeSetEntry.objects.get(
-                pk=option_value).barcode_set.id
+            set_id = option_model.barcode_set_id
         else:
             set_id = ''
         option_value = force_text(option_value)
@@ -152,7 +202,7 @@ class BarcodeSelect(forms.Select):
         else:
             selected_html = ''
         return format_html('<option data-set-id="{}" value="{}"{}>{}</option>',
-                           set_id,
+                           '',#set_id,
                            option_value,
                            selected_html,
                            force_text(option_label))
@@ -161,11 +211,17 @@ class BarcodeSelect(forms.Select):
 class LibraryForm(forms.ModelForm):
     """Form for handling library entries (table rows in the form set)"""
 
-    barcode = forms.ModelChoiceField(
+    barcode_set = forms.ModelChoiceField(
+        required=False,
+        queryset=models.BarcodeSet.objects.order_by('name'))
+    barcode = AdvancedModelChoiceField(
         required=False,
         queryset=models.BarcodeSetEntry.objects.order_by('name'),
         widget=BarcodeSelect)
-    barcode2 = forms.ModelChoiceField(
+    barcode_set2 = forms.ModelChoiceField(
+        required=False,
+        queryset=models.BarcodeSet.objects.order_by('name'))
+    barcode2 = AdvancedModelChoiceField(
         required=False,
         queryset=models.BarcodeSetEntry.objects.order_by('name'),
         widget=BarcodeSelect)
