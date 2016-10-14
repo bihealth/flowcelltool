@@ -51,7 +51,7 @@ Finally, initialize the database:
 From here on, you can follow the Getting Started guide.
 
 LDAP/ActiveDirectory Setup
-==========================
+--------------------------
 
 You can setup the tool to use LDAP/ActiveDirectory for logging into your web app.
 For this, set the following environment variables:
@@ -62,3 +62,43 @@ For this, set the following environment variables:
     export AUTH_LDAP_BIND_PASSWORD='password'
     export AUTH_LDAP_SERVER_URI='ldap://activedirectory.example.com'
     export AUTH_LDAP_USER_SEARCH_BASE='DC=example,DC=com'
+
+Deployment to Flynn
+===================
+
+`Flynn <https://flynn.io/>`_ is a PaaS system similar to Heroku that you can run on your own hardware.
+
+Prerequisites
+-------------
+
+Start by installing Flynn on your server and installing the ``flynn`` command line on your local machine as described in the `Flynn manual: Installation <https://flynn.io/docs/installation>`_.
+
+The Actual Deploying
+--------------------
+
+First, clone the repository from Github.
+
+.. code-block:: shell
+
+    $ git clone git@github.com:bihealth/flowcelltool.git
+
+Then, create a new Flynn app
+
+.. code-block:: shell
+
+    $ cd flowcelltool
+    $ flynn create flowcelltool
+    Created flowcelltool
+
+Next, provision a PostgreSQL database
+
+.. code-block:: shell
+
+    $ flynn flynn resource add postgres
+    Created resource d5d9350d-b55e-4102-a9d3-b5d4bbbd987c and release 56857385-d3ae-4c7e-8259-7fb2e184e064.
+
+Finally, deploy the application
+
+.. code-block:: shell
+
+    $ git push -u flynn master
