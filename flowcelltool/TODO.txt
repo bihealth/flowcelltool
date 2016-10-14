@@ -1,6 +1,5 @@
 ## ASAP
 
-- test login and permissions
 - JavaScript for easier library selection
 - Deployment on Flynn.io
 
@@ -10,6 +9,7 @@
 - improvements to messages module
     - handle permissions in a better way
     - secure attachments
+- prettify buttons for seq machine and barcode set details
 
 ## long-term
 

@@ -151,7 +151,7 @@ class BarcodeSetExportView(
         LoginRequiredMixin, View):
     """Exporting of BarcodeSet objects to JSON"""
 
-    def dispatch(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         barcode_set = get_object_or_404(
             models.BarcodeSet, pk=kwargs['pk'])
         dumper = import_export.BarcodeSetDumper()
@@ -337,7 +337,7 @@ class FlowCellExportView(
         LoginRequiredMixin, View):
     """Exporting of FlowCell objects to JSON"""
 
-    def dispatch(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         flow_cell = get_object_or_404(
             models.FlowCell, pk=kwargs['pk'])
         dumper = import_export.FlowCellDumper()
@@ -415,7 +415,6 @@ class FlowCellDeleteMessageView(
         LoginRequiredMixin, PermissionRequiredMixin, MessageDeleteView):
 
     permission_required = 'flowcells.delete_message'
-
 
 
 # Library Views ---------------------------------------------------------------
@@ -503,8 +502,12 @@ class SearchView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        query = self.request.GET.get('q')
+        query = self.request.GET.get('q', '')
         context['is_search'] = True
-        context['results'] = models.Library.objects.filter(name__contains=query)
+        if query:
+            context['results'] = models.Library.objects.filter(
+                name__contains=query)
+        else:
+            context['results'] = []
         context['query'] = query
         return context

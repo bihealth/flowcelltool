@@ -94,12 +94,13 @@ rules.add_perm(
 )
 rules.add_perm(
     'flowcells.change_flowcell',
-    is_flow_cell_owner | is_demux_operator | is_demux_admin | is_import_bot
+    is_flow_cell_owner | is_demux_operator | is_demux_admin
     | rules.is_superuser
 )
 rules.add_perm(
     'flowcells.delete_flowcell',
-    is_demux_operator | is_demux_admin | is_import_bot | rules.is_superuser
+    is_flow_cell_owner | is_demux_operator | is_demux_admin
+    | rules.is_superuser
 )
 
 # Similar, for library on flowcell

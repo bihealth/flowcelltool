@@ -10,6 +10,9 @@ coverage.xml
 ### Sphinx
 docs/_build
 
+### VS Studio Code ###
+.vscode/
+
 ### SublimeText ###
 # cache files for sublime text
 *.tmlanguage.cache
