@@ -164,6 +164,11 @@ class BarcodeSet(TimeStampedModel):
         help_text=('Short description of the barcode set. ' +
                    markdown_allowed()))
 
+    @property
+    def sorted_entries(self):
+        """Return barcode set entries, sorted by name"""
+        return self.entries.order_by('name')
+
     def get_absolute_url(self):
         return reverse('barcodeset_view', kwargs={'pk': self.pk})
 
@@ -354,6 +359,11 @@ class FlowCell(TimeStampedModel):
         Message, content_type_field='content_type',
         object_id_field='object_id')
 
+    @property
+    def sorted_libraries(self):
+        """Return libraries entries, sorted by name"""
+        return self.libraries.order_by('name')
+
     def save(self, *args, **kwargs):
         self._validate_sequencer()
         self._validate_num_lanes()
@@ -485,6 +495,9 @@ def try_helper(f, arg, exc=AttributeError, default=''):
 class Library(TimeStampedModel):
     """The data stored for each library that is to be sequenced
     """
+
+    class Meta:
+        ordering = ['name']
 
     #: The flow cell that this library has been sequenced on
     flow_cell = models.ForeignKey(FlowCell, related_name='libraries',

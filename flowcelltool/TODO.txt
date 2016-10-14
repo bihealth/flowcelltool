@@ -4,7 +4,6 @@
 
 ## Mid-term
 
-- Order entries in list displays
 - Fancy lane range input
 - add REST interface
 - improvements to messages module
@@ -14,6 +13,6 @@
 ## long-term
 
 - make libraries on flowcell sortable
-- filter functionality
+- filter and sort functionality in list tables
 - properly handle display ValidationError results in forms
 - add proper Selenium-based UI tests

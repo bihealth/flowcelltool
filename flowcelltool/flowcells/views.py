@@ -50,7 +50,7 @@ class SequencingMachineListView(
         LoginRequiredMixin, ListView):
     """Shows a list of sequencing machines"""
 
-    model = models.SequencingMachine
+    queryset = models.SequencingMachine.objects.order_by('vendor_id')
 
 
 class SequencingMachineCreateView(
@@ -102,7 +102,7 @@ class BarcodeSetListView(
         LoginRequiredMixin, ListView):
     """Shows a list of sequencing machines"""
 
-    model = models.BarcodeSet
+    queryset = models.BarcodeSet.objects.order_by('name')
 
 
 class BarcodeSetCreateView(
@@ -262,7 +262,7 @@ class FlowCellListView(
         LoginRequiredMixin, ListView):
     """Shows a list of flow cells, this is the index page"""
 
-    model = models.FlowCell
+    queryset = models.FlowCell.objects.order_by('name')
 
 
 class FlowCellCreateView(
