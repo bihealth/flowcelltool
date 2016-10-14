@@ -121,7 +121,7 @@ class LibrariesPrefillForm(forms.Form):
 # Library multi-edit related -------------------------------------------------
 
 #: Number of additional barcode set entry forms (= table rows) to create
-EXTRA_LIBRARY_FORMS = 2
+EXTRA_LIBRARY_FORMS = 10
 
 #: Fields to use for the library forms (= table rows)
 LIBRARY_FIELDS = ('name', 'reference', 'barcode_set', 'barcode',
@@ -162,9 +162,11 @@ class LibraryForm(forms.ModelForm):
     """Form for handling library entries (table rows in the form set)"""
 
     barcode = forms.ModelChoiceField(
+        required=False,
         queryset=models.BarcodeSetEntry.objects.order_by('name'),
         widget=BarcodeSelect)
     barcode2 = forms.ModelChoiceField(
+        required=False,
         queryset=models.BarcodeSetEntry.objects.order_by('name'),
         widget=BarcodeSelect)
 
