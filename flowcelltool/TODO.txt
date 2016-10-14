@@ -9,7 +9,6 @@
 - improvements to messages module
     - handle permissions in a better way
     - secure attachments
-- prettify buttons for seq machine and barcode set details
 
 ## long-term
 

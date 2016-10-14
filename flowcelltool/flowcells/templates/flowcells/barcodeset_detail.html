@@ -7,7 +7,7 @@
 <div class="row">
   <h2>Barcode Set: {{ object.name }}</h2>
 
-  {% include "flowcells/_barcodeset_detail_buttons.html" %}
+  {% include "flowcells/_barcodeset_detail_buttons.html" with location="top" %}
 
   <h3>Details</h3>
 
@@ -17,7 +17,7 @@
 
   {% include "flowcells/_barcodeset_detail_entries.html" %}
 
-  {% include "flowcells/_barcodeset_detail_buttons.html" %}
+  {% include "flowcells/_barcodeset_detail_buttons.html" with location="bottom" %}
 </div>
 
 {% endblock %}
