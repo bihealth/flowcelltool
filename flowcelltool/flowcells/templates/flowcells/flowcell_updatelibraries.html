@@ -31,3 +31,69 @@
 
 </div>
 {% endblock content %}
+
+{% block javascript %}
+{{ block.super }}
+
+<script type="text/javascript">
+    /* Convert from barcode <select> to barcode_set <select> id */
+    function barcodeToSet(barcodeId) {
+        console.log('barcodeToSet(' + barcodeId + ')');
+        var num = barcodeId.slice(barcodeId.length - 1);
+        console.log("num", num, typeof(num));
+        if (num != "2")
+            num = "";
+        var name = barcodeId.slice(0, barcodeId.length - num.length);
+        console.log('name ' + name + ", " + num.length);
+        console.log('return ' + name + '_set' + num);
+        return barcodeId.slice(0, barcodeId.length - num.length) + '_set' + num;
+    }
+
+    /* Convert from barcode_set <select> id to barcode <select> */
+    function barcodeSetToBarcode(barcodeId) {
+        console.log('barcodeSetToBarcode(' + barcodeId + ')');
+        var num = barcodeId.slice(barcodeId.length - 1);
+        if (num != "2")
+            num = "";
+        console.log('num ' + num);
+        console.log('return ' + barcodeId.substr(0, barcodeId.length - 4 - num.length) + num);
+        return barcodeId.substr(0, barcodeId.length - 4 - num.length) + num;
+    }
+
+    /* Update barcode field for a given select barcode set field */
+    function barcodeSetUpdated(barcodeSetSelect) {
+        var selectedValue = $(barcodeSetSelect).val();
+        var barcodeSelect = $('#' + barcodeSetToBarcode(barcodeSetSelect.attr('id')));
+        barcodeSelect.prop('disabled', !selectedValue);
+        if (!selectedValue) {
+            barcodeSelect.val('');
+        } else {
+            barcodeSelect.find('option').each(function() {
+                console.log($(this));
+                var dataSetId = $(this).attr('data-set-id');
+                console.log(dataSetId, barcodeSetSelect.val());
+                console.log(typeof(dataSetId), typeof(barcodeSetSelect.val()));
+                console.log(dataSetId == barcodeSetSelect.val());
+                if (dataSetId == '' || dataSetId == barcodeSetSelect.val()) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $('select.barcode-field, select.barcode-field2').each(function() {
+            console.log('1', this);
+            console.log('2', $(this).attr('id'));
+            var barcodeSetId = '#' + barcodeToSet($(this).attr('id'));
+            barcodeSetUpdated($(barcodeSetId));
+        });
+        $('select.barcode-set-field, select.barcode-set-field2').change(
+            function() {
+              barcodeSetUpdated($(this));
+        });
+    });
+</script>
+{% endblock %}

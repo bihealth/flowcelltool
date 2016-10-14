@@ -1,6 +1,9 @@
 from django import forms
 from django.db import transaction
 from django.forms.models import BaseModelFormSet, modelformset_factory
+from django.utils.encoding import force_text
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
 
@@ -118,15 +121,52 @@ class LibrariesPrefillForm(forms.Form):
 # Library multi-edit related -------------------------------------------------
 
 #: Number of additional barcode set entry forms (= table rows) to create
-EXTRA_LIBRARY_FORMS = 10
+EXTRA_LIBRARY_FORMS = 2
 
 #: Fields to use for the library forms (= table rows)
 LIBRARY_FIELDS = ('name', 'reference', 'barcode_set', 'barcode',
                   'barcode_set2', 'barcode2', 'lane_numbers')
 
 
+class BarcodeSelect(forms.Select):
+    """Barcode selection, adds "data-barcode-set" attribute to <option>
+
+    This is required for the form JavaScript to limit selections to the
+    barcodes from the given barcode sets.
+    """
+
+    def render_option(self, selected_choices, option_value, option_label):
+        if option_value is None:
+            option_value = ''
+        if option_value:
+            set_id = models.BarcodeSetEntry.objects.get(
+                pk=option_value).barcode_set.id
+        else:
+            set_id = ''
+        option_value = force_text(option_value)
+        if option_value in selected_choices:
+            selected_html = mark_safe(' selected="selected"')
+            if not self.allow_multiple_selected:
+                # Only allow for a single selection.
+                selected_choices.remove(option_value)
+        else:
+            selected_html = ''
+        return format_html('<option data-set-id="{}" value="{}"{}>{}</option>',
+                           set_id,
+                           option_value,
+                           selected_html,
+                           force_text(option_label))
+
+
 class LibraryForm(forms.ModelForm):
     """Form for handling library entries (table rows in the form set)"""
+
+    barcode = forms.ModelChoiceField(
+        queryset=models.BarcodeSetEntry.objects.order_by('name'),
+        widget=BarcodeSelect)
+    barcode2 = forms.ModelChoiceField(
+        queryset=models.BarcodeSetEntry.objects.order_by('name'),
+        widget=BarcodeSelect)
 
     def __init__(self, *args, **kwargs):
         # Pre-set the lane numbers, required for Django Formsets to work

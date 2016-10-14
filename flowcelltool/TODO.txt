@@ -1,10 +1,11 @@
 ## ASAP
 
-- JavaScript for easier library selection
 - Deployment on Flynn.io
 
 ## Mid-term
 
+- Order entries in list displays
+- Fancy lane range input
 - add REST interface
 - improvements to messages module
     - handle permissions in a better way
@@ -15,3 +16,4 @@
 - make libraries on flowcell sortable
 - filter functionality
 - properly handle display ValidationError results in forms
+- add proper Selenium-based UI tests

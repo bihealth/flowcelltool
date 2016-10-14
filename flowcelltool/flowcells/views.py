@@ -15,6 +15,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, \
 from django.db import IntegrityError
 
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field
 from rules.contrib.views import PermissionRequiredMixin
 
 from . import models, forms, import_export
@@ -486,6 +487,17 @@ class LibraryUpdateView(
         context['object'] = self.object
         context['formset'] = kwargs['formset']
         context['helper'] = FormHelper()
+        context['helper'].layout = Layout(
+            Field('name', css_class='form-control-sm'),
+            Field('reference', css_class='form-control-sm'),
+            Field('barcode_set',
+                  css_class='barcode-set-field form-control-sm'),
+            Field('barcode', css_class='barcode-field form-control-sm'),
+            Field('barcode_set2',
+                  css_class='barcode-set-field2 form-control-sm'),
+            Field('barcode2', css_class='barcode-field2 form-control-sm'),
+            Field('lane_numbers', css_class='form-control-sm'),
+        )
         context['helper'].form_tag = False
         context['helper'].template = \
             'bootstrap4/table_inline_formset.html'
