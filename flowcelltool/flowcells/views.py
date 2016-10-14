@@ -182,6 +182,11 @@ class BarcodeSetImportView(
         loader = import_export.BarcodeSetLoader()
         try:
             barcode_set = loader.run(payload)
+        except ValueError:
+            form.add_error(
+                'json_file',
+                'Problem during import. Is the JSON file valid?')
+            return self.form_invalid(form)
         except IntegrityError:
             form.add_error(
                 'json_file',
