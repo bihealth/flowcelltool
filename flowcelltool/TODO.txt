@@ -1,7 +1,6 @@
 ## ASAP
 
 - Deployment on Flynn.io
-- Rename Message.content_object to Message.thread_object
 
 ## Mid-term
 

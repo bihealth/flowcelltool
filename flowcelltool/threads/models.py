@@ -41,7 +41,7 @@ class Message(TimeStampedModel):
     # Messages related to a "thread" items on
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    thread_object = GenericForeignKey('content_type', 'object_id')
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
 

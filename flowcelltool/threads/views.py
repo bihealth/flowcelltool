@@ -64,7 +64,7 @@ class MessageUpdateView(UpdateView):
 
     def get_success_url(self):
         """Return absolute URL of the related object"""
-        return self.object.content_object.get_absolute_url()
+        return self.object.thread_object.get_absolute_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -86,9 +86,9 @@ class MessageDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['cancel_url'] = self.object.content_object.get_absolute_url()
+        context['cancel_url'] = self.object.thread_object.get_absolute_url()
         return context
 
     def get_success_url(self):
         """Return absolute URL of the related object"""
-        return self.object.content_object.get_absolute_url()
+        return self.object.thread_object.get_absolute_url()

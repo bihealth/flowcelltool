@@ -62,7 +62,7 @@ class LibrarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
-    content_object = GenericRelatedField({
+    thread_object = GenericRelatedField({
         models.FlowCell: serializers.HyperlinkedRelatedField(
             queryset = models.FlowCell.objects.all(),
             view_name='flowcell-detail',
@@ -72,4 +72,4 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = threads_models.Message
         fields = ('created_at', 'updated_at', 'title', 'body',
-                  'content_object')
+                  'thread_object')
