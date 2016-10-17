@@ -59,3 +59,6 @@ djangorestframework==3.4.7
 Markdown==2.6.7
 django_filter==0.15.2
 rest-framework-generic-relations==1.1.0
+
+# Django form wizards
+django-formtools==1.0

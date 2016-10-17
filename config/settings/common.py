@@ -45,6 +45,7 @@ THIRD_PARTY_APPS = (
     'db_file_storage',  # storing files in database
     'rest_framework',     # Django REST Framework (DRF)
     'generic_relations',  # generic relations for DRF
+    'formtools',  # for form wizards
 )
 
 # Apps specific for this project go here.

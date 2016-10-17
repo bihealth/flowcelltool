@@ -7,6 +7,9 @@
 .cache
 coverage.xml
 
+### Virtualenv
+.venv/
+
 ### Sphinx
 docs/_build
 
