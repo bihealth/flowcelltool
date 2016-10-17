@@ -39,6 +39,8 @@ class TestPermissionBase(TestCase):
     def _make_users(self):
         """Create users with the different roles/groups"""
         self.anonymous = None
+        self.nogroup = self.make_user(None, username='nogroup')
+        self.guest = self.make_user(GUEST, username='guest')
         self.inst_op = self.make_user(INSTRUMENT_OPERATOR, username='inst_op')
         self.demux_op = self.make_user(DEMUX_OPERATOR, username='demux_op')
         self.demux_admin = self.make_user(DEMUX_ADMIN, username='demux_admin')
@@ -87,8 +89,8 @@ class TestBaseViews(TestPermissionBase):
 
     def test_home(self):
         URL = reverse('home')
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
-                self.import_bot, self.superuser)
+        GOOD = (self.inst_op, self.nogroup, self.guest, self.demux_op,
+                self.demux_admin, self.import_bot, self.superuser)
         BAD = (self.anonymous,)
         REDIR = reverse('login') + '?next=/'
         self.assert_render_200_ok(URL, GOOD)
@@ -96,29 +98,32 @@ class TestBaseViews(TestPermissionBase):
 
     def test_login(self):
         URL = reverse('login')
-        GOOD = (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
-                self.import_bot, self.superuser)
+        GOOD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+                self.demux_op, self.demux_admin, self.import_bot,
+                self.superuser)
         self.assert_render_200_ok(URL, GOOD)
 
     def test_logout(self):
         URL = reverse('login')
-        GOOD = (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
-                self.import_bot, self.superuser)
+        GOOD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+                self.demux_op, self.demux_admin, self.import_bot,
+                self.superuser)
         REDIRECTION = '/login/'
         self.assert_render_200_ok(URL, GOOD)
 
     def test_about(self):
         URL = reverse('about')
-        GOOD = (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
-                self.import_bot, self.superuser)
+        GOOD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+                self.demux_op, self.demux_admin, self.import_bot,
+                self.superuser)
         self.assert_render_200_ok(URL, GOOD)
 
     def test_admin(self):
         URL = '/admin/'
         GOOD = (self.superuser,)
-        BAD = (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
-               self.import_bot)
-        REDIRECTION='/admin/login/?next=/admin/'
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+               self.demux_op, self.demux_admin, self.import_bot)
+        REDIRECTION = '/admin/login/?next=/admin/'
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD, redirection=REDIRECTION)
 
@@ -134,29 +139,33 @@ class TestSequencingMachineViews(TestPermissionBase, SequencingMachineMixin):
 
     def test_list(self):
         URL = reverse('instrument_list')
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin, self.import_bot,
-                self.superuser)
-        BAD = (self.anonymous,)
+        GOOD = (self.inst_op, self.guest, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous, self.nogroup)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_create(self):
         URL = reverse('instrument_create')
         GOOD = (self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+               self.demux_op, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_view(self):
         URL = reverse('instrument_view', kwargs={'pk': self.machine.pk})
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+        GOOD = (self.inst_op, self.guest, self.demux_op, self.demux_admin,
                 self.import_bot, self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_update(self):
         URL = reverse('instrument_update', kwargs={'pk': self.machine.pk})
         GOOD = (self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+               self.demux_op, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -179,31 +188,33 @@ class TestBarcodeSetViews(TestPermissionBase, BarcodeSetMixin):
 
     def test_list(self):
         URL = reverse('barcodeset_list')
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+        GOOD = (self.inst_op, self.guest, self.demux_op, self.demux_admin,
                 self.import_bot, self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_create(self):
         URL = reverse('barcodeset_create')
         GOOD = (self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+               self.demux_op, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_view(self):
         URL = reverse('barcodeset_view', kwargs={'pk': self.barcode_set.pk})
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+        GOOD = (self.inst_op, self.guest, self.demux_op, self.demux_admin,
                 self.import_bot, self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_update(self):
         URL = reverse('barcodeset_update', kwargs={'pk': self.barcode_set.pk})
         GOOD = (self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+               self.demux_op, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -211,29 +222,32 @@ class TestBarcodeSetViews(TestPermissionBase, BarcodeSetMixin):
         URL = reverse('barcodeset_updateentries',
                       kwargs={'pk': self.barcode_set.pk})
         GOOD = (self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+               self.demux_op, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_export(self):
         URL = reverse('barcodeset_export', kwargs={'pk': self.barcode_set.pk})
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+        GOOD = (self.inst_op, self.guest, self.demux_op, self.demux_admin,
                 self.import_bot, self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_import(self):
         URL = reverse('barcodeset_import')
         GOOD = (self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+               self.demux_op, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_delete(self):
         URL = reverse('barcodeset_delete', kwargs={'pk': self.barcode_set.pk})
         GOOD = (self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
+               self.demux_op, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -264,26 +278,26 @@ class TestFlowCellViews(
 
     def test_list(self):
         URL = reverse('flowcell_list')
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+        GOOD = (self.inst_op, self.guest, self.demux_op, self.demux_admin,
                 self.import_bot, self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_create(self):
         URL = reverse('flowcell_create')
-        GOOD = (self.inst_op, self.demux_op, self.import_bot, self.demux_admin,
-                self.superuser)
-        BAD = (self.anonymous,)
+        GOOD = (self.inst_op, self.demux_op, self.import_bot,
+                self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.nogroup, self.guest)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_view(self):
         URL = reverse('flowcell_view',
                       kwargs={'pk': self.inst_op_flow_cell.pk})
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+        GOOD = (self.inst_op, self.guest, self.demux_op, self.demux_admin,
                 self.import_bot, self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -291,7 +305,7 @@ class TestFlowCellViews(
         URL = reverse('flowcell_update',
                       kwargs={'pk': self.inst_op_flow_cell.pk})
         GOOD = (self.inst_op, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -300,7 +314,7 @@ class TestFlowCellViews(
                       kwargs={'pk': self.import_bot_flow_cell.pk})
         GOOD = (self.import_bot, self.demux_op, self.demux_admin,
                 self.superuser)
-        BAD = (self.anonymous, self.inst_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -308,7 +322,7 @@ class TestFlowCellViews(
         URL = reverse('flowcell_updatelibraries',
                       kwargs={'pk': self.inst_op_flow_cell.pk})
         GOOD = (self.inst_op, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -317,16 +331,16 @@ class TestFlowCellViews(
                       kwargs={'pk': self.import_bot_flow_cell.pk})
         GOOD = (self.import_bot, self.demux_op, self.demux_admin,
                 self.superuser)
-        BAD = (self.anonymous, self.inst_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_export(self):
         URL = reverse('flowcell_export',
                       kwargs={'pk': self.inst_op_flow_cell.pk})
-        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+        GOOD = (self.inst_op, self.guest, self.demux_op, self.demux_admin,
                 self.import_bot, self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -334,7 +348,7 @@ class TestFlowCellViews(
         URL = reverse('flowcell_import')
         GOOD = (self.inst_op, self.demux_op, self.import_bot, self.demux_admin,
                 self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup, self.guest)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -342,7 +356,7 @@ class TestFlowCellViews(
         URL = reverse('flowcell_delete',
                       kwargs={'pk': self.inst_op_flow_cell.pk})
         GOOD = (self.inst_op, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.import_bot)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.import_bot)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -351,7 +365,7 @@ class TestFlowCellViews(
                       kwargs={'pk': self.import_bot_flow_cell.pk})
         GOOD = (self.import_bot, self.demux_op, self.demux_admin,
                 self.superuser)
-        BAD = (self.anonymous, self.inst_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.inst_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -385,7 +399,7 @@ class TestFlowCellMessageViews(
                       kwargs={'related_pk': self.flow_cell.pk})
         GOOD = (self.inst_op, self.demux_op, self.demux_admin,
                 self.import_bot, self.superuser)
-        BAD = (self.anonymous,)
+        BAD = (self.anonymous, self.nogroup, self.guest)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -393,7 +407,8 @@ class TestFlowCellMessageViews(
         URL = reverse('flowcell_update_message',
                       kwargs={'pk': self.msg_import_bot.pk})
         GOOD = (self.import_bot, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.demux_op, self.demux_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.demux_op,
+               self.demux_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -401,7 +416,8 @@ class TestFlowCellMessageViews(
         URL = reverse('flowcell_update_message',
                       kwargs={'pk': self.msg_inst_op.pk})
         GOOD = (self.inst_op, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.import_bot, self.demux_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.import_bot,
+               self.demux_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -409,23 +425,26 @@ class TestFlowCellMessageViews(
         URL = reverse('flowcell_update_message',
                       kwargs={'pk': self.msg_demux_op.pk})
         GOOD = (self.demux_op, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.import_bot, self.inst_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.import_bot,
+               self.inst_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_delete_message_import_bot_owned(self):
-        URL =reverse('flowcell_delete_message',
-                     kwargs={'pk': self.msg_import_bot.pk})
+        URL = reverse('flowcell_delete_message',
+                      kwargs={'pk': self.msg_import_bot.pk})
         GOOD = (self.import_bot, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.demux_op, self.demux_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.demux_op,
+               self.demux_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
     def test_delete_message_inst_op_owned(self):
-        URL =reverse('flowcell_delete_message',
-                     kwargs={'pk': self.msg_inst_op.pk})
+        URL = reverse('flowcell_delete_message',
+                      kwargs={'pk': self.msg_inst_op.pk})
         GOOD = (self.inst_op, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.import_bot, self.demux_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.import_bot,
+               self.demux_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 
@@ -433,7 +452,8 @@ class TestFlowCellMessageViews(
         URL = reverse('flowcell_delete_message',
                       kwargs={'pk': self.msg_demux_op.pk})
         GOOD = (self.demux_op, self.demux_admin, self.superuser)
-        BAD = (self.anonymous, self.import_bot, self.inst_op)
+        BAD = (self.anonymous, self.nogroup, self.guest, self.import_bot,
+               self.inst_op)
         self.assert_render_200_ok(URL, GOOD)
         self.assert_redirect_to_login(URL, BAD)
 

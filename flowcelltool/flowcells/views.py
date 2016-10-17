@@ -47,8 +47,10 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 class SequencingMachineListView(
-        LoginRequiredMixin, ListView):
+        LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Shows a list of sequencing machines"""
+
+    permission_required = 'flowcells.list_sequencingmachine'
 
     queryset = models.SequencingMachine.objects.order_by('vendor_id')
 
@@ -66,8 +68,10 @@ class SequencingMachineCreateView(
 
 
 class SequencingMachineDetailView(
-        LoginRequiredMixin, DetailView):
+        LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """View detail of sequencing machine"""
+
+    permission_required = 'flowcells.view_sequencingmachine'
 
     model = models.SequencingMachine
 
@@ -99,8 +103,10 @@ class SequencingMachineDeleteView(
 
 
 class BarcodeSetListView(
-        LoginRequiredMixin, ListView):
+        LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Shows a list of sequencing machines"""
+
+    permission_required = 'flowcells.list_barcodeset'
 
     queryset = models.BarcodeSet.objects.order_by('name')
 
@@ -118,8 +124,10 @@ class BarcodeSetCreateView(
 
 
 class BarcodeSetDetailView(
-        LoginRequiredMixin, DetailView):
+        LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """View detail of sequencing machine"""
+
+    permission_required = 'flowcells.view_barcodeset'
 
     model = models.BarcodeSet
 
@@ -149,8 +157,10 @@ class BarcodeSetDeleteView(
 
 
 class BarcodeSetExportView(
-        LoginRequiredMixin, View):
+        LoginRequiredMixin, PermissionRequiredMixin, View):
     """Exporting of BarcodeSet objects to JSON"""
+
+    permission_required = 'flowcells.view_barcodeset'
 
     def get(self, request, *args, **kwargs):
         barcode_set = get_object_or_404(
@@ -264,8 +274,10 @@ class BarcodeSetEntryUpdateView(
 
 
 class FlowCellListView(
-        LoginRequiredMixin, ListView):
+        LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Shows a list of flow cells, this is the index page"""
+
+    permission_required = 'flowcells.list_flowcell'
 
     queryset = models.FlowCell.objects.order_by('name')
 
@@ -292,8 +304,10 @@ class FlowCellCreateView(
 
 
 class FlowCellDetailView(
-        LoginRequiredMixin, DetailView):
+        LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """Show the view for creating a flow cell"""
+
+    permission_required = 'flowcells.view_flowcell'
 
     #: The model type to create
     model = models.FlowCell
@@ -340,8 +354,10 @@ class FlowCellDeleteView(
 
 
 class FlowCellExportView(
-        LoginRequiredMixin, View):
+        LoginRequiredMixin, PermissionRequiredMixin, View):
     """Exporting of FlowCell objects to JSON"""
+
+    permission_required = 'flowcells.view_flowcell'
 
     def get(self, request, *args, **kwargs):
         flow_cell = get_object_or_404(
@@ -381,8 +397,10 @@ class FlowCellImportView(
 
 
 class FlowCellSampleSheetView(
-        LoginRequiredMixin, DetailView):
+        LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """Display of flow cell as sample sheet"""
+
+    permission_required = 'flowcells.view_flowcell'
 
     #: The model type to create
     model = models.FlowCell
@@ -512,8 +530,10 @@ class LibraryUpdateView(
 # Search-Related Views --------------------------------------------------------
 
 
-class SearchView(LoginRequiredMixin, TemplateView):
+class SearchView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     """Shows a list of sequencing machines"""
+
+    permission_required = 'flowcells.search'
 
     template_name = 'flowcells/search.html'
 

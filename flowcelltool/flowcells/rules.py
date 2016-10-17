@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import rules
 
+GUEST = 'Guest'
 INSTRUMENT_OPERATOR = 'Instrument Operator'
 DEMUX_OPERATOR = 'Demultiplexing Operator'
 DEMUX_ADMIN = 'Demultiplexing Admin'
@@ -35,6 +36,8 @@ def is_message_author(user, message):
     else:
         return message.author == user
 
+#: Whether or not has the "guest" group
+is_guest = rules.is_group_member(GUEST)
 
 #: Whether or not has the "Instrument Operator" group
 is_instrument_operator = rules.is_group_member(INSTRUMENT_OPERATOR)
@@ -55,8 +58,16 @@ is_import_bot = rules.is_group_member(IMPORT_BOT)
 
 # Permissions -----------------------------------------------------------------
 
-# Allow everyone access to flow cells
+# Allow everyone access to flowcells app
 rules.add_perm('flowcells', rules.always_allow)
+
+# Viewing and listing sequencing machines requires at least the guest group
+rules.add_perm('flowcells.list_sequencingmachine',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot)
+rules.add_perm('flowcells.view_sequencingmachine',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot)
 
 # Adding and updating sequencing machines requires to be a demultiplexing
 # administrator as this can be very destructive
@@ -66,6 +77,14 @@ rules.add_perm('flowcells.change_sequencingmachine',
                is_demux_admin | rules.is_superuser)
 rules.add_perm('flowcells.delete_sequencingmachine',
                is_demux_admin | rules.is_superuser)
+
+# Viewing and listing barcode sets requires at least the guest group
+rules.add_perm('flowcells.list_barcodeset',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot)
+rules.add_perm('flowcells.view_barcodeset',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot)
 
 # Adding and updating barcode sets requires to be a demultiplexing
 # administrator as this can be very destructive
@@ -84,6 +103,14 @@ rules.add_perm('flowcells.change_barcodesetentry',
                is_demux_admin | rules.is_superuser)
 rules.add_perm('flowcells.delete_barcodesetentry',
                is_demux_admin | rules.is_superuser)
+
+# Viewing and listing flow cells requires at least the guest group
+rules.add_perm('flowcells.list_flowcell',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot)
+rules.add_perm('flowcells.view_flowcell',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot)
 
 # Adding flow cells can be done by everyone, updating is only possible to
 # owners, demux operators and upwards.
@@ -120,6 +147,11 @@ rules.add_perm(
     | is_import_bot | rules.is_superuser
 )
 
+# Viewing and listing messages requires at least the guest group
+rules.add_perm('flowcells.view_message',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot)
+
 # Attaching messages to flow cells and modifying messages
 rules.add_perm(
     'flowcells.add_message',
@@ -134,3 +166,9 @@ rules.add_perm(
     'flowcells.delete_message',
     is_message_author | is_demux_admin | rules.is_superuser
 )
+
+# Searching requires at least the guest role
+
+rules.add_perm('flowcells.search',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot)
