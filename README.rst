@@ -1,13 +1,12 @@
+=============
 Flowcell Tool
 =============
-
-Simple management of HTS Flowcells for demultiplexing
 
 .. image:: https://img.shields.io/travis/bihealth/flowcelltool.svg
         :target: https://travis-ci.org/bihealth/flowcelltool
 
 .. image:: https://readthedocs.org/projects/flowcelltool/badge/?version=latest
-        :target: https://vcfpy.readthedocs.io/en/flowcelltool/?badge=latest
+        :target: https://flowcelltool.readthedocs.io/en/flowcelltool/?badge=latest
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/bihealth/flowcelltool/shield.svg
@@ -20,85 +19,32 @@ Simple management of HTS Flowcells for demultiplexing
 
 .. image:: https://api.codacy.com/project/badge/Coverage/cfe741307ec34e8fb90dfe37e84a2519
         :alt: Codacy Coverage
-        :target: https://www.codacy.com/app/manuel-holtgrewe/vcfpy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bihealth/vcfpy&amp;utm_campaign=Badge_Coverage
+        :target: https://www.codacy.com/app/manuel-holtgrewe/flowcelltool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bihealth/flowcelltool&amp;utm_campaign=Badge_Coverage
 
 .. image:: https://landscape.io/github/bihealth/flowcelltool/master/landscape.svg?style=flat
         :alt: Landscape Health
         :target: https://landscape.io/github/bihealth/flowcelltool
 
-:License: MIT
+Simple management of HTS Flowcells for demultiplexing
 
-:Status: ALPHA
+- Free software: MIT license
+- Documentation: https://flowcelltool.readthedocs.io.
 
-
-Settings
+Features
 --------
 
-Moved to settings_.
+- Web-based GUI for your HTS flow cells
+- Web-based GUI for editing adapter barcode sets
+- Export to bcl2fastq v1 and v2 sample sheets
+- Easy to deploy on [Flynn.io](https://flynn.io/) an open source Heroku clone for hosting on in-house hardware
 
-.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
+Prequisites
+-----------
 
-Basic Commands
---------------
+- Python 3
+- PostgreSQL
 
-Setting Up Your Users
-^^^^^^^^^^^^^^^^^^^^^
+Installation
+------------
 
-* To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
-
-* To create an **superuser account**, use this command::
-
-    $ python manage.py createsuperuser
-
-For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
-
-Test coverage
-^^^^^^^^^^^^^
-
-To run the tests, check your test coverage, and generate an HTML coverage report::
-
-    $ coverage run manage.py test
-    $ coverage html
-    $ open htmlcov/index.html
-
-Running tests with py.test
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-::
-
-  $ py.test
-
-Live reloading and Sass CSS compilation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Moved to `Live reloading and SASS compilation`_.
-
-.. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
-
-
-
-
-
-Deployment
-----------
-
-The following details how to deploy this application.
-
-
-
-Fixing Postgreqsl Encoding/UTF Errors
--------------------------------------
-
-::
-
-    sudo su postgres
-
-    psql
-
-    update pg_database set datistemplate=false where datname='template1';
-    drop database Template1;
-    create database template1 with owner=postgres encoding='UTF-8'
-
-    lc_collate='en_US.utf8' lc_ctype='en_US.utf8' template template0;
-
-    update pg_database set datistemplate=true where datname='template1';
+- See [installation manual](http://flowcelltool.readthedocs.io/en/latest/)
