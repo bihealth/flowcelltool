@@ -4,13 +4,21 @@
 <div class="row">
   <h2>CUBI Flowcelltool</h2>
 
-  <h3>Status</h3>
-
-    <ul>
-      <li>{{ num_flow_cells }} Flowcells</li>
-      <li>{{ num_libraries }} Libraries</li>
-      <li>{{ num_barcode_sets }} Barcode sets</li>
-    </li>
+  {% if not user.groups %}
+  <div class="alert alert-warning" role="alert">
+    <strong>You don't have any groups!</strong>
+    Your authentication worked but you have not been granted any groups and
+    thus no permissions yet!  You will not be able to do or see anything.
   </div>
+  {% else %}
+    <h3>Status</h3>
+
+      <ul>
+        <li>{{ num_flow_cells }} Flowcells</li>
+        <li>{{ num_libraries }} Libraries</li>
+        <li>{{ num_barcode_sets }} Barcode sets</li>
+      </li>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}
