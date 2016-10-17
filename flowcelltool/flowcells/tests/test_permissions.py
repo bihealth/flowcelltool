@@ -18,6 +18,7 @@ from .test_models import SequencingMachineMixin, FlowCellMixin, \
 from .test_views import MessageMixin
 
 
+GUEST = 'Guest'
 INSTRUMENT_OPERATOR = 'Instrument Operator'
 DEMUX_OPERATOR = 'Demultiplexing Operator'
 DEMUX_ADMIN = 'Demultiplexing Admin'
@@ -62,18 +63,20 @@ class TestPermissionBase(TestCase):
                 self.assertEquals(response.status_code, 200,
                                   'user={}'.format(user))
 
-    def assert_redirect_to(self, url, redir_url, users):
+    def assert_redirect_to_login(self, url, users, redirection=None):
+        if redirection is None:
+            redirection = reverse('login') + '?next=' + url
         for user in users:
             if user:
                 with self.login(user):
                     response = self.client.get(url)
                     self.assertRedirects(
-                        response, redir_url,
+                        response, redirection,
                         msg_prefix='user={}'.format(user))
             else:
                 response = self.client.get(url)
                 self.assertRedirects(
-                    response, redir_url,
+                    response, redirection,
                     msg_prefix='user={}'.format(user))
 
 
@@ -83,43 +86,41 @@ class TestPermissionBase(TestCase):
 class TestBaseViews(TestPermissionBase):
 
     def test_home(self):
-        self.assert_render_200_ok(
-            reverse('home'),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('home'),
-            reverse('login') + '?next=/',
-            (self.anonymous,))
+        URL = reverse('home')
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        REDIR = reverse('login') + '?next=/'
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD, redirection=REDIR)
 
     def test_login(self):
-        self.assert_render_200_ok(
-            reverse('login'),
-            (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
+        URL = reverse('login')
+        GOOD = (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        self.assert_render_200_ok(URL, GOOD)
 
     def test_logout(self):
-        self.assert_redirect_to(
-            reverse('logout'),
-            reverse('login'),
-            (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
+        URL = reverse('login')
+        GOOD = (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        REDIRECTION = '/login/'
+        self.assert_render_200_ok(URL, GOOD)
 
     def test_about(self):
-        self.assert_render_200_ok(
-            reverse('about'),
-            (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
+        URL = reverse('about')
+        GOOD = (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        self.assert_render_200_ok(URL, GOOD)
 
     def test_admin(self):
-        self.assert_render_200_ok(
-            '/admin/',
-            (self.superuser,))
-        self.assert_redirect_to(
-            '/admin/',
-            '/admin/login/?next=/admin/',
-            (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot))
+        URL = '/admin/'
+        GOOD = (self.superuser,)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.demux_admin,
+               self.import_bot)
+        REDIRECTION='/admin/login/?next=/admin/'
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD, redirection=REDIRECTION)
 
 
 # SequencingMachine related ---------------------------------------------------
@@ -132,57 +133,39 @@ class TestSequencingMachineViews(TestPermissionBase, SequencingMachineMixin):
         self.machine = self._make_machine()
 
     def test_list(self):
-        self.assert_render_200_ok(
-            reverse('instrument_list'),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('instrument_list'),
-            reverse('login')  + '?next=' + reverse('instrument_list'),
-            (self.anonymous,))
+        URL = reverse('instrument_list')
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin, self.import_bot,
+                self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_create(self):
-        self.assert_render_200_ok(
-            reverse('instrument_create'),
-            (self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('instrument_create'),
-            reverse('login')  + '?next=' + reverse('instrument_create'),
-            (self.anonymous, self.inst_op, self.demux_op, self.import_bot))
+        URL = reverse('instrument_create')
+        GOOD = (self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
 
     def test_view(self):
-        self.assert_render_200_ok(
-            reverse('instrument_view',
-                    kwargs={'pk': self.machine.pk}),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('instrument_view', kwargs={'pk': self.machine.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'instrument_view', kwargs={'pk': self.machine.pk}),
-            (self.anonymous,))
+        URL = reverse('instrument_view', kwargs={'pk': self.machine.pk})
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_update(self):
-        self.assert_render_200_ok(
-            reverse('instrument_update',
-                    kwargs={'pk': self.machine.pk}),
-            (self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('instrument_update', kwargs={'pk': self.machine.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'instrument_update', kwargs={'pk': self.machine.pk}),
-            (self.anonymous, self.inst_op, self.demux_op, self.import_bot))
+        URL = reverse('instrument_update', kwargs={'pk': self.machine.pk})
+        GOOD = (self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_delete(self):
-        self.assert_render_200_ok(
-            reverse('instrument_delete',
-                    kwargs={'pk': self.machine.pk}),
-            (self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('instrument_delete', kwargs={'pk': self.machine.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'instrument_delete', kwargs={'pk': self.machine.pk}),
-            (self.anonymous, self.inst_op, self.demux_op, self.import_bot))
+        URL = reverse('instrument_delete', kwargs={'pk': self.machine.pk})
+        GOOD = (self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
 
 # BarcodeSet related ----------------------------------------------------------
@@ -195,93 +178,64 @@ class TestBarcodeSetViews(TestPermissionBase, BarcodeSetMixin):
         self.barcode_set = self._make_barcode_set()
 
     def test_list(self):
-        self.assert_render_200_ok(
-            reverse('barcodeset_list'),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('barcodeset_list'),
-            reverse('login')  + '?next=' + reverse('barcodeset_list'),
-            (self.anonymous,))
+        URL = reverse('barcodeset_list')
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_create(self):
-        self.assert_render_200_ok(
-            reverse('barcodeset_create'),
-            (self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('barcodeset_create'),
-            reverse('login')  + '?next=' + reverse('barcodeset_create'),
-            (self.anonymous, self.inst_op, self.demux_op, self.import_bot))
+        URL = reverse('barcodeset_create')
+        GOOD = (self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_view(self):
-        self.assert_render_200_ok(
-            reverse('barcodeset_view',
-                    kwargs={'pk': self.barcode_set.pk}),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('barcodeset_view', kwargs={'pk': self.barcode_set.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'barcodeset_view', kwargs={'pk': self.barcode_set.pk}),
-            (self.anonymous,))
+        URL = reverse('barcodeset_view', kwargs={'pk': self.barcode_set.pk})
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_update(self):
-        self.assert_render_200_ok(
-            reverse('barcodeset_update',
-                    kwargs={'pk': self.barcode_set.pk}),
-            (self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('barcodeset_update', kwargs={'pk': self.barcode_set.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'barcodeset_update', kwargs={'pk': self.barcode_set.pk}),
-            (self.anonymous, self.inst_op, self.demux_op, self.import_bot))
+        URL = reverse('barcodeset_update', kwargs={'pk': self.barcode_set.pk})
+        GOOD = (self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_updateentries(self):
-        self.assert_render_200_ok(
-            reverse('barcodeset_updateentries',
-                    kwargs={'pk': self.barcode_set.pk}),
-            (self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('barcodeset_updateentries',
-                    kwargs={'pk': self.barcode_set.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'barcodeset_updateentries',
-                kwargs={'pk': self.barcode_set.pk}),
-            (self.anonymous, self.inst_op, self.demux_op, self.import_bot))
+        URL = reverse('barcodeset_updateentries',
+                      kwargs={'pk': self.barcode_set.pk})
+        GOOD = (self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_export(self):
-        self.assert_render_200_ok(
-            reverse('barcodeset_export',
-                    kwargs={'pk': self.barcode_set.pk}),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('barcodeset_export',
-                    kwargs={'pk': self.barcode_set.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'barcodeset_export',
-                kwargs={'pk': self.barcode_set.pk}),
-            (self.anonymous,))
+        URL = reverse('barcodeset_export', kwargs={'pk': self.barcode_set.pk})
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_import(self):
-        self.assert_render_200_ok(
-            reverse('barcodeset_import'),
-            (self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('barcodeset_import'),
-            reverse('login')  + '?next=' + reverse('barcodeset_import'),
-            (self.anonymous, self.inst_op, self.demux_op, self.import_bot))
+        URL = reverse('barcodeset_import')
+        GOOD = (self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_delete(self):
-        self.assert_render_200_ok(
-            reverse('barcodeset_delete',
-                    kwargs={'pk': self.barcode_set.pk}),
-            (self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('barcodeset_delete', kwargs={'pk': self.barcode_set.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'barcodeset_delete', kwargs={'pk': self.barcode_set.pk}),
-            (self.anonymous, self.inst_op, self.demux_op, self.import_bot))
+        URL = reverse('barcodeset_delete', kwargs={'pk': self.barcode_set.pk})
+        GOOD = (self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.inst_op, self.demux_op, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
 
 # FlowCell related ------------------------------------------------------------
@@ -309,136 +263,97 @@ class TestFlowCellViews(
             True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_list(self):
-        self.assert_render_200_ok(
-            reverse('flowcell_list'),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_list'),
-            reverse('login')  + '?next=' + reverse('flowcell_list'),
-            (self.anonymous,))
+        URL = reverse('flowcell_list')
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_create(self):
-        self.assert_render_200_ok(
-            reverse('flowcell_create'),
-            (self.inst_op, self.demux_op, self.import_bot, self.demux_admin,
-             self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_create'),
-            reverse('login')  + '?next=' + reverse('flowcell_create'),
-            (self.anonymous,))
+        URL = reverse('flowcell_create')
+        GOOD = (self.inst_op, self.demux_op, self.import_bot, self.demux_admin,
+                self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_view(self):
-        self.assert_render_200_ok(
-            reverse('flowcell_view',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_view', kwargs={'pk': self.inst_op_flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_view', kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.anonymous,))
+        URL = reverse('flowcell_view',
+                      kwargs={'pk': self.inst_op_flow_cell.pk})
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
-    def test_update(self):
-        # Flow cell owned by instrument operator
-        self.assert_render_200_ok(
-            reverse('flowcell_update',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.inst_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_update',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_update', kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.anonymous, self.import_bot))
-        # Flow cell owned by import bot
-        self.assert_render_200_ok(
-            reverse('flowcell_update',
-                    kwargs={'pk': self.import_bot_flow_cell.pk}),
-            (self.import_bot, self.demux_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_update',
-                    kwargs={'pk': self.import_bot_flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_update',
-                kwargs={'pk': self.import_bot_flow_cell.pk}),
-            (self.anonymous, self.inst_op))
+    def test_update_inst_op_owned(self):
+        URL = reverse('flowcell_update',
+                      kwargs={'pk': self.inst_op_flow_cell.pk})
+        GOOD = (self.inst_op, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
-    def test_updateentries(self):
-        # Flow cell owned by instrument operator
-        self.assert_render_200_ok(
-            reverse('flowcell_updatelibraries',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.inst_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_updatelibraries',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_updatelibraries',
-                kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.anonymous, self.import_bot))
-        # Flow cell owned by import bot
-        self.assert_render_200_ok(
-            reverse('flowcell_updatelibraries',
-                    kwargs={'pk': self.import_bot_flow_cell.pk}),
-            (self.import_bot, self.demux_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_updatelibraries',
-                    kwargs={'pk': self.import_bot_flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_updatelibraries',
-                kwargs={'pk': self.import_bot_flow_cell.pk}),
-            (self.anonymous, self.inst_op))
+    def test_update_import_bot_owned(self):
+        URL = reverse('flowcell_update',
+                      kwargs={'pk': self.import_bot_flow_cell.pk})
+        GOOD = (self.import_bot, self.demux_op, self.demux_admin,
+                self.superuser)
+        BAD = (self.anonymous, self.inst_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
+
+    def test_updateentries_inst_op_owned(self):
+        URL = reverse('flowcell_updatelibraries',
+                      kwargs={'pk': self.inst_op_flow_cell.pk})
+        GOOD = (self.inst_op, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
+
+    def test_updateentries_import_bot_owned(self):
+        URL = reverse('flowcell_updatelibraries',
+                      kwargs={'pk': self.import_bot_flow_cell.pk})
+        GOOD = (self.import_bot, self.demux_op, self.demux_admin,
+                self.superuser)
+        BAD = (self.anonymous, self.inst_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_export(self):
-        self.assert_render_200_ok(
-            reverse('flowcell_export',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_export',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_export', kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.anonymous,))
+        URL = reverse('flowcell_export',
+                      kwargs={'pk': self.inst_op_flow_cell.pk})
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
     def test_import(self):
-        self.assert_render_200_ok(
-            reverse('flowcell_import'),
-            (self.inst_op, self.demux_op, self.import_bot, self.demux_admin,
-             self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_import'),
-            reverse('login')  + '?next=' + reverse('flowcell_import'),
-            (self.anonymous,))
+        URL = reverse('flowcell_import')
+        GOOD = (self.inst_op, self.demux_op, self.import_bot, self.demux_admin,
+                self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
-    def test_delete(self):
-        # Flow cell owned by instrument operator
-        self.assert_render_200_ok(
-            reverse('flowcell_delete',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.inst_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_delete',
-                    kwargs={'pk': self.inst_op_flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_delete',
-                kwargs={'pk': self.inst_op_flow_cell.pk}),
-            (self.anonymous, self.import_bot))
-        # Flow cell owned by import bot
-        self.assert_render_200_ok(
-            reverse('flowcell_delete',
-                    kwargs={'pk': self.import_bot_flow_cell.pk}),
-            (self.import_bot, self.demux_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_delete',
-                    kwargs={'pk': self.import_bot_flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_delete',
-                kwargs={'pk': self.import_bot_flow_cell.pk}),
-            (self.anonymous, self.inst_op))
+    def test_delete_inst_op_owned(self):
+        URL = reverse('flowcell_delete',
+                      kwargs={'pk': self.inst_op_flow_cell.pk})
+        GOOD = (self.inst_op, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.import_bot)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
+
+    def test_delete_import_op_owned(self):
+        URL = reverse('flowcell_delete',
+                      kwargs={'pk': self.import_bot_flow_cell.pk})
+        GOOD = (self.import_bot, self.demux_op, self.demux_admin,
+                self.superuser)
+        BAD = (self.anonymous, self.inst_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
 
 # Message related -------------------------------------------------------------
@@ -466,94 +381,61 @@ class TestFlowCellMessageViews(
             self.demux_op, self.flow_cell, 'Title', 'Body')
 
     def test_add_message(self):
-        self.assert_render_200_ok(
-            reverse('flowcell_add_message',
-                    kwargs={'related_pk': self.flow_cell.pk}),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_add_message',
-                    kwargs={'related_pk': self.flow_cell.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_add_message',
-                kwargs={'related_pk': self.flow_cell.pk}),
-            (self.anonymous,))
+        URL = reverse('flowcell_add_message',
+                      kwargs={'related_pk': self.flow_cell.pk})
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
-    def test_change_message(self):
-        # Message owned by import bot
-        self.assert_render_200_ok(
-            reverse('flowcell_update_message',
-                    kwargs={'pk': self.msg_import_bot.pk}),
-            (self.import_bot, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_update_message',
-                    kwargs={'pk': self.msg_import_bot.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_update_message',
-                kwargs={'pk': self.msg_import_bot.pk}),
-            (self.anonymous, self.demux_op, self.demux_op))
-        # Message owned by instrument operator
-        self.assert_render_200_ok(
-            reverse('flowcell_update_message',
-                    kwargs={'pk': self.msg_inst_op.pk}),
-            (self.inst_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_update_message',
-                    kwargs={'pk': self.msg_inst_op.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_update_message',
-                kwargs={'pk': self.msg_inst_op.pk}),
-            (self.anonymous, self.import_bot, self.demux_op))
-        # Message owned by demux operator
-        self.assert_render_200_ok(
-            reverse('flowcell_update_message',
-                    kwargs={'pk': self.msg_demux_op.pk}),
-            (self.demux_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_update_message',
-                    kwargs={'pk': self.msg_demux_op.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_update_message',
-                kwargs={'pk': self.msg_demux_op.pk}),
-            (self.anonymous, self.import_bot, self.inst_op))
+    def test_change_message_import_bot_owned(self):
+        URL = reverse('flowcell_update_message',
+                      kwargs={'pk': self.msg_import_bot.pk})
+        GOOD = (self.import_bot, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.demux_op, self.demux_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
-    def test_delete_message(self):
-        # Message owned by import bot
-        self.assert_render_200_ok(
-            reverse('flowcell_delete_message',
-                    kwargs={'pk': self.msg_import_bot.pk}),
-            (self.import_bot, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_delete_message',
-                    kwargs={'pk': self.msg_import_bot.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_delete_message',
-                kwargs={'pk': self.msg_import_bot.pk}),
-            (self.anonymous, self.demux_op, self.demux_op))
-        # Message owned by instrument operator
-        self.assert_render_200_ok(
-            reverse('flowcell_delete_message',
-                    kwargs={'pk': self.msg_inst_op.pk}),
-            (self.inst_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_delete_message',
-                    kwargs={'pk': self.msg_inst_op.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_delete_message',
-                kwargs={'pk': self.msg_inst_op.pk}),
-            (self.anonymous, self.import_bot, self.demux_op))
-        # Message owned by demux operator
-        self.assert_render_200_ok(
-            reverse('flowcell_delete_message',
-                    kwargs={'pk': self.msg_demux_op.pk}),
-            (self.demux_op, self.demux_admin, self.superuser))
-        self.assert_redirect_to(
-            reverse('flowcell_delete_message',
-                    kwargs={'pk': self.msg_demux_op.pk}),
-            reverse('login')  + '?next=' + reverse(
-                'flowcell_delete_message',
-                kwargs={'pk': self.msg_demux_op.pk}),
-            (self.anonymous, self.import_bot, self.inst_op))
+    def test_change_message_inst_op_owned(self):
+        URL = reverse('flowcell_update_message',
+                      kwargs={'pk': self.msg_inst_op.pk})
+        GOOD = (self.inst_op, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.import_bot, self.demux_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
+
+    def test_change_message_demux_owned(self):
+        URL = reverse('flowcell_update_message',
+                      kwargs={'pk': self.msg_demux_op.pk})
+        GOOD = (self.demux_op, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.import_bot, self.inst_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
+
+    def test_delete_message_import_bot_owned(self):
+        URL =reverse('flowcell_delete_message',
+                     kwargs={'pk': self.msg_import_bot.pk})
+        GOOD = (self.import_bot, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.demux_op, self.demux_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
+
+    def test_delete_message_inst_op_owned(self):
+        URL =reverse('flowcell_delete_message',
+                     kwargs={'pk': self.msg_inst_op.pk})
+        GOOD = (self.inst_op, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.import_bot, self.demux_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
+
+    def test_delete_message_demux_owned(self):
+        URL = reverse('flowcell_delete_message',
+                      kwargs={'pk': self.msg_demux_op.pk})
+        GOOD = (self.demux_op, self.demux_admin, self.superuser)
+        BAD = (self.anonymous, self.import_bot, self.inst_op)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
 
 
 # Search ----------------------------------------------------------------------
@@ -562,11 +444,9 @@ class TestFlowCellMessageViews(
 class TestSearchView(TestPermissionBase):
 
     def test_search(self):
-        self.assert_render_200_ok(
-            reverse('search'),
-            (self.inst_op, self.demux_op, self.demux_admin,
-             self.import_bot, self.superuser))
-        self.assert_redirect_to(
-            reverse('search'),
-            reverse('login') + '?next=' + reverse('search'),
-            (self.anonymous,))
+        URL = reverse('search')
+        GOOD = (self.inst_op, self.demux_op, self.demux_admin,
+                self.import_bot, self.superuser)
+        BAD = (self.anonymous,)
+        self.assert_render_200_ok(URL, GOOD)
+        self.assert_redirect_to_login(URL, BAD)
