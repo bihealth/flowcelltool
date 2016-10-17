@@ -4,6 +4,7 @@
 
 ## Mid-term
 
+- Proper testing of REST API feature
 - Fancy lane range input
 - improvements to messages module
     - allow attachment download

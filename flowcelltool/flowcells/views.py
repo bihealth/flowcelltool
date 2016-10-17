@@ -423,7 +423,7 @@ class FlowCellSampleSheetView(
 class FlowCellAddMessageView(
         LoginRequiredMixin, PermissionRequiredMixin, MessageCreateView):
 
-    permission_required = 'flowcells.add_message'
+    permission_required = 'threads.add_message'
 
     #: The type of the related object on which to "thread" the messages
     related_model = models.FlowCell
@@ -432,13 +432,13 @@ class FlowCellAddMessageView(
 class FlowCellUpdateMessageView(
         LoginRequiredMixin, PermissionRequiredMixin, MessageUpdateView):
 
-    permission_required = 'flowcells.change_message'
+    permission_required = 'threads.change_message'
 
 
 class FlowCellDeleteMessageView(
         LoginRequiredMixin, PermissionRequiredMixin, MessageDeleteView):
 
-    permission_required = 'flowcells.delete_message'
+    permission_required = 'threads.delete_message'
 
 
 # Library Views ---------------------------------------------------------------

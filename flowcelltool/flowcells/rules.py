@@ -107,10 +107,10 @@ rules.add_perm('flowcells.delete_barcodesetentry',
 # Viewing and listing flow cells requires at least the guest group
 rules.add_perm('flowcells.list_flowcell',
                is_guest | is_instrument_operator | is_demux_operator
-               | is_demux_admin | is_import_bot)
+               | is_demux_admin | is_import_bot | rules.is_superuser)
 rules.add_perm('flowcells.view_flowcell',
                is_guest | is_instrument_operator | is_demux_operator
-               | is_demux_admin | is_import_bot)
+               | is_demux_admin | is_import_bot | rules.is_superuser)
 
 # Adding flow cells can be done by everyone, updating is only possible to
 # owners, demux operators and upwards.
@@ -130,7 +130,15 @@ rules.add_perm(
     | rules.is_superuser
 )
 
+
 # Similar, for library on flowcell
+rules.add_perm('flowcells.list_library',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot | rules.is_superuser)
+rules.add_perm('flowcells.view_library',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot | rules.is_superuser)
+
 rules.add_perm(
     'flowcells.add_library',
     is_librarys_flow_cell_owner | is_demux_operator | is_demux_admin
@@ -148,9 +156,12 @@ rules.add_perm(
 )
 
 # Viewing and listing messages requires at least the guest group
+rules.add_perm('flowcells.list_message',
+               is_guest | is_instrument_operator | is_demux_operator
+               | is_demux_admin | is_import_bot | rules.is_superuser)
 rules.add_perm('flowcells.view_message',
                is_guest | is_instrument_operator | is_demux_operator
-               | is_demux_admin | is_import_bot)
+               | is_demux_admin | is_import_bot | rules.is_superuser)
 
 # Attaching messages to flow cells and modifying messages
 rules.add_perm(
@@ -171,4 +182,4 @@ rules.add_perm(
 
 rules.add_perm('flowcells.search',
                is_guest | is_instrument_operator | is_demux_operator
-               | is_demux_admin | is_import_bot)
+               | is_demux_admin | is_import_bot | rules.is_superuser)
