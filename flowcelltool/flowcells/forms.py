@@ -21,7 +21,7 @@ class AdvancedModelChoiceIterator(ModelChoiceIterator):
             yield ("", self.field.empty_label, None)
         queryset = self.queryset.all()
         # Can't use iterator() when queryset uses prefetch_related()
-        if not queryset._prefetch_related_lookups:
+        if not queryset._prefetch_related_lookups:  # noqa
             queryset = queryset.iterator()
         for obj in queryset:
             yield self.choice(obj)
@@ -189,10 +189,6 @@ class BarcodeSelect(forms.Select):
                       option_model):
         if option_value is None:
             option_value = ''
-        if option_value:
-            set_id = option_model.barcode_set_id
-        else:
-            set_id = ''
         option_value = force_text(option_value)
         if option_value in selected_choices:
             selected_html = mark_safe(' selected="selected"')
@@ -202,7 +198,7 @@ class BarcodeSelect(forms.Select):
         else:
             selected_html = ''
         return format_html('<option data-set-id="{}" value="{}"{}>{}</option>',
-                           '',#set_id,
+                           '',
                            option_value,
                            selected_html,
                            force_text(option_label))

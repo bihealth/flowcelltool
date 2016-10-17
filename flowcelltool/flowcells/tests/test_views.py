@@ -734,13 +734,18 @@ class TestFlowCellSetExportView(
         self.assertEqual(response.content.decode('utf-8'), EXPECTED)
 
 
-class TestBarcodeSetImportView(
+class TestFlowCellImportView(
         SuperUserTestCase, SequencingMachineMixin,
         BarcodeSetEntryMixin, BarcodeSetMixin):
 
     def setUp(self):
         self.user = self.make_user()
         self.client = Client()
+        self.machine = self._make_machine()
+        self.barcode_set = self._make_barcode_set()
+        self.barcode = self._make_barcode_set_entry(self.barcode_set)
+        self.barcode2 = self._make_barcode_set_entry(
+            self.barcode_set, 'AR02', 'CGATATA')
 
     def test_render(self):
         # Prepare payload to post
@@ -1370,7 +1375,8 @@ class TestMessageCreateView(
 
 class MessageMixin:
 
-    def _make_message(self, user, flow_cell, title, body):
+    @classmethod
+    def _make_message(cls, user, flow_cell, title, body):
         msg = threads_models.Message.objects.create(
             author=user,
             content_type=ContentType.objects.get_for_model(flow_cell),

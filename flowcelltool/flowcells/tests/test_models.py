@@ -13,7 +13,8 @@ from .. import models
 class SequencingMachineMixin:
     """Helper mixin class to provide _make_machine"""
 
-    def _make_machine(self):
+    @classmethod
+    def _make_machine(cls):
         """Return SequencingMachine instance for testing"""
         values = {
             'vendor_id': 'NS5001234',
@@ -62,7 +63,8 @@ class TestSequencingMachine(TestCase, SequencingMachineMixin):
 class BarcodeSetMixin:
     """Mixin for for _make_barcode_set()"""
 
-    def _make_barcode_set(self):
+    @classmethod
+    def _make_barcode_set(cls):
         values = {
             'name': 'Agilent SureSelect XT Test',
             'short_name': 'SureSelectTest',
@@ -101,8 +103,9 @@ class TestBarcodeSet(TestCase, BarcodeSetMixin):
 class BarcodeSetEntryMixin:
     """Mixin for for _make_barcode_set()"""
 
+    @classmethod
     def _make_barcode_set_entry(
-            self, barcode_set, name='AR01', sequence='ACGTGTTA'):
+            cls, barcode_set, name='AR01', sequence='ACGTGTTA'):
         values = {
             'name': name,
             'sequence': sequence,
@@ -151,8 +154,9 @@ class TestBarcodeSetEntry(TestCase, BarcodeSetEntryMixin, BarcodeSetMixin):
 class FlowCellMixin:
     """Helper mixin that provides _make_flow_cell()"""
 
+    @classmethod
     def _make_flow_cell(
-            self, owner, name, num_lanes, status, operator, is_paired,
+            cls, owner, name, num_lanes, status, operator, is_paired,
             index_read_count, rta_version, read_length, description):
         values = {
             'owner': owner,
@@ -233,8 +237,9 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
 class LibraryMixin:
     """Helper mixin that provides _make_library()"""
 
+    @classmethod
     def _make_library(
-            self, flow_cell, name, reference, barcode_set, barcode,
+            cls, flow_cell, name, reference, barcode_set, barcode,
             lane_numbers, barcode_set2=None, barcode2=None):
         values = {
             'flow_cell': flow_cell,

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """DRF views"""
 
+from django.http import Http404
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
-import rules
 
 from ..flowcells import models
 from ..users.models import User
@@ -73,15 +73,14 @@ class RulesBackedPermissions(permissions.BasePermission):
         )
 
         model_cls = queryset.model
-        user = request.user
-
         perms = self.get_required_permissions(action, model_cls)
+
         if not all(request.user.has_perm(perm, obj) for perm in perms):
             # If the user does not have permissions we need to determine if
             # they have read permissions to see 403, or not, and simply see
             # a 404 response.
 
-            if request.method in SAFE_METHODS:
+            if request.method in permissions.SAFE_METHODS:
                 # Read permissions already checked and failed, no need
                 # to make another lookup.
                 raise Http404

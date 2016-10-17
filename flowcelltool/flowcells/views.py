@@ -388,7 +388,8 @@ class FlowCellImportView(
         payload = self.request.FILES['json_file'].read().decode('utf-8')
         loader = import_export.FlowCellLoader()
         try:
-            loader.run(payload)
+            flow_cell = loader.run(payload)
+            return redirect(flow_cell.get_absolute_url())
         except IntegrityError:
             form.add_error(
                 'json_file',
