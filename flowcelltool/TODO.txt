@@ -1,13 +1,13 @@
 ## ASAP
 
 - Deployment on Flynn.io
+- Rename Message.content_object to Message.thread_object
 
 ## Mid-term
 
 - Fancy lane range input
-- add REST interface
 - improvements to messages module
-    - handle permissions in a better way
+    - allow attachment download
     - secure attachments
 
 ## long-term

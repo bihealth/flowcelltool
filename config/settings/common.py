@@ -43,6 +43,8 @@ THIRD_PARTY_APPS = (
     'markdown_deux',  # Markdown support
     'rules.apps.AutodiscoverRulesConfig',  # django rules engine
     'db_file_storage',  # storing files in database
+    'rest_framework',     # Django REST Framework (DRF)
+    'generic_relations',  # generic relations for DRF
 )
 
 # Apps specific for this project go here.
@@ -288,3 +290,13 @@ if env.str('AUTH_LDAP_SERVER_URI', None):
         'last_name': 'sn',
         'email': 'mail',
     }
+
+
+# Django REST Framework Configuration
+# ------------------------------------------------------------------------------
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # TODO: use rules engine
+    ]
+}

@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
 from flowcelltool.flowcells.views import HomeView
+from flowcelltool.rest_api import urls as rest_api_urls
 
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
@@ -27,6 +28,12 @@ urlpatterns = [
 
     # Messages with attachments
     url(r'^threads/', include('flowcelltool.threads.urls', namespace='threads')),
+
+    # Django REST framework auth hook-in
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    # Flowcells API
+    url(r'^api/', include(rest_api_urls.ROUTER.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
