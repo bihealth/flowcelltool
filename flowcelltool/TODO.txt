@@ -1,10 +1,8 @@
-## ASAP
-
-- Deployment on Flynn.io
-
 ## Mid-term
 
 - Proper testing of REST API feature
+- Improve copy-and-paste process of flow cell import
+- Order entries in list displays
 - Fancy lane range input
 - improvements to messages module
     - allow attachment download
