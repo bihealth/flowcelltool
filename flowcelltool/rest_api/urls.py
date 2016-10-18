@@ -8,7 +8,7 @@ from . import views
 
 
 #: The DRF Router object to use
-ROUTER = routers.DefaultRouter()
+ROUTER = routers.DefaultRouter(schema_title='Flowcelltool API')
 
 # Views for "flowcells" app ---------------------------------------------------
 

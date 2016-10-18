@@ -58,7 +58,7 @@ class RulesBackedPermissions(permissions.BasePermission):
             request.user and
             (permissions.is_authenticated(request.user) or
             not self.authenticated_users_only) and
-            all(request.user.has_perm(perm, request.user) for perm in perms))
+            all(request.user.has_perm(perm) for perm in perms))
 
     def has_object_permission(self, request, view, obj):
         action = view.action or 'retrieve'
