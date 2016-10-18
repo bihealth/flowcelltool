@@ -1,0 +1,33 @@
+{% extends "flowcells/flowcell_extractlibraries.html" %}
+
+{% block table_preview %}
+<div class="row">
+  <h2>Data Preview</h2>
+
+  <p>
+    Below, you can see a preview of the uploaded data with row and column
+    numbers.
+  <p>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <td>&nbsp;</td>
+        {% for _ in table_cols %}
+        <th>{{ forloop.counter }}</td>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in table_rows %}
+        <tr>
+          <th>{{ forloop.counter }}</td>
+          {% for field in row %}
+            <td>{{ field|default:"&nbsp;" }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -2,6 +2,8 @@
 
 - Proper testing of REST API feature
 - Improve copy-and-paste process of flow cell import
+    - test properly
+    - better user feedback during validation
 - Order entries in list displays
 - Fancy lane range input
 - improvements to messages module

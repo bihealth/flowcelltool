@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}Extract Flow Cell Libraries{% endblock %}
+
+{% block content %}
+<div class="row">
+  <h2>Extract Flow Cell Libraries</h2>
+
+  <form method="post">
+    {{ wizard.management_form }}
+    {% crispy form helper %}
+
+    {% include "flowcells/_flowcell_extractlibraries_buttons.html" %}
+  </form>
+</div>
+
+{% block table_preview %}
+  {# Placeholder #}
+{% endblock %}
+
+{% endblock content %}

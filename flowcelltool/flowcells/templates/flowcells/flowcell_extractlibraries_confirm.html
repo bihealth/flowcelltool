@@ -1,0 +1,46 @@
+{% extends "flowcells/flowcell_extractlibraries.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="row">
+  <h2>Extract Flow Cell Libraries</h2>
+
+  <p>
+    Below, you can see the proposed libraries that are to be imported for
+    the flow cell {{ object.token_vendor_id }}.  Confirm and finish the import.
+  </p>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Sample Name</th>
+        <th>Reference</th>
+        <th>Barcode Set</th>
+        <th>Barcode</th>
+        <th>Barcode Set 2</th>
+        <th>Barcode 2</th>
+        <th>Lanes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for library in libraries %}
+        <tr>
+          <td>{{ library.name }}</td>
+          <td>{{ library.reference }}</td>
+          <td>{{ library.barcode_set|default:"-" }}</td>
+          <td>{{ library.barcode|default:"-" }}</td>
+          <td>{{ library.barcode_set2|default:"-" }}</td>
+          <td>{{ library.barcode2|default:"-" }}</td>
+          <td>{{ library.lane_numbers|join:"," }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <form method="post">
+    {{ wizard.management_form }}
+    {% crispy form helper %}
+    {% include "flowcells/_flowcell_extractlibraries_buttons.html" %}
+  </form>
+</div>
+{% endblock %}

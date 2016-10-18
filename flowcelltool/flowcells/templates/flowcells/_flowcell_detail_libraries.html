@@ -35,7 +35,7 @@
         {% endif %}
       </td>
       <td>{{ lib.barcode.sequence }}</td>
-      <td>{{ lib.lane_numbers }}</td>
+      <td>{{ lib.lane_numbers|join:"," }}</td>
     </tr>
     {% endfor %}
   </tbody>

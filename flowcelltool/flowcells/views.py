@@ -1,6 +1,8 @@
 import logging
+
 import re
 
+from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
@@ -17,6 +19,7 @@ from django.db import IntegrityError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from rules.contrib.views import PermissionRequiredMixin
+from formtools.wizard.views import SessionWizardView
 
 from . import models, forms, import_export
 from ..threads.views import MessageCreateView, MessageUpdateView, \
@@ -526,6 +529,142 @@ class LibraryUpdateView(
         context['helper'].template = \
             'bootstrap4/table_inline_formset.html'
         return context
+
+
+class FlowCellExtractLibrariesView(
+        LoginRequiredMixin, PermissionRequiredMixin, SessionWizardView):
+    """Display of flow cell as sample sheet"""
+
+    permission_required = 'flowcells.change_flowcell'
+
+    FORMS = (
+        ('paste_tsv', forms.PasteTSVForm),
+        ('pick_columns', forms.PickColumnsForm),
+        ('confirm', forms.ConfirmExtractionForm),
+    )
+
+    TEMPLATES = {
+        'paste_tsv': 'flowcells/flowcell_extractlibraries.html',
+        'pick_columns': 'flowcells/flowcell_extractlibraries_pick.html',
+        'confirm': 'flowcells/flowcell_extractlibraries_confirm.html',
+    }
+
+    #: Initial values for the forms in the individual steps
+    initial_dict = {
+        'pick_columns': {
+            'reference': models.REFERENCE_HUMAN,
+            'sample_column': 1,
+            'barcode_column': 2,
+            'first_row': 1,
+            'lane_numbers_column': 3,
+        }
+    }
+
+    def get_template_names(self):
+        """Return name of current template"""
+        return self.TEMPLATES[self.steps.current]
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['object'] = get_object_or_404(
+            models.FlowCell, pk=self.kwargs['pk'])
+        context['helper'] = FormHelper()
+        context['helper'].form_tag = False
+        context['helper'].template_pack = 'bootstrap4'
+        if self.steps.current == 'pick_columns':
+            table_rows, table_ncols = self._extract_payload(
+                self.get_cleaned_data_for_step('paste_tsv')['payload'])
+            context['table_rows'] = table_rows
+            context['table_cols'] = table_ncols
+        elif self.steps.current == 'confirm':
+            context['libraries'] = self._build_libraries()
+        return context
+
+    def done(self, *args, **kwargs):
+        flow_cell = get_object_or_404(models.FlowCell, pk=self.kwargs['pk'])
+        with transaction.atomic():
+            for library in self._build_libraries():
+                library.save()
+            return redirect(reverse(
+                'flowcell_view', kwargs={'pk': flow_cell.pk}))
+
+    def _build_libraries(self):
+        """Build library objects from result of paste_tsv and pick_columns
+        steps
+        """
+        flow_cell = get_object_or_404(models.FlowCell, pk=self.kwargs['pk'])
+        table_rows, _ = self._extract_payload(
+            self.get_cleaned_data_for_step('paste_tsv')['payload'])
+        pick_results = self.get_cleaned_data_for_step('pick_columns')
+        result = []
+        for row in table_rows[pick_results['first_row'] - 1:]:
+            barcode = self._select_barcode(
+                row, pick_results['barcode_set'],
+                pick_results['barcode_column'])
+            barcode2 = self._select_barcode(
+                row, pick_results['barcode_set2'],
+                pick_results['barcode2_column'])
+            lane_numbers = self._get_lane_numbers(
+                row, pick_results['lane_numbers_column'])
+            library = models.Library(
+                flow_cell=flow_cell,
+                name=row[pick_results['sample_column'] - 1],
+                reference=pick_results['reference'],
+                barcode_set=pick_results['barcode_set'],
+                barcode=barcode,
+                barcode_set2=pick_results['barcode_set2'],
+                barcode2=barcode2,
+                lane_numbers=lane_numbers)
+            result.append(library)
+        return result
+
+    def _get_lane_numbers(self, row, lane_numbers_column):
+        """Return list of integer lane numbers
+        """
+        return list(map(int, row[lane_numbers_column - 1].split(',')))
+
+    def _select_barcode(self, row, barcode_set, barcode_column):
+        """Select barcode from barcode_set with "best" match
+
+        The heuristic used for a "best" match is as follows:
+
+        - suffix has to be a suffix of the barcode name
+        - count the number of preceding digits [1-9] before the suffix
+        - the first one with fewest number of digits [1-9] wins
+
+        Effectively this breaks the tie of "1" against "01" and "11" in
+        favour of "01", against "1" and "11" in favour of "1" and so on.
+        """
+        if not barcode_column:
+            return None
+        else:
+            suffix = row[barcode_column - 1]
+        candidates = []
+        for entry in barcode_set.entries.all():
+            if not entry.name.endswith(suffix):
+                continue  # ignore
+            m = re.match(r'([1-9]+)$', entry.name[:-(len(suffix))])
+            l = 0 if not m else len(m.groups(1))
+            candidates.append((l, entry))
+        if not candidates:
+            return None
+        else:
+            return list(sorted(candidates, key=lambda x: x[0]))[0][1]
+
+    @classmethod
+    def _extract_payload(self, payload):
+        """Convert payload TSV to array of arrays with same dimension"""
+        table = []
+        rows = payload.replace('\r\n', '\n').split('\n')
+        for row in rows:
+            if any(f.strip() for f in row):
+                table.append(row.split('\t'))
+        max_cols = max(len(row) for row in table)
+        for i, row in enumerate(table):
+            if len(row) != max_cols:
+                table[i] += ([''] * (max_cols - len(row)))
+        table_ncols = list(range(max_cols))
+        return table, table_ncols
 
 
 # Search-Related Views --------------------------------------------------------

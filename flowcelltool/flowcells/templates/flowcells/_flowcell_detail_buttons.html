@@ -40,6 +40,12 @@
           <i class="fa fa-table" aria-hidden="true"></i>
           Update Libraries
         </a>
+        <a class="dropdown-item"
+            href="{% url 'flowcell_extract' pk=object.pk %}"
+            title="Copy and paste libraries for {{ object.token_vendor_id }}">
+          <i class="fa fa-clipboard" aria-hidden="true"></i>
+          Copy &amp; Paste XLS
+        </a>
         <a class="dropdown-item" data-toggle="collapse"
             href="#collapse-{{ location }}"
             aria-haspopup="true" aria-expanded="false">

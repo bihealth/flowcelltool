@@ -6,6 +6,8 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.forms.models import ModelChoiceIterator, ModelChoiceField
 from django.forms.fields import ChoiceField
+from django.contrib.postgres.forms import SimpleArrayField
+from django.core.validators import MinValueValidator
 
 from crispy_forms.helper import FormHelper
 
@@ -267,3 +269,96 @@ LibraryFormSet = modelformset_factory(
     formset=BaseLibraryFormSet,
     fields=LIBRARY_FIELDS,
     extra=EXTRA_LIBRARY_FORMS)
+
+
+# Wizard for XLS copy-and-paste ----------------------------------------------
+
+
+class PasteTSVForm(forms.Form):
+    """First step of the XLS copy-and-paste wizard
+
+    Allows copy and paste of TSV data or providing an upload XLS file
+    """
+
+    #: A Textarea for copy and paste
+    payload = forms.CharField(
+        required=False,
+        label='Tab-separated values',
+        help_text='Copy-and paste fields from Excel here',
+        widget=forms.Textarea)
+
+
+class PickColumnsForm(forms.Form):
+    """Second step in the XLS copy-and-paste wizard
+
+    Allows to select the barcode sets and barcode set entries as well as
+    columns for the sets and the row to start at.
+    """
+
+    #: Reference to use for all samples
+    reference = forms.ChoiceField(
+        required=True,
+        choices=models.REFERENCE_CHOICES,
+        label='Reference/Organism',
+        help_text=('Upon import, the same for all samples.  Can be changed '
+                   'later on'))
+
+    #: Select column for sample name
+    sample_column = forms.IntegerField(
+        min_value=1,
+        required=True,
+        label='Sample column index',
+        help_text='The first column has index 1')
+
+    #: Barcode set for barcode 1
+    barcode_set = forms.ModelChoiceField(
+        required=False,
+        queryset=models.BarcodeSet.objects.order_by('name'))
+
+    #: Barcode set for barcode 2
+    barcode_set2 = forms.ModelChoiceField(
+        required=False,
+        queryset=models.BarcodeSet.objects.order_by('name'),
+        label='Barcode set',
+        help_text='Leave empty for no barcodes')
+
+    #: Select column for barcode 1
+    barcode_column = forms.IntegerField(
+        min_value=1,
+        required=False,
+        label='Barcode column index',
+        help_text='Leave empty for no barcodes. The first column has index 1')
+
+    #: Barcode set for barcode 2
+    barcode_set2 = forms.ModelChoiceField(
+        required=False,
+        queryset=models.BarcodeSet.objects.order_by('name'),
+        help_text='Leave empty for no secondary barcodes')
+
+    #: Select column for barcode 2
+    barcode2_column = forms.IntegerField(
+        min_value=1,
+        required=False,
+        label='Barcode column index',
+        help_text=('Leave empty for no secondary barcodes. The first column '
+                   'has index 1'))
+
+    #: Select row number to start at
+    first_row = forms.IntegerField(
+        min_value=1,
+        required=False,
+        label='First data row',
+        help_text=('Select number of first row with data. The first row '
+                   'has index 1'))
+
+    #: Select column for lanes
+    lane_numbers_column = forms.IntegerField(
+        min_value=1,
+        required=True,
+        label='Lane column index',
+        help_text='The first column has index 1')
+
+
+class ConfirmExtractionForm(forms.Form):
+    """Empty form, used for confirming that the detection worked correctly
+    """

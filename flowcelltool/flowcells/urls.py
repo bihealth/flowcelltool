@@ -2,6 +2,7 @@
 from django.conf.urls import url
 
 from . import views
+from . import forms
 
 urlpatterns = [
     # SequencingMachine related -----------------------------------------------
@@ -118,6 +119,12 @@ urlpatterns = [
         regex=r'^flowcell/sheet/(?P<pk>\d+)$',
         view=views.FlowCellSampleSheetView.as_view(),
         name='flowcell_sheet',
+    ),
+    url(
+        regex=r'^flowcell/extract/(?P<pk>\d+)$',
+        view=views.FlowCellExtractLibrariesView.as_view(
+            views.FlowCellExtractLibrariesView.FORMS),
+        name='flowcell_extract',
     ),
 
     # FlowCell-Message related ------------------------------------------------
