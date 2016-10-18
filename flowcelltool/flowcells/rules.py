@@ -165,16 +165,16 @@ rules.add_perm('flowcells.view_message',
 
 # Attaching messages to flow cells and modifying messages
 rules.add_perm(
-    'flowcells.add_message',
+    'threads.add_message',
     is_instrument_operator | is_demux_operator | is_demux_admin
     | is_import_bot | rules.is_superuser
 )
 rules.add_perm(
-    'flowcells.change_message',
+    'threads.change_message',
     is_message_author | is_demux_admin | rules.is_superuser
 )
 rules.add_perm(
-    'flowcells.delete_message',
+    'threads.delete_message',
     is_message_author | is_demux_admin | rules.is_superuser
 )
 
