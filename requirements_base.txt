@@ -55,7 +55,8 @@ django-db-file-storage==0.4.1
 django-multiupload==0.5.1
 
 # Django-REST-Framework and friends
-djangorestframework==3.4.7
+-e git://github.com/tomchristie/django-rest-framework.git@d5e63d2d7f6570d6306e755bd7366c75dd1b845b#egg=djangorestframework
+# djangorestframework==3.4.7
 Markdown==2.6.7
 django_filter==0.15.2
 rest-framework-generic-relations==1.1.0

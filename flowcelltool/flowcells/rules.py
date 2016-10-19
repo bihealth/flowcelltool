@@ -36,6 +36,16 @@ def is_message_author(user, message):
     else:
         return message.author == user
 
+
+@rules.predicate
+def is_attachment_message_author(user, att):
+    """Whether or not the user created the attachment's message"""
+    if not att or not att.message or not att.message.author:
+        return False
+    else:
+        return att.message.author == user
+
+
 #: Whether or not has the "guest" group
 is_guest = rules.is_group_member(GUEST)
 
@@ -176,6 +186,21 @@ rules.add_perm(
 rules.add_perm(
     'threads.delete_message',
     is_message_author | is_demux_admin | rules.is_superuser
+)
+
+# Attaching files to messages to flow cells and modifying messages
+rules.add_perm(
+    'threads.add_attachment',
+    is_instrument_operator | is_demux_operator | is_demux_admin
+    | is_import_bot | rules.is_superuser
+)
+rules.add_perm(
+    'threads.change_attachment',
+    is_attachment_message_author | is_demux_admin | rules.is_superuser
+)
+rules.add_perm(
+    'threads.delete_attachment',
+    is_attachment_message_author | is_demux_admin | rules.is_superuser
 )
 
 # Searching requires at least the guest role

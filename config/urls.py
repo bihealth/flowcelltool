@@ -8,6 +8,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
+from rest_framework.schemas import get_schema_view
 
 from flowcelltool.flowcells.views import HomeView
 from flowcelltool.rest_api import urls as rest_api_urls
@@ -32,12 +33,18 @@ urlpatterns = [
     # Messages with attachments
     url(r'^threads/', include('flowcelltool.threads.urls', namespace='threads')),
 
-    # Django REST framework auth hook-in
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-
-    # Flowcells API
-    url(r'^api/', include(rest_api_urls.ROUTER.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.REST_API:
+    # Only enable REST API if explicitely enabled as it currently is experimental
+    urlpatterns += [
+        # Django REST framework auth hook-in
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+        # Flowcells API
+        url(r'^api/', include(rest_api_urls.ROUTER.urls)),
+        url(r'^api/schema', get_schema_view(title='Flowcelltool API')),
+    ]
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

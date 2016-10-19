@@ -46,6 +46,7 @@ Features
 
     installation
     getting_started
+    rest_api
 
 .. toctree::
     :caption: User Manual

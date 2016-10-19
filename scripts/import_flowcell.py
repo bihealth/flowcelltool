@@ -10,6 +10,7 @@ import urllib
 import xml.etree.ElementTree as ET
 
 import coreapi
+from coreapi.utils import File
 from coreapi.compat import b64encode
 import coreapi.codecs
 
@@ -18,7 +19,7 @@ RUN_PARAMETERS_XML = 'runParameters.xml'
 #: File name for run infos
 RUN_INFO_XML = 'RunInfo.xml'
 #: File name for RTA Configuration
-RTA_CONFIGURATION_XML = 'RTAConfiguration.xml'
+# RTA_CONFIGURATION_XML = 'RTAConfiguration.xml'
 
 #: Name of environment variable for username
 ENV_USER = 'FLOWCELLTOOL_USER'
@@ -42,8 +43,8 @@ class BaseImporter:
         self.run_parameters = ET.parse(os.path.join(
             self.args.flowcell_dir, RUN_PARAMETERS_XML))
         #: ETree for RTAConfiguration.xml
-        self.rta_configuration = ET.parse(os.path.join(
-            self.args.flowcell_dir, RUN_PARAMETERS_XML))
+        # self.rta_configuration = ET.parse(os.path.join(
+        #     self.args.flowcell_dir, RTA_CONFIGURATION_XML))
         #: ETree for runInfo.xml
         self.run_info = ET.parse(os.path.join(
             self.args.flowcell_dir, RUN_INFO_XML))
@@ -67,12 +68,25 @@ class BaseImporter:
         params['libraries'] = []
         decoders = [coreapi.codecs.CoreJSONCodec(), coreapi.codecs.JSONCodec()]
         client = coreapi.Client(
-            decoders=decoders,
             transports=[self._build_auth_transport()])
-        schema = client.get(self.api_url)
-        print(schema)
-        lst = client.action(schema, ['flow_cells', 'list'])#, params=params)
-        print(lst)
+        schema = client.get(self.api_url + '/schema')
+        flow_cell = client.action(schema, ['flow_cells', 'create'],
+                                  params=params)
+        params = {
+            'title': 'Instrument Run Files',
+            'body': 'Here are the instrument run files.\nBleep, I\'m a bot.',
+            'thread_object': flow_cell['url'],
+            'attachments': [],
+        }
+        print(params)
+        message = client.action(schema, ['messages', 'create'], params=params)
+        for fname in (RUN_PARAMETERS_XML, RUN_INFO_XML):
+            path = os.path.join(self.args.flowcell_dir, fname)
+            with open(path, 'rb') as f:
+                client.action(schema, ['attachments', 'create'], params={
+                    'message': flow_cell['url'],
+                    'payload': File(fname, f),
+                })
 
     def _build_auth_transport(self):
         credentials_string = '{}:{}'.format(self.user, self.password)
@@ -95,7 +109,7 @@ class BaseImporter:
 
     def _get_name(self):
         """Return flow cell name"""
-        return self.rta_configuration.find('.//RunID').text
+        return self.run_parameters.find('.//RunID').text
 
     def _get_num_lanes(self):
         """Return number of lanes"""
@@ -147,7 +161,7 @@ def create_importer(args):
 def run(args):
     """Entry point after command line parsing"""
     importer = create_importer(args)
-    import pprint; pprint.pprint(importer.run(), indent=2)
+    importer.run()
 
 
 def main(argv=None):

@@ -303,3 +303,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100
 }
+
+# Disable/Enable REST API
+# ------------------------------------------------------------------------------
+
+REST_API = env.bool('FLOWCELLTOOL_REST_API', False)

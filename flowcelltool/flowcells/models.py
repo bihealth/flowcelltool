@@ -16,7 +16,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator, \
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
 
-from ..threads.models import Message
+from ..threads.models import Message, Attachment
 
 
 # TimeStampedModel ------------------------------------------------------------

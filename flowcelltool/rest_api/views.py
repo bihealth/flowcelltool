@@ -150,3 +150,13 @@ class MessageViewSet(BaseViewSet):
 
     queryset = models.Message.objects.all().order_by('created_at')
     serializer_class = serializers.MessageSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+class AttachmentViewSet(BaseViewSet):
+    """API endpoint for Message"""
+
+    queryset = models.Attachment.objects.all().order_by('created_at')
+    serializer_class = serializers.AttachmentSerializer
