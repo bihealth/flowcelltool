@@ -64,7 +64,7 @@ class LibrarySerializer(serializers.HyperlinkedModelSerializer):
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
     thread_object = GenericRelatedField({
         models.FlowCell: serializers.HyperlinkedRelatedField(
-            queryset = models.FlowCell.objects.all(),
+            queryset=models.FlowCell.objects.all(),
             view_name='flowcell-detail',
         )
     })
@@ -76,6 +76,7 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AttachmentSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
         model = threads_models.Attachment
         fields = ('pk', 'url', 'created', 'modified', 'message', 'payload')

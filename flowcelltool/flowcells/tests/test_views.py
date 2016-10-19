@@ -24,7 +24,7 @@ from .test_models import SequencingMachineMixin, FlowCellMixin, \
     BarcodeSetMixin, BarcodeSetEntryMixin, LibraryMixin
 
 
-# Helper Classes --------------------------------------------------------------
+# Helper Classes ---------------------------------------------------------
 
 
 class SuperUserTestCase(TestCase):
@@ -38,7 +38,7 @@ class SuperUserTestCase(TestCase):
         return user
 
 
-# FlowCell related ------------------------------------------------------------
+# FlowCell related -------------------------------------------------------
 
 
 class TestFlowCellListView(
@@ -175,7 +175,7 @@ class TestFlowCellUpdateView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('flowcell_update', kwargs={'pk': self.flow_cell.pk}),
-            values)
+                values)
 
         # Check resulting database state
         self.assertEqual(FlowCell.objects.all().count(), 1)
@@ -239,8 +239,8 @@ class TestFlowCellDeleteView(
 
 
 class TestLibraryUpdateView(
-    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
-    BarcodeSetMixin, BarcodeSetEntryMixin):
+        SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+        BarcodeSetMixin, BarcodeSetEntryMixin):
 
     def setUp(self):
         self.user = self.make_user()
@@ -334,7 +334,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
-                                kwargs={'pk': self.flow_cell.pk}))
+                                  kwargs={'pk': self.flow_cell.pk}))
 
     def test_update_more(self):
         """Test that updating library entries works correctly (submit more)"""
@@ -343,7 +343,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_updatelibraries',
-                                kwargs={'pk': self.flow_cell.pk}))
+                                  kwargs={'pk': self.flow_cell.pk}))
 
     def test_add(self):
         """Test that adding libraries works correctly"""
@@ -418,7 +418,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
-                                kwargs={'pk': self.flow_cell.pk}))
+                                  kwargs={'pk': self.flow_cell.pk}))
 
     def test_delete(self):
         """Test that deleting libraries works correctly"""
@@ -472,7 +472,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
-                                kwargs={'pk': self.flow_cell.pk}))
+                                  kwargs={'pk': self.flow_cell.pk}))
 
     def test_prefill_form_first(self):
         """Test that prefilling the form with barcode1 works correctly"""
@@ -512,7 +512,7 @@ class TestLibraryUpdateView(
             self.assertEquals(form.initial['barcode_set2'], self.barcode_set)
 
 
-# SequencingMachine related ---------------------------------------------------
+# SequencingMachine related ----------------------------------------------
 
 
 class TestSequencingMachineListView(
@@ -809,7 +809,7 @@ class TestFlowCellImportView(
         self.assertEqual(Library.objects.all().count(), 1)
 
 
-# BarcodeSet related ----------------------------------------------------------
+# BarcodeSet related -----------------------------------------------------
 
 
 class TestBarcodeSetListView(
@@ -872,7 +872,7 @@ class TestBarcodeSetCreateView(SuperUserTestCase):
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                kwargs={'pk': barcode_set.pk}))
+                                  kwargs={'pk': barcode_set.pk}))
 
 
 class TestBarcodeSetDetailView(
@@ -945,7 +945,7 @@ class TestBarcodeSetUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                kwargs={'pk': barcode_set.pk}))
+                                  kwargs={'pk': barcode_set.pk}))
 
 
 class TestBarcodeSetDeleteView(
@@ -1041,7 +1041,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                kwargs={'pk': self.barcode_set.pk}))
+                                  kwargs={'pk': self.barcode_set.pk}))
 
     def test_update_more(self):
         """Test that updating barcode set entries works correctly"""
@@ -1050,7 +1050,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_updateentries',
-                                kwargs={'pk': self.barcode_set.pk}))
+                                  kwargs={'pk': self.barcode_set.pk}))
 
     def test_add(self):
         """Test that adding barcode set entries works correctly"""
@@ -1105,7 +1105,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                kwargs={'pk': self.barcode_set.pk}))
+                                  kwargs={'pk': self.barcode_set.pk}))
 
     def test_delete(self):
         """Test that deleting barcode set entries works correctly"""
@@ -1148,7 +1148,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                kwargs={'pk': self.barcode_set.pk}))
+                                  kwargs={'pk': self.barcode_set.pk}))
 
 
 class TestBarcodeSetExportView(
@@ -1235,7 +1235,7 @@ class TestBarcodeSetImportView(SuperUserTestCase):
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                kwargs={'pk': barcodeset.pk}))
+                                  kwargs={'pk': barcodeset.pk}))
 
         # Check database state afterwards
         self.assertEqual(BarcodeSet.objects.all().count(), 1)
@@ -1243,8 +1243,8 @@ class TestBarcodeSetImportView(SuperUserTestCase):
 
 
 class TestSearchView(
-    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
-    BarcodeSetMixin, BarcodeSetEntryMixin):
+        SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+        BarcodeSetMixin, BarcodeSetEntryMixin):
 
     def setUp(self):
         self.user = self.make_user()
@@ -1286,12 +1286,12 @@ class TestSearchView(
         self.assertEqual(len(response.context['results']), 0)
 
 
-# Message Related -------------------------------------------------------------
+# Message Related --------------------------------------------------------
 
 
 class TestMessageCreateView(
-    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
-    BarcodeSetMixin, BarcodeSetEntryMixin):
+        SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+        BarcodeSetMixin, BarcodeSetEntryMixin):
 
     def setUp(self):
         self.user = self.make_user()
@@ -1391,8 +1391,8 @@ class MessageMixin:
 
 
 class TestMessageDeleteView(
-    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
-    BarcodeSetMixin, BarcodeSetEntryMixin, MessageMixin):
+        SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+        BarcodeSetMixin, BarcodeSetEntryMixin, MessageMixin):
 
     def setUp(self):
         self.user = self.make_user()
@@ -1441,10 +1441,9 @@ class TestMessageDeleteView(
         self.assertEquals(threads_models.Message.objects.all().count(), 0)
 
 
-
 class TestMessageUpdateView(
-    SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
-    BarcodeSetMixin, BarcodeSetEntryMixin, MessageMixin):
+        SuperUserTestCase, FlowCellMixin, SequencingMachineMixin, LibraryMixin,
+        BarcodeSetMixin, BarcodeSetEntryMixin, MessageMixin):
 
     def setUp(self):
         self.user = self.make_user()

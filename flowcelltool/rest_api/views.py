@@ -10,7 +10,7 @@ from ..flowcells import models
 from ..users.models import User
 from . import serializers
 
-# Permission Helpers ----------------------------------------------------------
+# Permission Helpers -----------------------------------------------------
 
 
 class RulesBackedPermissions(permissions.BasePermission):
@@ -57,7 +57,7 @@ class RulesBackedPermissions(permissions.BasePermission):
         return (
             request.user and
             (permissions.is_authenticated(request.user) or
-            not self.authenticated_users_only) and
+             not self.authenticated_users_only) and
             all(request.user.has_perm(perm) for perm in perms))
 
     def has_object_permission(self, request, view, obj):
@@ -96,7 +96,7 @@ class RulesBackedPermissions(permissions.BasePermission):
         return True
 
 
-# DRF API ViewSets ------------------------------------------------------------
+# DRF API ViewSets -------------------------------------------------------
 
 
 class BaseViewSet(viewsets.ModelViewSet):

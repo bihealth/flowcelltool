@@ -19,7 +19,7 @@ from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
 from ..threads.models import Message, Attachment
 
 
-# SequencingMachine and related -----------------------------------------------
+# SequencingMachine and related ------------------------------------------
 
 #: Key value for machine model MiSeq
 MACHINE_MODEL_MISEQ = 'MiSeq'
@@ -349,7 +349,7 @@ class FlowCell(TimeStampedModel):
             return '_'.join(map(str, (
                 '' if not self.run_date else self.run_date.strftime('%y%m%d'),
                 ('' if not self.sequencing_machine
-                else self.sequencing_machine.vendor_id),
+                 else self.sequencing_machine.vendor_id),
                 '{:04}'.format(0 if not self.run_number else self.run_number),
                 self.slot,
                 self.vendor_id,
