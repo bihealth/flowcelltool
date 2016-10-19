@@ -11,13 +11,13 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.forms.models import ModelChoiceIterator, ModelChoiceField
 from django.forms.fields import ChoiceField
-from django.contrib.postgres.forms import SimpleArrayField
 from django.core.validators import MinValueValidator, RegexValidator
 from django.shortcuts import get_object_or_404
 
 from crispy_forms.helper import FormHelper
 
 from . import models
+from .widgets import IntegerRangeField
 
 
 # Advanced ModelChoice fields -------------------------------------------------
@@ -276,6 +276,7 @@ class LibraryForm(forms.ModelForm):
         required=False,
         queryset=models.BarcodeSetEntry.objects.order_by('name'),
         widget=BarcodeSelect)
+    lane_numbers = IntegerRangeField(required=True, min_length=1)
 
     def __init__(self, *args, **kwargs):
         # Pre-set the lane numbers, required for Django Formsets to work

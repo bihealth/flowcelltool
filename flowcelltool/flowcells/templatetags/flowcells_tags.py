@@ -2,6 +2,8 @@
 """Custom template tags for the flowcells app"""
 from django import template
 
+import pagerange
+
 register = template.Library()
 
 
@@ -33,3 +35,8 @@ def fa_mime_type(value):
         'text/html': 'file-text-o',
     }
     return mapping.get(value, 'file-o')
+
+
+@register.filter('integer_range')
+def integer_range(value):
+    return pagerange.PageRange(value).range

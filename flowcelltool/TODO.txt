@@ -1,9 +1,6 @@
-## Short-term
-
-- Split flow cell name field
-
 ## Mid-term
 
+- Properly test IntegerRangeField
 - Proper testing of REST API feature
 - Improve copy-and-paste process of flow cell import
     - test properly

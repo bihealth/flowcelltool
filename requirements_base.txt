@@ -63,3 +63,6 @@ rest-framework-generic-relations==1.1.0
 
 # Django form wizards
 django-formtools==1.0
+
+# Page range
+pagerange==0.4
