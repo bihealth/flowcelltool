@@ -1,4 +1,5 @@
 {% load staticfiles i18n %}<!DOCTYPE html>
+{% load rules %}
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -97,9 +98,10 @@
             </ul>
 
             <ul class="nav navbar-nav pull-xs-right">
-              {% if not is_search %}
+              {% has_perm 'flowcells.search' request.user flowcell as can_search %}
+              {% if can_search and not is_search %}
               <li class="nav-item">
-                <form action="{% url 'search' %}" method="GET">
+                <form action="{% url 'search' %}" method="GET" class="form-inline">
                   <div class="input-group">
                     <input type="text" class="form-control" name="q" placeholder="Search Term">
                     <span class="input-group-btn">

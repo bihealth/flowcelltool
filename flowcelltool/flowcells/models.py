@@ -11,8 +11,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.contenttypes.fields import GenericRelation
 
 from flowcelltool.users.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator, \
-    RegexValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from model_utils.models import TimeStampedModel
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
@@ -267,16 +266,6 @@ RTA_VERSION_CHOICES = (
 )
 
 
-#: Regular expression for flow cell names
-FLOW_CELL_NAME_RE = (
-    r'^(?P<date>\d{6,6})'
-    r'_(?P<machine_name>[^_]+)'
-    r'_(?P<run_no>\d+)'
-    r'_(?P<slot>\w)'
-    r'_(?P<vendor_id>[^_]+)'
-    r'(_(?P<label>.+))?$')
-
-
 class FlowCell(TimeStampedModel):
     """Information stored for each flow cell"""
 
@@ -286,15 +275,24 @@ class FlowCell(TimeStampedModel):
     owner = models.ForeignKey(User, null=True, blank=True,
                               on_delete=models.SET_NULL)
 
-    #: Full name of the flow cell, fulfilling the pattern
-    #: "YYMMDD_MACHINE_RUNNUMBER_SLOT_FLOWCELLID_LABEL"
-    name = models.CharField(
-        max_length=100,
-        validators=[
-            RegexValidator(FLOW_CELL_NAME_RE,
-                           message='Invalid flow cell name')],
-        help_text=('The full flow cell name, e.g., '
-                   '160303_ST-K12345_0815_A_BCDEFGHIXX_LABEL'))
+    #: Run date of the flow cell
+    run_date = models.DateField()
+
+    #: The sequencer used for processing this flow cell
+    sequencing_machine = models.ForeignKey(
+        SequencingMachine, null=True, blank=True, on_delete=models.SET_NULL)
+
+    #: The run number on the machine
+    run_number = models.PositiveIntegerField()
+
+    #: The slot of the machine
+    slot = models.CharField(max_length=1)
+
+    #: The vendor ID of the flow cell name
+    vendor_id = models.CharField(max_length=40)
+
+    #: The label of the flow cell
+    label = models.CharField(max_length=100)
 
     #: Short description length
     description = models.TextField(
@@ -303,10 +301,6 @@ class FlowCell(TimeStampedModel):
         help_text=(
             'Short description of the flow cell ' +
             markdown_allowed()))
-
-    #: The sequencer used for processing this flow cell
-    sequencing_machine = models.ForeignKey(
-        SequencingMachine, null=True, blank=True, on_delete=models.SET_NULL)
 
     #: Number of lanes on the flow cell
     num_lanes = models.IntegerField(
@@ -345,31 +339,31 @@ class FlowCell(TimeStampedModel):
         Message, content_type_field='content_type',
         object_id_field='object_id')
 
+    def get_full_name(self):
+        """Return full flow cell name"""
+        if all(not x for x in (self.run_date, self.sequencing_machine,
+                               self.run_number, self.slot, self.vendor_id,
+                               self.label)):
+            return ''
+        else:
+            return '_'.join(map(str, (
+                '' if not self.run_date else self.run_date.strftime('%y%m%d'),
+                ('' if not self.sequencing_machine
+                else self.sequencing_machine.vendor_id),
+                '{:04}'.format(0 if not self.run_number else self.run_number),
+                self.slot,
+                self.vendor_id,
+                self.label
+            )))
+
     @property
     def sorted_libraries(self):
         """Return libraries entries, sorted by name"""
         return self.libraries.order_by('name')
 
     def save(self, *args, **kwargs):
-        self._validate_sequencer()
         self._validate_num_lanes()
         super().save(*args, **kwargs)
-
-    def _validate_sequencer(self):
-        """Check that the sequencer given in the name exists, then update
-        the machine attribute to the corresponding record
-        """
-        m = re.match(FLOW_CELL_NAME_RE, self.name)
-        if not m:
-            raise ValidationError(
-                'Invalid flow cell name, cannot infer machine name')
-        machine_name = m.group('machine_name')
-        qs = SequencingMachine.objects.filter(vendor_id=machine_name)
-        if not qs.exists():
-            raise ValidationError(
-                'Sequencing machine named {} not found'.format(machine_name))
-        else:
-            self.sequencing_machine = qs.all()[0]
 
     def _validate_num_lanes(self):
         """Check that the num_lanes value is compatible with any contained
@@ -383,12 +377,13 @@ class FlowCell(TimeStampedModel):
                         self.num_lanes))
 
     def __str__(self):
-        return str(self.name)
+        return str(self.get_full_name())
 
     def __repr__(self):
         tpl = 'FlowCell({})'
-        values = (self.name, self.sequencing_machine,
-                  self.num_lanes, self.status, self.operator, self.is_paired,
+        values = (self.run_date, self.sequencing_machine, self.run_number,
+                  self.slot, self.vendor_id, self.label, self.num_lanes,
+                  self.status, self.operator, self.is_paired,
                   self.index_read_count, self.rta_version, self.read_length)
         return tpl.format(', '.join(repr(v) for v in values))
 
@@ -401,28 +396,6 @@ class FlowCell(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('flowcell_view', kwargs={'pk': self.pk})
-
-    def token_date(self):
-        return self._name_tokens().get('date', '')
-
-    def token_instrument(self):
-        return self._name_tokens().get('machine_name', '')
-
-    def token_run_no(self):
-        return self._name_tokens().get('run_no', '')
-
-    def token_slot(self):
-        return self._name_tokens().get('slot', '')
-
-    def token_vendor_id(self):
-        return self._name_tokens().get('vendor_id', '')
-
-    def token_label(self):
-        return self._name_tokens().get('label', '')
-
-    @functools.lru_cache()
-    def _name_tokens(self):
-        return re.match(FLOW_CELL_NAME_RE, self.name).groupdict()
 
 
 #: Reference used for identifying human samples
@@ -567,7 +540,7 @@ class Library(TimeStampedModel):
             'type': 'Library',
             'title': self.name,
             'description': 'on flow cell {}'.format(
-                self.flow_cell.token_vendor_id())
+                self.flow_cell.vendor_id)
         }
 
     def __str__(self):
@@ -581,6 +554,6 @@ class Library(TimeStampedModel):
 
     def __repr__(self):
         tpl = 'Library({})'
-        values = (self.flow_cell.name, self.reference, self.barcode_set,
-                  self.barcode, self.lane_numbers)
+        values = (self.flow_cell.get_full_name(), self.reference,
+                  self.barcode_set, self.barcode, self.lane_numbers)
         return tpl.format(', '.join(map(repr, values)))  # noqa

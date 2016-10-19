@@ -2,6 +2,7 @@
 """Tests for the views from the flowcelltools Django app
 """
 
+import datetime
 import io
 import textwrap
 
@@ -46,12 +47,10 @@ class TestFlowCellListView(
     def setUp(self):
         self.user = self.make_user()
         self.machine = self._make_machine()
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_render(self):
         """Simply test that rendering the list view works"""
@@ -100,7 +99,6 @@ class TestFlowCellCreateView(
         self.assertIsNotNone(flow_cell)
         EXPECTED = {
             'id': flow_cell.pk,
-            'name': self.flow_cell_name,
             'description': '',
             'owner': self.user.pk,
             'num_lanes': 8,
@@ -111,6 +109,12 @@ class TestFlowCellCreateView(
             'rta_version': models.RTA_VERSION_V2,
             'sequencing_machine': self.machine.pk,
             'read_length': 151,
+            'vendor_id': '',
+            'run_date': datetime.date(2016, 3, 3),
+            'run_number': 815,
+            'label': 'LABEL',
+            'slot': 'A',
+            'vendor_id': 'BCDEFGHIXX',
         }
         self.assertEqual(model_to_dict(flow_cell), EXPECTED)
 
@@ -126,13 +130,11 @@ class TestFlowCellDetailView(
     def setUp(self):
         self.user = self.make_user()
         self.machine = self._make_machine()
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.client = Client()
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_render(self):
         """Simply test that rendering the detail view works"""
@@ -153,13 +155,11 @@ class TestFlowCellUpdateView(
     def setUp(self):
         self.user = self.make_user()
         self.machine = self._make_machine()
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.client = Client()
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_render(self):
         """Test that the flow cell update POST works"""
@@ -168,7 +168,7 @@ class TestFlowCellUpdateView(
 
         # Simulate POST request
         values = model_to_dict(self.flow_cell)
-        values['name'] = values['name'] + 'YADAYADAYADA'
+        values['name'] = self.flow_cell.get_full_name() + 'YADAYADAYADA'
         values['status'] = models.FLOWCELL_STATUS_DEMUX_COMPLETE
 
         # Simulate the POST
@@ -183,7 +183,7 @@ class TestFlowCellUpdateView(
         self.assertIsNotNone(flow_cell)
         EXPECTED = {
             'id': flow_cell.pk,
-            'name': values['name'],
+            'label': 'LABELYADAYADAYADA',
             'description': 'Description',
             'owner': self.user.pk,
             'num_lanes': 8,
@@ -193,7 +193,11 @@ class TestFlowCellUpdateView(
             'index_read_count': 1,
             'rta_version': models.RTA_VERSION_V2,
             'sequencing_machine': self.machine.pk,
+            'slot': 'A',
             'read_length': 151,
+            'run_number': 815,
+            'vendor_id': 'BCDEFGHIXX',
+            'run_date': datetime.date(2016, 3, 3),
         }
         self.assertEqual(model_to_dict(flow_cell), EXPECTED)
 
@@ -209,13 +213,11 @@ class TestFlowCellDeleteView(
     def setUp(self):
         self.user = self.make_user()
         self.machine = self._make_machine()
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.client = Client()
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_render(self):
         """Test that the flow cell delete POST works"""
@@ -252,12 +254,10 @@ class TestLibraryUpdateView(
         self.barcode2 = self._make_barcode_set_entry(
             self.barcode_set, 'AR02', 'ATTATATA')
         # Create Flow cell
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library1 = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode1, [1, 2], None, None)
@@ -682,12 +682,10 @@ class TestFlowCellSetExportView(
         self.barcode = self._make_barcode_set_entry(self.barcode_set)
         self.barcode2 = self._make_barcode_set_entry(
             self.barcode_set, 'AR02', 'CGATATA')
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode, [1, 2],
@@ -704,7 +702,12 @@ class TestFlowCellSetExportView(
         self.assertEqual(response.status_code, 200)
         EXPECTED = textwrap.dedent(r"""
             {
-              "name": "160303_NS5001234_0815_A_BCDEFGHIXX_LABEL",
+              "run_date": "2016-03-03",
+              "sequencing_machine": "NS5001234",
+              "run_number": 815,
+              "slot": "A",
+              "vendor_id": "BCDEFGHIXX",
+              "label": "LABEL",
               "description": "Description",
               "num_lanes": 8,
               "status": "seq_complete",
@@ -751,7 +754,12 @@ class TestFlowCellImportView(
         # Prepare payload to post
         payload = io.StringIO(textwrap.dedent(r"""
             {
-              "name": "160303_NS5001234_0815_A_BCDEFGHIXX_LABEL",
+              "run_date": "2016-03-03",
+              "sequencing_machine": "NS5001234",
+              "run_number": 815,
+              "slot": "A",
+              "vendor_id": "BCDEFGHIXX",
+              "label": "LABEL",
               "description": "Description",
               "num_lanes": 8,
               "status": "seq_complete",
@@ -794,7 +802,7 @@ class TestFlowCellImportView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
-                                kwargs={'pk': flowcell.pk}))
+                                  kwargs={'pk': flowcell.pk}))
 
         # Check database state afterwards
         self.assertEqual(FlowCell.objects.all().count(), 1)
@@ -1250,12 +1258,10 @@ class TestSearchView(
         self.barcode2 = self._make_barcode_set_entry(
             self.barcode_set, 'AR02', 'ATTATATA')
         # Create Flow cell
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library1 = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode1, [1, 2], None, None)
@@ -1299,12 +1305,10 @@ class TestMessageCreateView(
         self.barcode2 = self._make_barcode_set_entry(
             self.barcode_set, 'AR02', 'ATTATATA')
         # Create Flow cell
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library1 = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode1, [1, 2], None, None)
@@ -1402,12 +1406,10 @@ class TestMessageDeleteView(
         self.barcode2 = self._make_barcode_set_entry(
             self.barcode_set, 'AR02', 'ATTATATA')
         # Create Flow cell
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library1 = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode1, [1, 2], None, None)
@@ -1456,12 +1458,10 @@ class TestMessageUpdateView(
         self.barcode2 = self._make_barcode_set_entry(
             self.barcode_set, 'AR02', 'ATTATATA')
         # Create Flow cell
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library1 = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode1, [1, 2], None, None)

@@ -4,7 +4,7 @@
 
 {% block title %}
 {% if object.pk %}
-Update Flow Cell {{ object.token_vendor_id }}
+Update Flow Cell {{ object.vendor_id }}
 {% else %}
 Create Flow Cell
 {% endif %}
@@ -14,7 +14,7 @@ Create Flow Cell
 
 <div>
   {% if object.pk %}
-  <h2>Update Flow Cell {{ object.token_vendor_id }}</h2>
+  <h2>Update Flow Cell {{ object.vendor_id }}</h2>
   {% else %}
   <h2>Create Flow Cell</h2>
   {% endif %}

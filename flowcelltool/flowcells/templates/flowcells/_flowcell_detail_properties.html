@@ -3,16 +3,28 @@
   <dd class="col-sm-10">{{ object.created }}</dd>
 
   <dt class="col-sm-2">Last update</dt>
-  <dd class="col-sm-10">{{ object.updated }}</dd>
+  <dd class="col-sm-10">{{ object.modified }}</dd>
 
   <dt class="col-sm-2">Owner</dt>
   <dd class="col-sm-10">{{ object.owner.username|default:"none" }}</dd>
 
-  <dt class="col-sm-2">Name</dt>
-  <dd class="col-sm-10">{{ object.name }}</dd>
-
   <dt class="col-sm-2">Instrument</dt>
   <dd class="col-sm-10">{{ object.sequencing_machine.vendor_id }}</dd>
+
+  <dt class="col-sm-2">Vendor</dt>
+  <dd class="col-sm-10">{{ object.vendor_id }}</dd>
+
+  <dt class="col-sm-2">Run Number</dt>
+  <dd class="col-sm-10">{{ object.run_number }}</dd>
+
+  <dt class="col-sm-2">Slot</dt>
+  <dd class="col-sm-10">{{ object.slot }}</dd>
+
+  <dt class="col-sm-2">Label</dt>
+  <dd class="col-sm-10">{{ object.label }}</dd>
+
+  <dt class="col-sm-2">Full Name</dt>
+  <dd class="col-sm-10">{{ object.get_full_name }}</dd>
 
   <dt class="col-sm-2">Lane count</dt>
   <dd class="col-sm-10">{{ object.num_lanes }}</dd>

@@ -4,6 +4,7 @@
 We only test the "GET" actions as the protection is on a per-CBV level
 """
 
+import datetime
 import io
 import textwrap
 
@@ -268,13 +269,13 @@ class TestFlowCellViews(
         self.flow_cell_name2 = '160303_{}_0815_B_CCDEFGHIXX_LABEL'.format(
             self.machine.vendor_id)
         self.inst_op_flow_cell = self._make_flow_cell(
-            self.inst_op, self.flow_cell_name1, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.inst_op, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.import_bot_flow_cell = self._make_flow_cell(
-            self.import_bot, self.flow_cell_name2, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.import_bot, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_list(self):
         URL = reverse('flowcell_list')
@@ -380,12 +381,10 @@ class TestFlowCellMessageViews(
     def setUp(self):
         super().setUp()
         self.machine = self._make_machine()
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.inst_op, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.inst_op, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         # One message by import bot, instrument operator, and demux operator
         self.msg_import_bot = self._make_message(
             self.import_bot, self.flow_cell, 'Title', 'Body')

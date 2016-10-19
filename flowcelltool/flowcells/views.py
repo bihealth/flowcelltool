@@ -276,13 +276,21 @@ class BarcodeSetEntryUpdateView(
 # FlowCell Views --------------------------------------------------------------
 
 
+#: All fields for the flow cell
+FLOW_CELL_FIELDS = (
+    'run_date', 'sequencing_machine', 'run_number', 'slot', 'vendor_id',
+    'label', 'description', 'num_lanes', 'status', 'operator', 'is_paired',
+    'index_read_count', 'rta_version', 'read_length',
+)
+
+
 class FlowCellListView(
         LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Shows a list of flow cells, this is the index page"""
 
     permission_required = 'flowcells.list_flowcell'
 
-    queryset = models.FlowCell.objects.order_by('name')
+    queryset = models.FlowCell.objects.order_by('run_date')
 
 
 class FlowCellCreateView(
@@ -294,9 +302,8 @@ class FlowCellCreateView(
     #: The model type to create
     model = models.FlowCell
 
-    #: Fields to show in the create view, the rest is auto-filled
-    fields = ('name', 'description', 'num_lanes', 'status', 'operator',
-              'is_paired', 'index_read_count', 'rta_version', 'read_length')
+    #: The form to use (for splitting name into tokens)
+    form_class = forms.FlowCellForm
 
     def form_valid(self, form):
         self.object = form.save(commit=False)  # noqa
@@ -338,9 +345,8 @@ class FlowCellUpdateView(
     #: The model type to create
     model = models.FlowCell
 
-    #: Fields to show in the create view, the rest is auto-filled
-    fields = ('name', 'description', 'num_lanes', 'status', 'operator',
-              'is_paired', 'index_read_count', 'rta_version', 'read_length')
+    #: The form to use (for splitting name into tokens)
+    form_class = forms.FlowCellForm
 
 
 class FlowCellDeleteView(
@@ -370,7 +376,7 @@ class FlowCellExportView(
                                 content_type='text/plain')
         response['Content-Disposition'] = (
             'attachment; filename="flowcell_{}.json"'.format(
-                flow_cell.token_vendor_id()))
+                flow_cell.vendor_id))
         return response
 
 

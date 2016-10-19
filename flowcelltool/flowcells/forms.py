@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+import datetime
+import re
+
 from django import forms
 from django.db import transaction
 from django.forms.models import BaseModelFormSet, modelformset_factory
@@ -7,7 +12,8 @@ from django.utils.safestring import mark_safe
 from django.forms.models import ModelChoiceIterator, ModelChoiceField
 from django.forms.fields import ChoiceField
 from django.contrib.postgres.forms import SimpleArrayField
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
+from django.shortcuts import get_object_or_404
 
 from crispy_forms.helper import FormHelper
 
@@ -126,16 +132,63 @@ class FlowCellImportForm(forms.Form):
 
 # FlowCell related ------------------------------------------------------------
 
+#: Regular expression for flow cell names
+FLOW_CELL_NAME_RE = (
+    r'^(?P<date>\d{6,6})'
+    r'_(?P<machine_name>[^_]+)'
+    r'_(?P<run_no>\d+)'
+    r'_(?P<slot>\w)'
+    r'_(?P<vendor_id>[^_]+)'
+    r'(_(?P<label>.+))?$')
+
 
 class FlowCellForm(forms.ModelForm):
+    """Custom form for manipulating FlowCell objects
+
+    We need a special form to tokenize/untokenize the flow cell name to/from
+    properties.
+    """
+
+    #: Special field with the flow cell name.  The different tokens
+    #: will be extracted in the form's logic
+    name = forms.CharField(
+        max_length=100,
+        validators=[
+            RegexValidator(FLOW_CELL_NAME_RE,
+                           message='Invalid flow cell name')],
+        help_text=('The full flow cell name, e.g., '
+                   '160303_ST-K12345_0815_A_BCDEFGHIXX_LABEL'))
 
     class Meta:
-
         model = models.FlowCell
 
         fields = ('name', 'description', 'num_lanes', 'status', 'operator',
                   'is_paired', 'index_read_count', 'rta_version',
                   'read_length')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['name'].initial = self.instance.get_full_name()
+
+    def clean(self):
+        name_dict = re.match(
+            FLOW_CELL_NAME_RE, self.cleaned_data.pop('name')).groupdict()
+        self.cleaned_data['run_date'] = datetime.datetime.strptime(
+            name_dict['date'], '%y%m%d').date()
+        self.cleaned_data['sequencing_machine'] = get_object_or_404(
+            models.SequencingMachine, vendor_id=name_dict['machine_name'])
+        self.cleaned_data['run_number'] = int(name_dict['run_no'])
+        self.cleaned_data['slot'] = name_dict['slot']
+        self.cleaned_data['vendor_id'] = name_dict['vendor_id']
+        self.cleaned_data['label'] = name_dict['label']
+        return self.cleaned_data
+
+    def save(self, *args, **kwargs):
+        for key in ('run_date', 'sequencing_machine', 'run_number', 'slot',
+                    'vendor_id', 'label'):
+            setattr(self.instance, key, self.cleaned_data[key])
+        return super().save(*args, **kwargs)
 
 
 class LibrariesPrefillForm(forms.Form):

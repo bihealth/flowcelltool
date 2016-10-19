@@ -21,7 +21,7 @@ class SequencingMachineSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.SequencingMachine
-        fields = ('pk', 'url', 'created', 'updated', 'vendor_id', 'label',
+        fields = ('pk', 'url', 'created', 'modified', 'vendor_id', 'label',
                   'description', 'machine_model', 'slot_count',
                   'dual_index_workflow')
 
@@ -30,7 +30,7 @@ class BarcodeSetSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.BarcodeSet
-        fields = ('pk', 'url', 'created', 'updated', 'name', 'short_name',
+        fields = ('pk', 'url', 'created', 'modified', 'name', 'short_name',
                   'description', 'entries')
 
 
@@ -38,7 +38,7 @@ class BarcodeSetEntrySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.BarcodeSetEntry
-        fields = ('pk', 'url', 'created', 'updated', 'name', 'sequence',
+        fields = ('pk', 'url', 'created', 'modified', 'name', 'sequence',
                   'barcode_set')
 
 
@@ -46,7 +46,7 @@ class FlowCellSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.FlowCell
-        fields = ('pk', 'url', 'created', 'updated', 'owner', 'name',
+        fields = ('pk', 'url', 'created', 'modified', 'owner', 'name',
                   'description', 'sequencing_machine', 'num_lanes',
                   'status', 'operator', 'is_paired', 'index_read_count',
                   'rta_version', 'read_length', 'libraries')
@@ -56,7 +56,7 @@ class LibrarySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Library
-        fields = ('pk', 'url', 'created', 'updated', 'name', 'reference',
+        fields = ('pk', 'url', 'created', 'modified', 'name', 'reference',
                   'barcode_set', 'barcode', 'barcode_set2', 'barcode2',
                   'lane_numbers', 'flow_cell')
 
@@ -71,11 +71,11 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = threads_models.Message
-        fields = ('pk', 'url', 'created', 'updated', 'title', 'body',
+        fields = ('pk', 'url', 'created', 'modified', 'title', 'body',
                   'thread_object', 'attachments')
 
 
 class AttachmentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = threads_models.Attachment
-        fields = ('pk', 'url', 'created', 'updated', 'message', 'payload')
+        fields = ('pk', 'url', 'created', 'modified', 'message', 'payload')
