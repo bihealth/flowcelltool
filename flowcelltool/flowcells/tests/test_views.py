@@ -790,7 +790,7 @@ class TestFlowCellImportView(
                 {'json_file': payload})
 
         # Check response
-        flowcell = FlowCell.objects.order_by('-created_at')[0]
+        flowcell = FlowCell.objects.order_by('-created')[0]
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
@@ -1223,7 +1223,7 @@ class TestBarcodeSetImportView(SuperUserTestCase):
                 {'json_file': payload})
 
         # Check response
-        barcodeset = BarcodeSet.objects.order_by('-created_at')[0]
+        barcodeset = BarcodeSet.objects.order_by('-created')[0]
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',

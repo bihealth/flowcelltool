@@ -13,25 +13,11 @@ from django.contrib.contenttypes.fields import GenericRelation
 from flowcelltool.users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator, \
     RegexValidator
+from model_utils.models import TimeStampedModel
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
 
 from ..threads.models import Message, Attachment
-
-
-# TimeStampedModel ------------------------------------------------------------
-
-
-class TimeStampedModel(models.Model):
-    """Base class that adds the created_ad and updated_add field"""
-
-    #: Timestamp for creation time
-    created_at = models.DateTimeField(auto_now_add=True)
-    #: Timestamp for last update
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
 
 
 # SequencingMachine and related -----------------------------------------------

@@ -17,7 +17,7 @@
             {% else %}
               {{ message.author }}
             {% endif %}
-            at {{ message.created_at }}
+            at {{ message.created }}
           </small>
 
           {% has_perm 'flowcells.change_message' request.user message as can_change_message %}
