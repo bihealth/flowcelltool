@@ -16,6 +16,9 @@ urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
 
+    # Django db file storage
+    url(r'^files/', include('db_file_storage.urls')),
+
     # Stock login and logout
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout_then_login, name='logout'),
