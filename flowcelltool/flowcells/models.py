@@ -292,7 +292,7 @@ class FlowCell(TimeStampedModel):
     vendor_id = models.CharField(max_length=40)
 
     #: The label of the flow cell
-    label = models.CharField(max_length=100)
+    label = models.CharField(blank=True, null=True, max_length=100)
 
     #: Short description length
     description = models.TextField(
