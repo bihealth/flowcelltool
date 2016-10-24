@@ -215,6 +215,8 @@ class TestsSampleSheetGenerator(
     def setUp(self):
         self.user = self.make_user()
         self.machine = self._make_machine()
+        self.machine.dual_index_workflow = models.INDEX_WORKFLOW_B
+        self.machine.save()
         self.barcode_set = self._make_barcode_set()
         self.barcode = self._make_barcode_set_entry(self.barcode_set)
         self.barcode2 = self._make_barcode_set_entry(
@@ -233,6 +235,7 @@ class TestsSampleSheetGenerator(
             self.flow_cell)
 
     def test_build_yaml(self):
+        self.maxDiff = None
         RESULT = self.generator.build_yaml()
         EXPECTED = textwrap.dedent(r"""
             # CUBI Flow Cell YAML
@@ -250,6 +253,10 @@ class TestsSampleSheetGenerator(
                   barcode:
                     name: 'AR01'
                     seq: 'ACGTGTTA'
+                  barcode_set2: 'SureSelectTest'
+                  barcode2:
+                    name: 'AR02'
+                    seq: 'TATATCG'
                   lanes: [1, 2]
         """).lstrip()
         self.assertEqual(RESULT, EXPECTED)

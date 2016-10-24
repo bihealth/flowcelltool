@@ -9,7 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.core.exceptions import ValidationError
 
-from .models import BarcodeSet, FlowCell, SequencingMachine
+from .models import (
+    BarcodeSet, FlowCell, SequencingMachine, INDEX_WORKFLOW_A)
 
 
 __author__ = 'Manuel Holtgrewe <manuel.holtgrewe@bihealth.de>'
@@ -181,6 +182,26 @@ class FlowCellLoader:  # pylint:disable=too-few-public-methods
             return flow_cell
 
 
+def revcomp(s):
+    """Reverse complement function"""
+    MAP = {
+        'A': 'T',
+        'a': 't',
+        'C': 'G',
+        'c': 'g',
+        'g': 'c',
+        'G': 'C',
+        'T': 'A',
+        't': 'a',
+    }
+    return ''.join(reversed([MAP.get(x, x) for x in s]))
+
+
+def identity(s):
+    """Identity function"""
+    return s
+
+
 class FlowCellSampleSheetGenerator:
     """Helper class for generating sample sheet from FlowCell instance"""
 
@@ -190,6 +211,11 @@ class FlowCellSampleSheetGenerator:
 
     def build_yaml(self):
         """Return YAML representation of sample sheet"""
+        if (self.flow_cell.sequencing_machine.dual_index_workflow ==
+                INDEX_WORKFLOW_A):
+            idx2mod = identity
+        else:
+            idx2mod = revcomp
         rows = [
             '# CUBI Flow Cell YAML',
             '- name: {}'.format(repr(self.flow_cell.get_full_name())),
@@ -209,11 +235,25 @@ class FlowCellSampleSheetGenerator:
             rows += [
                 '    - name: {}'.format(repr(lib.name)),
                 '      reference: {}'.format(repr(lib.reference)),
-                '      barcode_set: {}'.format(repr(
-                    lib.barcode_set.short_name)),
-                '      barcode:',
-                '        name: {}'.format(repr(lib.barcode.name)),
-                '        seq: {}'.format(repr(lib.barcode.sequence)),
+            ]
+            if lib.barcode_set and lib.barcode:
+                rows += [
+                    '      barcode_set: {}'.format(repr(
+                        lib.barcode_set.short_name)),
+                    '      barcode:',
+                    '        name: {}'.format(repr(lib.barcode.name)),
+                    '        seq: {}'.format(repr(lib.barcode.sequence)),
+                ]
+            if lib.barcode_set2 and lib.barcode2:
+                rows += [
+                    '      barcode_set2: {}'.format(repr(
+                        lib.barcode_set2.short_name)),
+                    '      barcode2:',
+                    '        name: {}'.format(repr(lib.barcode2.name)),
+                    '        seq: {}'.format(repr(idx2mod(
+                        lib.barcode2.sequence))),
+                ]
+            rows += [
                 '      lanes: {}'.format(list(sorted(lib.lane_numbers))),
             ]
         return '\n'.join(rows) + '\n'
