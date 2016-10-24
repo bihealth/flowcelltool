@@ -350,7 +350,7 @@ class FlowCell(TimeStampedModel):
                                self.label)):
             return ''
         else:
-            return '_'.join(map(str, (
+            return '_'.join(map(str, [x for x in [
                 '' if not self.run_date else self.run_date.strftime('%y%m%d'),
                 ('' if not self.sequencing_machine
                  else self.sequencing_machine.vendor_id),
@@ -358,7 +358,7 @@ class FlowCell(TimeStampedModel):
                 self.slot,
                 self.vendor_id,
                 self.label
-            )))
+            ] if x]))
 
     @property
     def sorted_libraries(self):
