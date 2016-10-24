@@ -304,19 +304,22 @@ class TestLibrary(
         with self.assertRaises(ValidationError):
             self._make_library(
                 self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
-                self.barcode_set, self.barcode2, [2])
-
-    def test_validate_uniqueness_violate_barcode(self):
-        with self.assertRaises(ValidationError):
-            self._make_library(
-                self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
                 self.barcode_set, self.barcode, [2])
 
-    def test_validate_uniqueness_violate_barcode2(self):
+    def test_validate_uniqueness_violate_barcode_one(self):
+        # no exception raised below
+        self._make_library(
+            self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode, [2])
+        self._make_library(
+            self.flow_cell, 'LIB_003', models.REFERENCE_HUMAN,
+            None, None, [2], self.barcode_set, self.barcode2)
+
+    def test_validate_uniqueness_violate_barcode_both(self):
         with self.assertRaises(ValidationError):
             self._make_library(
                 self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
-                self.barcode_set, self.barcode2, [2],
+                self.barcode_set, self.barcode, [2],
                 self.barcode_set, self.barcode2)
 
     def test_validate_lane_nos(self):
