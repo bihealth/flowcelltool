@@ -36,6 +36,9 @@ MACHINE_MODEL_HISEQ1000 = 'HiSeq1000'
 #: Key value for machine model HiSeq1500
 MACHINE_MODEL_HISEQ1500 = 'HiSeq1500'
 
+#: Key value for machine model HiSeq2000
+MACHINE_MODEL_HISEQ2000 = 'HiSeq2000'
+
 #: Key value for machine model HiSeq3000
 MACHINE_MODEL_HISEQ3000 = 'HiSeq3000'
 
@@ -52,6 +55,7 @@ MACHINE_MODELS = (
     (MACHINE_MODEL_NEXTSEQ500, 'NextSeq 500'),
     (MACHINE_MODEL_HISEQ1000, 'HiSeq 1000'),
     (MACHINE_MODEL_HISEQ1500, 'HiSeq 1500'),
+    (MACHINE_MODEL_HISEQ2000, 'HiSeq 2000'),
     (MACHINE_MODEL_HISEQ3000, 'HiSeq 3000'),
     (MACHINE_MODEL_HISEQ4000, 'HiSeq 4000'),
     (MACHINE_MODEL_OTHER, 'Other'),  # be a bit more future proof
@@ -519,18 +523,22 @@ class Library(TimeStampedModel):
             raise ValidationError(
                 ('There are libraries sharing flow cell lane with the '
                  'same name as {}'.format(self.name)))
-        # Check that no libraries exist with the same barcode
-        if libs_on_lanes.filter(barcode=self.barcode).exists():
+        # Check that no libraries exist with the same primary and secondary
+        # barcode
+        kwargs = {}
+        if self.barcode is None:
+            kwargs['barcode__isnull'] = True
+        else:
+            kwargs['barcode'] = self.barcode
+        if self.barcode2 is None:
+            kwargs['barcode2__isnull'] = True
+        else:
+            kwargs['barcode2'] = self.barcode2
+        if libs_on_lanes.filter(**kwargs).exists():
             raise ValidationError(
                 ('There are libraries sharing flow cell lane with the '
-                 'same barcode as {}: {}'.format(self.name, self.barcode)))
-        # Check that no libraries exist with the same secondary barcode
-        if self.barcode2:
-            if libs_on_lanes.filter(barcode2=self.barcode2).exists():
-                raise ValidationError(
-                    ('There are libraries sharing flow cell lane with the '
-                     'same secondary barcode as {}: {}'.format(
-                         self.name, self.barcode2)))
+                 'same barcodes as {}: {}/{}'.format(
+                     self.name, self.barcode, self.barcode2)))
 
     def get_absolute_url(self):
         return self.flow_cell.get_absolute_url()
