@@ -6,11 +6,11 @@
     - test properly
     - better user feedback during validation
 - Order entries in list displays
-- Fancy lane range input
 - improvements to messages module
     - allow attachment download
     - secure attachments
 - Form-like validation for API views
+- proper testing of xls copy and paste extraction
 
 ## long-term
 
