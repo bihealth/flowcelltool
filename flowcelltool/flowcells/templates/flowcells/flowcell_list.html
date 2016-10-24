@@ -32,7 +32,7 @@
       <tbody>
         {% for flowcell in object_list %}
           <tr>
-            <td>{{ flowcell.date|date:"ymd" }}</td>
+            <td>{{ flowcell.run_date|date:"ymd" }}</td>
             <td>{{ flowcell.status }}</td>
             <td>
               <a href="{% url 'instrument_view' pk=flowcell.sequencing_machine.pk %}"
