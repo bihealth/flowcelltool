@@ -20,6 +20,29 @@ from . import models
 from .widgets import IntegerRangeField
 
 
+# Helper code -----------------------------------------------------------------
+
+
+def get_object_or_none(klass, *args, **kwargs):
+    if hasattr(klass, '_default_manager'):
+        queryset = klass._default_manager.all()
+    else:
+        queryset = klass
+    try:
+        return queryset.get(*args, **kwargs)
+    except AttributeError:
+        klass__name = (
+            klass.__name__
+            if isinstance(klass, type)
+            else klass.__class__.__name__)
+        raise ValueError(
+            "First argument to get_object_or_404() must be a Model, Manager, "
+            "or QuerySet, not '%s'." % klass__name
+        )
+    except queryset.model.DoesNotExist:
+        return None
+
+
 # Advanced ModelChoice fields -------------------------------------------------
 
 
@@ -176,8 +199,10 @@ class FlowCellForm(forms.ModelForm):
             FLOW_CELL_NAME_RE, self.cleaned_data.pop('name')).groupdict()
         self.cleaned_data['run_date'] = datetime.datetime.strptime(
             name_dict['date'], '%y%m%d').date()
-        self.cleaned_data['sequencing_machine'] = get_object_or_404(
+        self.cleaned_data['sequencing_machine'] = get_object_or_none(
             models.SequencingMachine, vendor_id=name_dict['machine_name'])
+        if self.cleaned_data['sequencing_machine'] is None:
+            self.add_error('name', 'Unknown sequencing machine')
         self.cleaned_data['run_number'] = int(name_dict['run_no'])
         self.cleaned_data['slot'] = name_dict['slot']
         self.cleaned_data['vendor_id'] = name_dict['vendor_id']
