@@ -177,8 +177,10 @@ class FlowCellForm(forms.ModelForm):
     name = forms.CharField(
         max_length=100,
         validators=[
-            RegexValidator(FLOW_CELL_NAME_RE,
-                           message='Invalid flow cell name')],
+            RegexValidator(
+                FLOW_CELL_NAME_RE,
+                message=('Invalid flow cell name. Did you forgot the '
+                         'underscore between the slot and the vendor ID?'))],
         help_text=('The full flow cell name, e.g., '
                    '160303_ST-K12345_0815_A_BCDEFGHIXX_LABEL'))
 
@@ -195,6 +197,8 @@ class FlowCellForm(forms.ModelForm):
             self.fields['name'].initial = self.instance.get_full_name()
 
     def clean(self):
+        if not 'name' in self.cleaned_data:
+            return self.cleaned_data  # give up, wrong format
         name_dict = re.match(
             FLOW_CELL_NAME_RE, self.cleaned_data.pop('name')).groupdict()
         self.cleaned_data['run_date'] = datetime.datetime.strptime(
