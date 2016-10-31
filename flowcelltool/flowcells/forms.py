@@ -367,25 +367,20 @@ class PickColumnsForm(forms.Form):
     #: Barcode set for barcode 1
     barcode_set = forms.ModelChoiceField(
         required=False,
+        label='Barcode set 1',
         queryset=models.BarcodeSet.objects.order_by('name'))
-
-    #: Barcode set for barcode 2
-    barcode_set2 = forms.ModelChoiceField(
-        required=False,
-        queryset=models.BarcodeSet.objects.order_by('name'),
-        label='Barcode set',
-        help_text='Leave empty for no barcodes')
 
     #: Select column for barcode 1
     barcode_column = forms.IntegerField(
         min_value=1,
         required=False,
-        label='Barcode column index',
+        label='Barcode 1 column index',
         help_text='Leave empty for no barcodes. The first column has index 1')
 
     #: Barcode set for barcode 2
     barcode_set2 = forms.ModelChoiceField(
         required=False,
+        label='Barcode set 2',
         queryset=models.BarcodeSet.objects.order_by('name'),
         help_text='Leave empty for no secondary barcodes')
 
@@ -393,7 +388,7 @@ class PickColumnsForm(forms.Form):
     barcode2_column = forms.IntegerField(
         min_value=1,
         required=False,
-        label='Barcode column index',
+        label='Barcode 2 column index',
         help_text=('Leave empty for no secondary barcodes. The first column '
                    'has index 1'))
 
