@@ -36,3 +36,46 @@
 [hidden][style="display: block;"] {
   display: block !important;
 }
+
+/* Tag group, for flow cell layout view */
+.tag-group {
+    padding: 2px;
+}
+
+.tag-group > .tag:not(:first-child):not(:last-child) {
+	border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+	border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.tag-group > .tag:first-child {
+	border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-right: 0;
+}
+
+.tag-group > .tag:last-child {
+	border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: 0;
+}
+
+.sheet-pane {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-top: none;
+
+	height: 400px;
+	overflow: auto;
+}
+
+@media print
+{
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+}

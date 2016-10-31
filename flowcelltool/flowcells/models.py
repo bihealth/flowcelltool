@@ -360,6 +360,17 @@ class FlowCell(TimeStampedModel):
                 self.label
             ] if x]))
 
+    def get_lanes(self):
+        """Return a list of Library lists, for the layout on the flow cell"""
+        try:
+            lanes = [[] for i in range(self.num_lanes)]
+            for lib in self.libraries.order_by('name'):
+                for lane in lib.lane_numbers:
+                    lanes[lane - 1].append(lib)
+            return lanes
+        except IndexError:
+            return '(invalid)'
+
     @property
     def sorted_libraries(self):
         """Return libraries entries, sorted by name"""
