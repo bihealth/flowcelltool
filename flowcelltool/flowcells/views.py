@@ -293,6 +293,9 @@ class FlowCellListView(
 
     queryset = models.FlowCell.objects.order_by('run_date')
 
+    #: Pagination with 50 items should work fine for us
+    paginate_by = 50
+
 
 class FlowCellCreateView(
         LoginRequiredMixin, PermissionRequiredMixin, CreateView):
