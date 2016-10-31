@@ -17,7 +17,7 @@
             {% else %}
               {{ message.author }}
             {% endif %}
-            at {{ message.created_at }}
+            at {{ message.created }}
           </small>
 
           {% has_perm 'flowcells.change_message' request.user message as can_change_message %}
@@ -56,7 +56,7 @@
             {% for attachment in message.attachments.all %}
               <li class="list-group-item">
                 <i class="fa fa-{{ attachment.payload.file.mimetype|fa_mime_type }}" aria-hidden="true"></i>
-                <a href="{#% url 'db_file_storage.download_file' %}?name={{ attachment.payload }}#}">
+                <a href="{% url 'db_file_storage.download_file' %}?name={{ attachment.payload }}">
                   {{ attachment.payload.file.filename }}
                 </a>
                 ({{ attachment.payload.file.size|sizify }})

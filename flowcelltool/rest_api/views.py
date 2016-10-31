@@ -10,7 +10,7 @@ from ..flowcells import models
 from ..users.models import User
 from . import serializers
 
-# Permission Helpers ----------------------------------------------------------
+# Permission Helpers -----------------------------------------------------
 
 
 class RulesBackedPermissions(permissions.BasePermission):
@@ -57,7 +57,7 @@ class RulesBackedPermissions(permissions.BasePermission):
         return (
             request.user and
             (permissions.is_authenticated(request.user) or
-            not self.authenticated_users_only) and
+             not self.authenticated_users_only) and
             all(request.user.has_perm(perm) for perm in perms))
 
     def has_object_permission(self, request, view, obj):
@@ -96,7 +96,7 @@ class RulesBackedPermissions(permissions.BasePermission):
         return True
 
 
-# DRF API ViewSets ------------------------------------------------------------
+# DRF API ViewSets -------------------------------------------------------
 
 
 class BaseViewSet(viewsets.ModelViewSet):
@@ -113,42 +113,42 @@ class UserViewSet(BaseViewSet):
 class SequencingMachineViewSet(BaseViewSet):
     """API endpoint for SequencingMachine"""
 
-    queryset = models.SequencingMachine.objects.all().order_by('created_at')
+    queryset = models.SequencingMachine.objects.all().order_by('created')
     serializer_class = serializers.SequencingMachineSerializer
 
 
 class BarcodeSetViewSet(BaseViewSet):
     """API endpoint for BarcodeSet"""
 
-    queryset = models.BarcodeSet.objects.all().order_by('created_at')
+    queryset = models.BarcodeSet.objects.all().order_by('created')
     serializer_class = serializers.BarcodeSetSerializer
 
 
 class BarcodeSetEntryViewSet(BaseViewSet):
     """API endpoint for BarcodeSetEntry"""
 
-    queryset = models.BarcodeSetEntry.objects.all().order_by('created_at')
+    queryset = models.BarcodeSetEntry.objects.all().order_by('created')
     serializer_class = serializers.BarcodeSetEntrySerializer
 
 
 class FlowCellViewSet(BaseViewSet):
     """API endpoint for FlowCell"""
 
-    queryset = models.FlowCell.objects.all().order_by('created_at')
+    queryset = models.FlowCell.objects.all().order_by('created')
     serializer_class = serializers.FlowCellSerializer
 
 
 class LibraryViewSet(BaseViewSet):
     """API endpoint for Library"""
 
-    queryset = models.Library.objects.all().order_by('created_at')
+    queryset = models.Library.objects.all().order_by('created')
     serializer_class = serializers.LibrarySerializer
 
 
 class MessageViewSet(BaseViewSet):
     """API endpoint for Message"""
 
-    queryset = models.Message.objects.all().order_by('created_at')
+    queryset = models.Message.objects.all().order_by('created')
     serializer_class = serializers.MessageSerializer
 
     def perform_create(self, serializer):
@@ -158,5 +158,5 @@ class MessageViewSet(BaseViewSet):
 class AttachmentViewSet(BaseViewSet):
     """API endpoint for Message"""
 
-    queryset = models.Attachment.objects.all().order_by('created_at')
+    queryset = models.Attachment.objects.all().order_by('created')
     serializer_class = serializers.AttachmentSerializer

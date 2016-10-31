@@ -28,7 +28,7 @@
         {% if can_add_message %}
         <a class="dropdown-item"
             href="{% url 'flowcell_add_message' related_pk=object.pk %}"
-            title="Add message to {{ object.token_vendor_id }}">
+            title="Add message to {{ object.vendor_id }}">
           <i class="fa fa-reply" aria-hidden="true"></i>
           Add Message
         </a>
@@ -36,13 +36,13 @@
         {% if can_change_flowcell %}
         <a class="dropdown-item"
             href="{% url 'flowcell_updatelibraries' pk=object.pk %}"
-            title="Update libraries {{ object.token_vendor_id }}">
+            title="Update libraries {{ object.vendor_id }}">
           <i class="fa fa-table" aria-hidden="true"></i>
           Update Libraries
         </a>
         <a class="dropdown-item"
             href="{% url 'flowcell_extract' pk=object.pk %}"
-            title="Copy and paste libraries for {{ object.token_vendor_id }}">
+            title="Copy and paste libraries for {{ object.vendor_id }}">
           <i class="fa fa-clipboard" aria-hidden="true"></i>
           Copy &amp; Paste XLS
         </a>
@@ -54,7 +54,7 @@
         </a>
         <a class="dropdown-item"
             href="{% url 'flowcell_update' pk=object.pk %}"
-            title="Update flow cell {{ object.token_vendor_id }}">
+            title="Update flow cell {{ object.vendor_id }}">
           <i class="fa fa-pencil" aria-hidden="true"></i>
           Update
         </a>
@@ -62,7 +62,7 @@
         {% if can_delete_flowcell %}
         <a class="dropdown-item"
             href="{% url 'flowcell_delete' pk=object.pk %}"
-            title="Delete flow cell {{ object.token_vendor_id }}">
+            title="Delete flow cell {{ object.vendor_id }}">
           <i class="fa fa-eraser" aria-hidden="true"></i>
           Delete
         </a>

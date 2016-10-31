@@ -8,10 +8,12 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
-from rest_framework.schemas import get_schema_view
 
 from flowcelltool.flowcells.views import HomeView
-from flowcelltool.rest_api import urls as rest_api_urls
+
+if settings.REST_API:
+    from rest_framework.schemas import get_schema_view
+    from flowcelltool.rest_api import urls as rest_api_urls
 
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),

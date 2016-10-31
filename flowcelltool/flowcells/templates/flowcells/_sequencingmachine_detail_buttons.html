@@ -18,7 +18,7 @@
           {% if can_delete_sequencingmachine %}
           <a class="dropdown-item"
               href="{% url 'instrument_delete' pk=object.pk %}"
-              title="Delete flow cell {{ object.token_vendor_id }}">
+              title="Delete flow cell {{ object.vendor_id }}">
             <i class="fa fa-eraser" aria-hidden="true"></i>
             Delete
           </a>
@@ -26,7 +26,7 @@
           {% if can_change_sequencingmachine %}
           <a class="dropdown-item"
               href="{% url 'instrument_update' pk=object.pk %}"
-              title="Update flow cell {{ object.token_vendor_id }}">
+              title="Update flow cell {{ object.vendor_id }}">
             <i class="fa fa-pencil" aria-hidden="true"></i>
             Update
           </a>

@@ -2,10 +2,12 @@
 """Tests for the models from the flowcelltools Django app
 """
 
-from test_plus.test import TestCase
+import datetime
 
 from django.forms.models import model_to_dict
 from django.core.exceptions import ValidationError
+
+from test_plus.test import TestCase
 
 from .. import models
 
@@ -156,11 +158,17 @@ class FlowCellMixin:
 
     @classmethod
     def _make_flow_cell(
-            cls, owner, name, num_lanes, status, operator, is_paired,
+            cls, owner, run_date, sequencing_machine, run_number, slot,
+            vendor_id, label, num_lanes, status, operator, is_paired,
             index_read_count, rta_version, read_length, description):
         values = {
             'owner': owner,
-            'name': name,
+            'run_date': run_date,
+            'sequencing_machine': sequencing_machine,
+            'run_number': run_number,
+            'slot': slot,
+            'vendor_id': vendor_id,
+            'label': label,
             'num_lanes': num_lanes,
             'status': status,
             'operator': operator,
@@ -183,18 +191,15 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
         self.machine = self._make_machine()
         self.barcode_set = self._make_barcode_set()
         self.barcode = self._make_barcode_set_entry(self.barcode_set)
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
     def test_initialization(self):
         EXPECTED = {
             'id': self.flow_cell.pk,
             'owner': self.user.pk,
-            'name': self.flow_cell_name,
             'description': 'Description',
             'sequencing_machine': self.machine.pk,
             'num_lanes': 8,
@@ -204,6 +209,12 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
             'index_read_count': 1,
             'rta_version': models.RTA_VERSION_V2,
             'read_length': 151,
+            'label': 'LABEL',
+            'run_date': datetime.date(2016, 3, 3),
+            'run_number': 815,
+            'slot': 'A',
+            'status': 'seq_complete',
+            'vendor_id': 'BCDEFGHIXX',
         }
         self.assertEqual(model_to_dict(self.flow_cell), EXPECTED)
 
@@ -213,25 +224,12 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
 
     def test__repr__(self):
         EXPECTED = (
-            r"""FlowCell('160303_NS5001234_0815_A_BCDEFGHIXX_LABEL', """
-            r"""SequencingMachine('NS5001234', 'NextSeq#1', 'In corner of """
-            r"""lab 101', 'NextSeq500', 1, 'A'), 8, 'seq_complete', """
-            r"""'John Doe', True, 1, 2, 151)""")
+            r"""FlowCell(datetime.date(2016, 3, 3), """
+            r"""SequencingMachine('NS5001234', 'NextSeq#1', """
+            r"""'In corner of lab 101', 'NextSeq500', 1, 'A'), 815, 'A', """
+            r"""'BCDEFGHIXX', 'LABEL', 8, 'seq_complete', 'John Doe', """
+            r"""True, 1, 2, 151)""")
         self.assertEqual(repr(self.flow_cell), EXPECTED)
-
-    def test_validate_sequencer(self):
-        self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
-
-    def test_tokens(self):
-        self.assertEquals(self.flow_cell.token_date(), '160303')
-        self.assertEquals(self.flow_cell.token_instrument(), 'NS5001234')
-        self.assertEquals(self.flow_cell.token_run_no(), '0815')
-        self.assertEquals(self.flow_cell.token_slot(), 'A')
-        self.assertEquals(self.flow_cell.token_vendor_id(), 'BCDEFGHIXX')
-        self.assertEquals(self.flow_cell.token_label(), 'LABEL')
 
 
 class LibraryMixin:
@@ -267,12 +265,10 @@ class TestLibrary(
         self.barcode = self._make_barcode_set_entry(self.barcode_set)
         self.barcode2 = self._make_barcode_set_entry(
             self.barcode_set, 'AR02', 'CGATATA')
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode, [1, 2],
@@ -308,19 +304,22 @@ class TestLibrary(
         with self.assertRaises(ValidationError):
             self._make_library(
                 self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
-                self.barcode_set, self.barcode2, [2])
-
-    def test_validate_uniqueness_violate_barcode(self):
-        with self.assertRaises(ValidationError):
-            self._make_library(
-                self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
                 self.barcode_set, self.barcode, [2])
 
-    def test_validate_uniqueness_violate_barcode2(self):
+    def test_validate_uniqueness_violate_barcode_one(self):
+        # no exception raised below
+        self._make_library(
+            self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
+            self.barcode_set, self.barcode, [2])
+        self._make_library(
+            self.flow_cell, 'LIB_003', models.REFERENCE_HUMAN,
+            None, None, [2], self.barcode_set, self.barcode2)
+
+    def test_validate_uniqueness_violate_barcode_both(self):
         with self.assertRaises(ValidationError):
             self._make_library(
                 self.flow_cell, 'LIB_002', models.REFERENCE_HUMAN,
-                self.barcode_set, self.barcode2, [2],
+                self.barcode_set, self.barcode, [2],
                 self.barcode_set, self.barcode2)
 
     def test_validate_lane_nos(self):

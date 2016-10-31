@@ -7,7 +7,7 @@ DEMUX_OPERATOR = 'Demultiplexing Operator'
 DEMUX_ADMIN = 'Demultiplexing Admin'
 IMPORT_BOT = 'Import Bot'
 
-# Predicates ------------------------------------------------------------------
+# Predicates -------------------------------------------------------------
 
 
 @rules.predicate
@@ -62,11 +62,11 @@ is_demux_admin = rules.is_group_member(DEMUX_ADMIN)
 is_import_bot = rules.is_group_member(IMPORT_BOT)
 
 
-# Rules -----------------------------------------------------------------------
+# Rules ------------------------------------------------------------------
 
 # TODO: I don't see what I need rules for if I have permissions...
 
-# Permissions -----------------------------------------------------------------
+# Permissions ------------------------------------------------------------
 
 # Allow everyone access to flowcells app
 rules.add_perm('flowcells', rules.always_allow)

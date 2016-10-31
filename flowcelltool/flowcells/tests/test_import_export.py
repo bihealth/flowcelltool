@@ -2,6 +2,7 @@
 """Tests for module import_export
 """
 
+import datetime
 import textwrap
 
 from test_plus.test import TestCase
@@ -98,12 +99,10 @@ class TestsFlowCellDumper(
         self.barcode = self._make_barcode_set_entry(self.barcode_set)
         self.barcode2 = self._make_barcode_set_entry(
             self.barcode_set, 'AR02', 'CGATATA')
-        self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
-            self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode, [1, 2],
@@ -113,7 +112,12 @@ class TestsFlowCellDumper(
         RESULT = import_export.FlowCellDumper.run(self.flow_cell)
         EXPECTED = textwrap.dedent(r"""
             {
-              "name": "160303_NS5001234_0815_A_BCDEFGHIXX_LABEL",
+              "run_date": "2016-03-03",
+              "sequencing_machine": "NS5001234",
+              "run_number": 815,
+              "slot": "A",
+              "vendor_id": "BCDEFGHIXX",
+              "label": "LABEL",
               "description": "Description",
               "num_lanes": 8,
               "status": "seq_complete",
@@ -158,7 +162,12 @@ class TestsFlowCellLoader(
     def test_run(self):
         JSON = textwrap.dedent(r"""
             {
-              "name": "160303_NS5001234_0815_A_BCDEFGHIXX_LABEL",
+              "run_date": "2016-03-03",
+              "sequencing_machine": "NS5001234",
+              "run_number": 815,
+              "slot": "A",
+              "vendor_id": "BCDEFGHIXX",
+              "label": "LABEL",
               "description": "Description",
               "num_lanes": 8,
               "status": "seq_complete",
@@ -191,7 +200,8 @@ class TestsFlowCellLoader(
         self.assertEquals(models.FlowCell.objects.all().count(), 1)
         flow_cell = models.FlowCell.objects.all()[0]
         self.assertEquals(
-            flow_cell.name, '160303_NS5001234_0815_A_BCDEFGHIXX_LABEL')
+            flow_cell.get_full_name(),
+            '160303_NS5001234_0815_A_BCDEFGHIXX_LABEL')
 
         self.assertEquals(models.Library.objects.all().count(), 1)
         library = models.Library.objects.all()[0]
@@ -205,6 +215,8 @@ class TestsSampleSheetGenerator(
     def setUp(self):
         self.user = self.make_user()
         self.machine = self._make_machine()
+        self.machine.dual_index_workflow = models.INDEX_WORKFLOW_B
+        self.machine.save()
         self.barcode_set = self._make_barcode_set()
         self.barcode = self._make_barcode_set_entry(self.barcode_set)
         self.barcode2 = self._make_barcode_set_entry(
@@ -212,9 +224,9 @@ class TestsSampleSheetGenerator(
         self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
             self.machine.vendor_id)
         self.flow_cell = self._make_flow_cell(
-            self.user, self.flow_cell_name, 8,
-            models.FLOWCELL_STATUS_SEQ_COMPLETE, 'John Doe',
-            True, 1, models.RTA_VERSION_V2, 151, 'Description')
+            self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
+            'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
+            'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
         self.library = self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode, [1, 2],
@@ -223,6 +235,7 @@ class TestsSampleSheetGenerator(
             self.flow_cell)
 
     def test_build_yaml(self):
+        self.maxDiff = None
         RESULT = self.generator.build_yaml()
         EXPECTED = textwrap.dedent(r"""
             # CUBI Flow Cell YAML
@@ -240,6 +253,10 @@ class TestsSampleSheetGenerator(
                   barcode:
                     name: 'AR01'
                     seq: 'ACGTGTTA'
+                  barcode_set2: 'SureSelectTest'
+                  barcode2:
+                    name: 'AR02'
+                    seq: 'TATATCG'
                   lanes: [1, 2]
         """).lstrip()
         self.assertEqual(RESULT, EXPECTED)

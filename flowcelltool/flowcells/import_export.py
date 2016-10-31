@@ -2,13 +2,15 @@
 """Code for importing and exporting database records to YAML/JSON"""
 
 from collections import OrderedDict
+import datetime
 import json
 
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.core.exceptions import ValidationError
 
-from .models import BarcodeSet, FlowCell
+from .models import (
+    BarcodeSet, FlowCell, SequencingMachine, INDEX_WORKFLOW_A)
 
 
 __author__ = 'Manuel Holtgrewe <manuel.holtgrewe@bihealth.de>'
@@ -78,11 +80,14 @@ class FlowCellDumper:  # pylint:disable=too-few-public-methods
     def run(cls, flow_cell):
         """Return JSON dump of FlowCell in flow_cell as string"""
         # Get base fields
-        result = OrderedDict()
-        for key in ('name', 'description', 'num_lanes',
-                    'status', 'operator', 'is_paired',
-                    'index_read_count', 'rta_version',
-                    'read_length'):
+        result = OrderedDict([
+            ('run_date', flow_cell.run_date.strftime('%Y-%m-%d')),
+            ('sequencing_machine', flow_cell.sequencing_machine.vendor_id),
+        ])
+        for key in (
+                'run_number', 'slot', 'vendor_id', 'label', 'description',
+                'num_lanes', 'status', 'operator', 'is_paired',
+                'index_read_count', 'rta_version', 'read_length'):
             result[key] = getattr(flow_cell, key)
         # Get barcode set entries
         result['libraries'] = []
@@ -127,8 +132,17 @@ class FlowCellLoader:  # pylint:disable=too-few-public-methods
         """Load FlowCell object form json_string"""
         deserialized = json.loads(json_string)
         with transaction.atomic():
+            sequencing_machine = get_object_or_404(
+                SequencingMachine,
+                vendor_id=deserialized.get('sequencing_machine'))
             flow_cell = FlowCell(
-                name=deserialized['name'],
+                run_date=datetime.datetime.strptime(
+                    deserialized['run_date'], '%Y-%m-%d'),
+                sequencing_machine=sequencing_machine,
+                run_number=deserialized['run_number'],
+                slot=deserialized['slot'],
+                vendor_id=deserialized['vendor_id'],
+                label=deserialized['label'],
                 description=deserialized['description'],
                 num_lanes=deserialized['num_lanes'],
                 status=deserialized['status'],
@@ -168,6 +182,26 @@ class FlowCellLoader:  # pylint:disable=too-few-public-methods
             return flow_cell
 
 
+def revcomp(s):
+    """Reverse complement function"""
+    MAP = {
+        'A': 'T',
+        'a': 't',
+        'C': 'G',
+        'c': 'g',
+        'g': 'c',
+        'G': 'C',
+        'T': 'A',
+        't': 'a',
+    }
+    return ''.join(reversed([MAP.get(x, x) for x in s]))
+
+
+def identity(s):
+    """Identity function"""
+    return s
+
+
 class FlowCellSampleSheetGenerator:
     """Helper class for generating sample sheet from FlowCell instance"""
 
@@ -177,9 +211,14 @@ class FlowCellSampleSheetGenerator:
 
     def build_yaml(self):
         """Return YAML representation of sample sheet"""
+        if (self.flow_cell.sequencing_machine.dual_index_workflow ==
+                INDEX_WORKFLOW_A):
+            idx2mod = identity
+        else:
+            idx2mod = revcomp
         rows = [
             '# CUBI Flow Cell YAML',
-            '- name: {}'.format(repr(self.flow_cell.name)),
+            '- name: {}'.format(repr(self.flow_cell.get_full_name())),
             '  num_lanes: {}'.format(self.flow_cell.num_lanes),
             '  operator: {}'.format(repr(self.flow_cell.operator)),
             '  rta_version: {}'.format(self.flow_cell.rta_version),
@@ -196,11 +235,25 @@ class FlowCellSampleSheetGenerator:
             rows += [
                 '    - name: {}'.format(repr(lib.name)),
                 '      reference: {}'.format(repr(lib.reference)),
-                '      barcode_set: {}'.format(repr(
-                    lib.barcode_set.short_name)),
-                '      barcode:',
-                '        name: {}'.format(repr(lib.barcode.name)),
-                '        seq: {}'.format(repr(lib.barcode.sequence)),
+            ]
+            if lib.barcode_set and lib.barcode:
+                rows += [
+                    '      barcode_set: {}'.format(repr(
+                        lib.barcode_set.short_name)),
+                    '      barcode:',
+                    '        name: {}'.format(repr(lib.barcode.name)),
+                    '        seq: {}'.format(repr(lib.barcode.sequence)),
+                ]
+            if lib.barcode_set2 and lib.barcode2:
+                rows += [
+                    '      barcode_set2: {}'.format(repr(
+                        lib.barcode_set2.short_name)),
+                    '      barcode2:',
+                    '        name: {}'.format(repr(lib.barcode2.name)),
+                    '        seq: {}'.format(repr(idx2mod(
+                        lib.barcode2.sequence))),
+                ]
+            rows += [
                 '      lanes: {}'.format(list(sorted(lib.lane_numbers))),
             ]
         return '\n'.join(rows) + '\n'
@@ -217,7 +270,7 @@ class FlowCellSampleSheetGenerator:
         for lib in self.flow_cell.libraries.order_by('name'):
             for lane_no in sorted(lib.lane_numbers):
                 rows.append([
-                    self.flow_cell.token_vendor_id(),
+                    self.flow_cell.vendor_id,
                     lane_no,
                     lib.name,
                     lib.reference,
@@ -232,10 +285,7 @@ class FlowCellSampleSheetGenerator:
 
     def build_v2(self):
         """To bcl2fastq v2 sample sheet CSV file"""
-        date = '{}/{}/{}'.format(
-            self.flow_cell.token_date()[0:2],
-            self.flow_cell.token_date()[2:4],
-            self.flow_cell.token_date()[4:6])
+        date = self.flow_cell.run_date.strftime("%y/%m/%d")
         rows = [
             ['[Header]'],
             ['IEMFileVersion', '4'],

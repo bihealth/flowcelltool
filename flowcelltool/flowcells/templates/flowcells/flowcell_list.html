@@ -32,7 +32,7 @@
       <tbody>
         {% for flowcell in object_list %}
           <tr>
-            <td>{{ flowcell.token_date }}</td>
+            <td>{{ flowcell.run_date|date:"ymd" }}</td>
             <td>{{ flowcell.status }}</td>
             <td>
               <a href="{% url 'instrument_view' pk=flowcell.sequencing_machine.pk %}"
@@ -42,8 +42,8 @@
               </td>
             <td>
               <a href="{% url 'flowcell_view' pk=flowcell.pk %}"
-                 title="Show flow cell {{ flowcell.token_vendor_id }} details">
-                {{ flowcell.token_vendor_id }}
+                 title="Show flow cell {{ flowcell.vendor_id }} details">
+                {{ flowcell.vendor_id }}
               </a>
             </td>
             <td>
@@ -92,7 +92,7 @@
                   {% if can_add_message %}
                   <a class="dropdown-item"
                       href="{% url 'flowcell_add_message' related_pk=flowcell.pk %}"
-                      title="Add message to {{ object.token_vendor_id }}">
+                      title="Add message to {{ object.vendor_id }}">
                     <i class="fa fa-reply" aria-hidden="true"></i>
                     Add Message
                   </a>

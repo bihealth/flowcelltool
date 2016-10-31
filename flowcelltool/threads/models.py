@@ -3,23 +3,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 from db_file_storage.model_utils import delete_file, delete_file_if_needed
+from model_utils.models import TimeStampedModel
 
 from django.conf import settings
-
-
-# TimeStampedModel ------------------------------------------------------------
-
-
-class TimeStampedModel(models.Model):
-    """Base class that adds the created_ad and updated_add field"""
-
-    #: Timestamp for creation time
-    created_at = models.DateTimeField(auto_now_add=True)
-    #: Timestamp for last update
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
 
 
 # Message and related ---------------------------------------------------------

@@ -20,6 +20,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from rules.contrib.views import PermissionRequiredMixin
 from formtools.wizard.views import SessionWizardView
+import pagerange
 
 from . import models, forms, import_export
 from ..threads.views import MessageCreateView, MessageUpdateView, \
@@ -276,13 +277,21 @@ class BarcodeSetEntryUpdateView(
 # FlowCell Views --------------------------------------------------------------
 
 
+#: All fields for the flow cell
+FLOW_CELL_FIELDS = (
+    'run_date', 'sequencing_machine', 'run_number', 'slot', 'vendor_id',
+    'label', 'description', 'num_lanes', 'status', 'operator', 'is_paired',
+    'index_read_count', 'rta_version', 'read_length',
+)
+
+
 class FlowCellListView(
         LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Shows a list of flow cells, this is the index page"""
 
     permission_required = 'flowcells.list_flowcell'
 
-    queryset = models.FlowCell.objects.order_by('name')
+    queryset = models.FlowCell.objects.order_by('run_date')
 
 
 class FlowCellCreateView(
@@ -294,9 +303,8 @@ class FlowCellCreateView(
     #: The model type to create
     model = models.FlowCell
 
-    #: Fields to show in the create view, the rest is auto-filled
-    fields = ('name', 'description', 'num_lanes', 'status', 'operator',
-              'is_paired', 'index_read_count', 'rta_version', 'read_length')
+    #: The form to use (for splitting name into tokens)
+    form_class = forms.FlowCellForm
 
     def form_valid(self, form):
         self.object = form.save(commit=False)  # noqa
@@ -338,9 +346,8 @@ class FlowCellUpdateView(
     #: The model type to create
     model = models.FlowCell
 
-    #: Fields to show in the create view, the rest is auto-filled
-    fields = ('name', 'description', 'num_lanes', 'status', 'operator',
-              'is_paired', 'index_read_count', 'rta_version', 'read_length')
+    #: The form to use (for splitting name into tokens)
+    form_class = forms.FlowCellForm
 
 
 class FlowCellDeleteView(
@@ -370,7 +377,7 @@ class FlowCellExportView(
                                 content_type='text/plain')
         response['Content-Disposition'] = (
             'attachment; filename="flowcell_{}.json"'.format(
-                flow_cell.token_vendor_id()))
+                flow_cell.vendor_id))
         return response
 
 
@@ -608,7 +615,7 @@ class FlowCellExtractLibrariesView(
                 row, pick_results['lane_numbers_column'])
             library = models.Library(
                 flow_cell=flow_cell,
-                name=row[pick_results['sample_column'] - 1],
+                name=row[pick_results['sample_column'] - 1].strip(),
                 reference=pick_results['reference'],
                 barcode_set=pick_results['barcode_set'],
                 barcode=barcode,
@@ -621,13 +628,15 @@ class FlowCellExtractLibrariesView(
     def _get_lane_numbers(self, row, lane_numbers_column):
         """Return list of integer lane numbers
         """
-        return list(map(int, row[lane_numbers_column - 1].split(',')))
+        return list(pagerange.PageRange(row[lane_numbers_column - 1]).pages)
 
     def _select_barcode(self, row, barcode_set, barcode_column):
         """Select barcode from barcode_set with "best" match
 
         The heuristic used for a "best" match is as follows:
 
+        - if the value from the pasted data is equal to the barcode set entry
+          name, pick this one
         - suffix has to be a suffix of the barcode name
         - count the number of preceding digits [1-9] before the suffix
         - the first one with fewest number of digits [1-9] wins
@@ -638,14 +647,18 @@ class FlowCellExtractLibrariesView(
         if not barcode_column:
             return None
         else:
-            suffix = row[barcode_column - 1]
+            suffix = row[barcode_column - 1].strip()
         candidates = []
         for entry in barcode_set.entries.all():
             if not entry.name.endswith(suffix):
                 continue  # ignore
-            m = re.match(r'([1-9]+)$', entry.name[:-(len(suffix))])
-            l = 0 if not m else len(m.groups(1))
-            candidates.append((l, entry))
+            elif suffix == entry.name:  # perfect match
+                candidates = [(0, entry)]
+                break
+            else:
+                m = re.match(r'([1-9]+)$', entry.name[:-(len(suffix))])
+                l = 0 if not m else len(m.groups(1))
+                candidates.append((l, entry))
         if not candidates:
             return None
         else:

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Flow Cell Details {{ object.token_vendor_id }}{% endblock %}
+{% block title %}Flow Cell Details {{ object.vendor_id }}{% endblock %}
 
 {% block content %}
-<h2>Flow Cell: {{ object.token_vendor_id }}</h2>
+<h2>Flow Cell: {{ object.vendor_id }}</h2>
 
 {% include "flowcells/_flowcell_detail_buttons.html" %}
 
