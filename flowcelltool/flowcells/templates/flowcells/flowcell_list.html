@@ -87,7 +87,7 @@
                     <i class="fa fa-wpforms" aria-hidden="true"></i>
                     Sheet Export
                   </a>
-                  {% has_perm 'flowcells.add_message' request.user as can_add_message %}
+                  {% has_perm 'threads.add_message' request.user as can_add_message %}
                   {% if can_add_message %}
                   <a class="dropdown-item"
                       href="{% url 'flowcell_add_message' related_pk=flowcell.pk %}"

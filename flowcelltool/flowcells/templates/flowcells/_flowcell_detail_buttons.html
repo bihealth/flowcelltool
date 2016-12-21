@@ -1,9 +1,4 @@
 {% load crispy_forms_filters %}
-{% load rules %}
-{% has_perm 'flowcells.update_flowcell' request.user flowcell as can_change_flowcell %}
-{% has_perm 'flowcells.delete_flowcell' request.user flowcell as can_delete_flowcell %}
-{% has_perm 'flowcells.add_message' request.user flowcell as can_add_message %}
-
 
 <div class="row">
   <div class="btn-group pull-right">
