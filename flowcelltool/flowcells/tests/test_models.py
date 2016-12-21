@@ -199,6 +199,7 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
     def test_initialization(self):
         EXPECTED = {
             'id': self.flow_cell.pk,
+            'demux_operator': None,
             'owner': self.user.pk,
             'description': 'Description',
             'sequencing_machine': self.machine.pk,

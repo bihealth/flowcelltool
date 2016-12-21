@@ -22,11 +22,8 @@
             <th class="col-md-1">Instrument</th>
             <th class="col-md-2">Flow Cell</th>
             <th class="col-md-1">Mode</th>
-            <th class="col-md-1" title="RTA version 1.x/2.x">RTAv</th>
-            <th class="col-md-2">Operator</th>
-            <th class="col-md-1 text-right">Libraries</th>
-            <th class="col-md-1">&nbsp;</th>
-            <th class="col-md-1">&nbsp;</th>
+            <th class="col-md-4">Seq./Demux. Operator</th>
+            <th class="col-md-2 text-right" colspan="3">Libraries</th>
         </tr>
       </thead>
       <tbody>
@@ -54,8 +51,10 @@
               {% endif %}
               {{ flowcell.read_length }}
             </td>
-            <td>{{ flowcell.rta_version }}</td>
-            <td>{{ flowcell.operator }}</td>
+            <td>
+              {{ flowcell.operator }} /
+              {{ flowcell.demux_operator|default:"-" }}
+            </td>
             <td>{{ flowcell.libraries.count }}</td>
             <td class="text-xs-right">
               {% if flowcell.description %}

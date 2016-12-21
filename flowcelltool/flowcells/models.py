@@ -331,8 +331,15 @@ class FlowCell(TimeStampedModel):
         choices=FLOWCELL_STATUS_CHOICES,
         help_text='Processing status of flow cell')
 
-    #: Name of the run operator
-    operator = models.CharField(max_length=100)
+    #: Name of the sequencing machine operator
+    operator = models.CharField(
+        max_length=100, verbose_name='Sequencer Operator')
+
+    #: The user responsible for demultiplexing
+    demux_operator = models.ForeignKey(
+        User, verbose_name='Demultiplexing Operator',
+        related_name='demuxed_flowcells', on_delete=models.SET_NULL,
+        null=True, blank=True, help_text='User responsible for demultiplexing')
 
     #: Whether or not the run was executed in a paired-end fashion
     is_paired = models.BooleanField(

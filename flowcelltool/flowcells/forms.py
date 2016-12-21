@@ -188,6 +188,7 @@ class FlowCellForm(forms.ModelForm):
         model = models.FlowCell
 
         fields = ('name', 'description', 'num_lanes', 'status', 'operator',
+                  'demux_operator',
                   'is_paired', 'index_read_count', 'rta_version',
                   'read_length')
 

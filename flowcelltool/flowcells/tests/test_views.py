@@ -104,6 +104,7 @@ class TestFlowCellCreateView(
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_INITIAL,
             'operator': 'John Doe',
+            'demux_operator': None,
             'is_paired': True,
             'index_read_count': 1,
             'rta_version': models.RTA_VERSION_V2,
@@ -168,6 +169,7 @@ class TestFlowCellUpdateView(
 
         # Simulate POST request
         values = model_to_dict(self.flow_cell)
+        values['demux_operator'] = ''
         values['name'] = self.flow_cell.get_full_name() + 'YADAYADAYADA'
         values['status'] = models.FLOWCELL_STATUS_DEMUX_COMPLETE
 
@@ -189,6 +191,7 @@ class TestFlowCellUpdateView(
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_DEMUX_COMPLETE,
             'operator': 'John Doe',
+            'demux_operator': None,
             'is_paired': True,
             'index_read_count': 1,
             'rta_version': models.RTA_VERSION_V2,
