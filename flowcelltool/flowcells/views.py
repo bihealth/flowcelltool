@@ -291,7 +291,9 @@ class FlowCellListView(
 
     permission_required = 'flowcells.list_flowcell'
 
-    queryset = models.FlowCell.objects.order_by('run_date')
+    #: Flow cells are sorted by run date (inferred from the name when being
+    #: created, latest come first)
+    queryset = models.FlowCell.objects.order_by('-run_date')
 
     #: Pagination with 50 items should work fine for us
     paginate_by = 50
