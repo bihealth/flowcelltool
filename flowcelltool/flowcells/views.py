@@ -42,7 +42,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         result = super().get_context_data(*args, **kwargs)
         result['num_flow_cells'] = models.FlowCell.objects.count()
-        result['num_libraries'] = models.FlowCell.objects.count()
+        result['num_libraries'] = models.Library.objects.count()
         result['num_barcode_sets'] = models.BarcodeSet.objects.count()
         return result
 
