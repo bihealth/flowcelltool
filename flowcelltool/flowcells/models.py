@@ -225,11 +225,17 @@ FLOWCELL_STATUS_SEQ_COMPLETE = 'seq_complete'
 #: Flow cell status key for sequencing failed
 FLOWCELL_STATUS_SEQ_FAILED = 'seq_failed'
 
+#: Flow cell status key for demultiplexing started
+FLOWCELL_STATUS_DEMUX_STARTED = 'demux_started'
+
 #: Flow cell status key for demultiplexing complete
 FLOWCELL_STATUS_DEMUX_COMPLETE = 'demux_complete'
 
 #: Flow cell status key for demultiplexing delivered
 FLOWCELL_STATUS_DEMUX_DELIVERED = 'demux_delivered'
+
+#: Flow cell status key for bcls delivered
+FLOWCELL_STATUS_BCL_DELIVERED = 'bcl_delivered'
 
 #: Flow cell status choices
 FLOWCELL_STATUS_CHOICES = (
@@ -244,9 +250,17 @@ FLOWCELL_STATUS_CHOICES = (
     (FLOWCELL_STATUS_SEQ_FAILED, 'sequencing failed'),
     #: demultiplexing has been completed
     (FLOWCELL_STATUS_DEMUX_COMPLETE, 'demultiplexing complete'),
+    #: demultiplexing running, the demultiplexing operator started filling
+    #: out the sample sheet in the flow cell tool and goes on running the
+    #: demultiplexing
+    (FLOWCELL_STATUS_DEMUX_STARTED, 'demultiplexing started'),
     #: demultiplexed files have been moved to their final destination, either
-    #: in-house or to a customer/project partner
+    #: in-house or to a customer/project partner, the raw base calls
+    #: might also be delivered
     (FLOWCELL_STATUS_DEMUX_DELIVERED, 'demultiplexing results delivered'),
+    #: raw BCL files have been delivered without demultiplexing as requested
+    #: by the customer/project partner
+    (FLOWCELL_STATUS_BCL_DELIVERED, 'base calls delivered'),
 )
 
 
