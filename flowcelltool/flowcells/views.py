@@ -25,6 +25,7 @@ import pagerange
 from . import models, forms, import_export
 from ..threads.views import MessageCreateView, MessageUpdateView, \
     MessageDeleteView
+from . import emails
 
 
 LOGGER = logging.getLogger(__name__)
@@ -44,6 +45,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
         result['num_flow_cells'] = models.FlowCell.objects.count()
         result['num_libraries'] = models.Library.objects.count()
         result['num_barcode_sets'] = models.BarcodeSet.objects.count()
+        result['num_sequencers'] = models.SequencingMachine.objects.count()
         return result
 
 
@@ -315,6 +317,8 @@ class FlowCellCreateView(
         self.object = form.save(commit=False)  # noqa
         self.object.owner = self.request.user
         self.object.save()
+        emails.email_flowcell_created(
+            self.request.user, self.object, self.request)
         return redirect(reverse(
             'flowcell_view', kwargs={'pk': self.object.pk}))
 
@@ -354,6 +358,12 @@ class FlowCellUpdateView(
     #: The form to use (for splitting name into tokens)
     form_class = forms.FlowCellForm
 
+    def form_valid(self, form):
+        result = super().form_valid(form)
+        emails.email_flowcell_updated(
+            self.request.user, self.object, self.request)
+        return result
+
 
 class FlowCellDeleteView(
         LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
@@ -366,6 +376,11 @@ class FlowCellDeleteView(
 
     #: URL to redirect to on success
     success_url = reverse_lazy('flowcell_list')
+
+    def delete(self, request, *args, **kwargs):
+        result = super().delete(self, *args, **kwargs)
+        emails.email_flowcell_deleted(request.user, self.object)
+        return result
 
 
 class FlowCellExportView(

@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """Models for the flowcells app"""
 
-import functools
-import re
-
 from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -13,10 +10,9 @@ from django.contrib.contenttypes.fields import GenericRelation
 from flowcelltool.users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from model_utils.models import TimeStampedModel
+from ..threads.models import Message
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
-
-from ..threads.models import Message, Attachment
 
 
 # SequencingMachine and related ------------------------------------------

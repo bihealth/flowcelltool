@@ -11,8 +11,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.forms.models import ModelChoiceIterator, ModelChoiceField
 from django.forms.fields import ChoiceField
-from django.core.validators import MinValueValidator, RegexValidator
-from django.shortcuts import get_object_or_404
+from django.core.validators import RegexValidator
 
 from crispy_forms.helper import FormHelper
 
@@ -198,7 +197,7 @@ class FlowCellForm(forms.ModelForm):
             self.fields['name'].initial = self.instance.get_full_name()
 
     def clean(self):
-        if not 'name' in self.cleaned_data:
+        if 'name' not in self.cleaned_data:
             return self.cleaned_data  # give up, wrong format
         name_dict = re.match(
             FLOW_CELL_NAME_RE, self.cleaned_data.pop('name')).groupdict()

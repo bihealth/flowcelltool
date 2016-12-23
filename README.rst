@@ -48,3 +48,9 @@ Installation
 ------------
 
 - See [installation manual](http://flowcelltool.readthedocs.io/en/latest/)
+
+Environment Variables
+---------------------
+
+- EMAIL_URL
+- EMAIL_SENDER

@@ -1,6 +1,4 @@
-from django.utils import six
 from django.forms import CharField
-from django.contrib.postgres.forms import SimpleArrayField
 from django.contrib.postgres.validators import (
     ArrayMaxLengthValidator, ArrayMinLengthValidator,
 )

@@ -1,5 +1,8 @@
 from django.apps import AppConfig
 
 
-class FlowcellsConfig(AppConfig):
-    name = 'flowcells'
+class FlowcellsAppConfig(AppConfig):
+    name = 'flowcelltool.flowcells'
+
+    def ready(self):
+        pass
