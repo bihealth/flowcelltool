@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """Models for the flowcells app"""
 
-import functools
-import re
-
 from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -13,10 +10,9 @@ from django.contrib.contenttypes.fields import GenericRelation
 from flowcelltool.users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from model_utils.models import TimeStampedModel
+from ..threads.models import Message
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
-
-from ..threads.models import Message, Attachment
 
 
 # SequencingMachine and related ------------------------------------------
@@ -225,11 +221,17 @@ FLOWCELL_STATUS_SEQ_COMPLETE = 'seq_complete'
 #: Flow cell status key for sequencing failed
 FLOWCELL_STATUS_SEQ_FAILED = 'seq_failed'
 
+#: Flow cell status key for demultiplexing started
+FLOWCELL_STATUS_DEMUX_STARTED = 'demux_started'
+
 #: Flow cell status key for demultiplexing complete
 FLOWCELL_STATUS_DEMUX_COMPLETE = 'demux_complete'
 
 #: Flow cell status key for demultiplexing delivered
 FLOWCELL_STATUS_DEMUX_DELIVERED = 'demux_delivered'
+
+#: Flow cell status key for bcls delivered
+FLOWCELL_STATUS_BCL_DELIVERED = 'bcl_delivered'
 
 #: Flow cell status choices
 FLOWCELL_STATUS_CHOICES = (
@@ -244,9 +246,17 @@ FLOWCELL_STATUS_CHOICES = (
     (FLOWCELL_STATUS_SEQ_FAILED, 'sequencing failed'),
     #: demultiplexing has been completed
     (FLOWCELL_STATUS_DEMUX_COMPLETE, 'demultiplexing complete'),
+    #: demultiplexing running, the demultiplexing operator started filling
+    #: out the sample sheet in the flow cell tool and goes on running the
+    #: demultiplexing
+    (FLOWCELL_STATUS_DEMUX_STARTED, 'demultiplexing started'),
     #: demultiplexed files have been moved to their final destination, either
-    #: in-house or to a customer/project partner
+    #: in-house or to a customer/project partner, the raw base calls
+    #: might also be delivered
     (FLOWCELL_STATUS_DEMUX_DELIVERED, 'demultiplexing results delivered'),
+    #: raw BCL files have been delivered without demultiplexing as requested
+    #: by the customer/project partner
+    (FLOWCELL_STATUS_BCL_DELIVERED, 'base calls delivered'),
 )
 
 
@@ -317,8 +327,15 @@ class FlowCell(TimeStampedModel):
         choices=FLOWCELL_STATUS_CHOICES,
         help_text='Processing status of flow cell')
 
-    #: Name of the run operator
-    operator = models.CharField(max_length=100)
+    #: Name of the sequencing machine operator
+    operator = models.CharField(
+        max_length=100, verbose_name='Sequencer Operator')
+
+    #: The user responsible for demultiplexing
+    demux_operator = models.ForeignKey(
+        User, verbose_name='Demultiplexing Operator',
+        related_name='demuxed_flowcells', on_delete=models.SET_NULL,
+        null=True, blank=True, help_text='User responsible for demultiplexing')
 
     #: Whether or not the run was executed in a paired-end fashion
     is_paired = models.BooleanField(
@@ -359,6 +376,17 @@ class FlowCell(TimeStampedModel):
                 self.vendor_id,
                 self.label
             ] if x]))
+
+    def get_lanes(self):
+        """Return a list of Library lists, for the layout on the flow cell"""
+        try:
+            lanes = [[] for i in range(self.num_lanes)]
+            for lib in self.libraries.order_by('name'):
+                for lane in lib.lane_numbers:
+                    lanes[lane - 1].append(lib)
+            return lanes
+        except IndexError:
+            return '(invalid)'
 
     @property
     def sorted_libraries(self):

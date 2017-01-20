@@ -5,8 +5,6 @@ We only test the "GET" actions as the protection is on a per-CBV level
 """
 
 import datetime
-import io
-import textwrap
 
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
@@ -14,8 +12,8 @@ from django.core.urlresolvers import reverse
 from test_plus.test import TestCase
 
 from .. import models
-from .test_models import SequencingMachineMixin, FlowCellMixin, \
-    BarcodeSetMixin, BarcodeSetEntryMixin, LibraryMixin
+from .test_models import (
+    SequencingMachineMixin, FlowCellMixin, BarcodeSetMixin)
 from .test_views import MessageMixin
 
 
@@ -93,9 +91,9 @@ class TestBaseViews(TestPermissionBase):
         GOOD = (self.inst_op, self.nogroup, self.guest, self.demux_op,
                 self.demux_admin, self.import_bot, self.superuser)
         BAD = (self.anonymous,)
-        REDIR = reverse('login') + '?next=/'
+        REDIRECTION = reverse('login') + '?next=/'
         self.assert_render_200_ok(URL, GOOD)
-        self.assert_redirect_to_login(URL, BAD, redirection=REDIR)
+        self.assert_redirect_to_login(URL, BAD, redirection=REDIRECTION)
 
     def test_login(self):
         URL = reverse('login')
@@ -109,7 +107,6 @@ class TestBaseViews(TestPermissionBase):
         GOOD = (self.anonymous, self.nogroup, self.guest, self.inst_op,
                 self.demux_op, self.demux_admin, self.import_bot,
                 self.superuser)
-        REDIRECTION = '/login/'
         self.assert_render_200_ok(URL, GOOD)
 
     def test_about(self):

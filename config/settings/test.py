@@ -60,3 +60,7 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
         'django.template.loaders.app_directories.Loader',
     ]),
 ]
+# Disable/Enable Sending of emails
+# ------------------------------------------------------------------------------
+
+FLOWCELLS_SEND_EMAILS = True

@@ -5,6 +5,7 @@
 import datetime
 import io
 import textwrap
+from unittest.mock import patch, ANY
 
 from test_plus.test import TestCase
 
@@ -13,7 +14,6 @@ from django.forms.models import model_to_dict
 from django.test import Client
 from django.contrib.contenttypes.models import ContentType
 
-from .. import views
 from .. import models
 from ..models import SequencingMachine, FlowCell, BarcodeSet, \
     BarcodeSetEntry, Library
@@ -64,11 +64,17 @@ class TestFlowCellCreateView(
         SuperUserTestCase, FlowCellMixin, SequencingMachineMixin):
 
     def setUp(self):
+        self.email_patcher = patch(
+            'flowcelltool.flowcells.emails.email_flowcell_created')
+        self.email_mock = self.email_patcher.start()
         self.user = self.make_user()
         self.machine = self._make_machine()
         self.flow_cell_name = '160303_{}_0815_A_BCDEFGHIXX_LABEL'.format(
             self.machine.vendor_id)
         self.client = Client()
+
+    def tearDown(self):
+        self.email_patcher.stop()
 
     def test_render(self):
         """Simply test that post inserts a new flow cell and redirects to the
@@ -104,6 +110,7 @@ class TestFlowCellCreateView(
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_INITIAL,
             'operator': 'John Doe',
+            'demux_operator': None,
             'is_paired': True,
             'index_read_count': 1,
             'rta_version': models.RTA_VERSION_V2,
@@ -117,6 +124,9 @@ class TestFlowCellCreateView(
             'vendor_id': 'BCDEFGHIXX',
         }
         self.assertEqual(model_to_dict(flow_cell), EXPECTED)
+
+        # Check call to sending emails
+        self.email_mock.assert_called_once_with(self.user, flow_cell, ANY)
 
         # Check resulting response
         with self.login(self.user):
@@ -153,6 +163,9 @@ class TestFlowCellUpdateView(
         SuperUserTestCase, FlowCellMixin, SequencingMachineMixin):
 
     def setUp(self):
+        self.email_patcher = patch(
+            'flowcelltool.flowcells.emails.email_flowcell_updated')
+        self.email_mock = self.email_patcher.start()
         self.user = self.make_user()
         self.machine = self._make_machine()
         self.client = Client()
@@ -161,6 +174,9 @@ class TestFlowCellUpdateView(
             'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
             'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
 
+    def tearDown(self):
+        self.email_patcher.stop()
+
     def test_render(self):
         """Test that the flow cell update POST works"""
         # Check precondition
@@ -168,6 +184,7 @@ class TestFlowCellUpdateView(
 
         # Simulate POST request
         values = model_to_dict(self.flow_cell)
+        values['demux_operator'] = ''
         values['name'] = self.flow_cell.get_full_name() + 'YADAYADAYADA'
         values['status'] = models.FLOWCELL_STATUS_DEMUX_COMPLETE
 
@@ -189,6 +206,7 @@ class TestFlowCellUpdateView(
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_DEMUX_COMPLETE,
             'operator': 'John Doe',
+            'demux_operator': None,
             'is_paired': True,
             'index_read_count': 1,
             'rta_version': models.RTA_VERSION_V2,
@@ -201,6 +219,9 @@ class TestFlowCellUpdateView(
         }
         self.assertEqual(model_to_dict(flow_cell), EXPECTED)
 
+        # Check call to sending emails
+        self.email_mock.assert_called_once_with(self.user, flow_cell, ANY)
+
         # Check resulting response
         with self.login(self.user):
             self.assertRedirects(
@@ -211,6 +232,7 @@ class TestFlowCellDeleteView(
         SuperUserTestCase, FlowCellMixin, SequencingMachineMixin):
 
     def setUp(self):
+        self._set_up_mock()
         self.user = self.make_user()
         self.machine = self._make_machine()
         self.client = Client()
@@ -218,6 +240,23 @@ class TestFlowCellDeleteView(
             self.user, datetime.date(2016, 3, 3), self.machine, 815, 'A',
             'BCDEFGHIXX', 'LABEL', 8, models.FLOWCELL_STATUS_SEQ_COMPLETE,
             'John Doe', True, 1, models.RTA_VERSION_V2, 151, 'Description')
+
+    def _set_up_mock(self):
+        # The argument FlowCell is passed after deletion and thus it is not
+        # equal to self.flow_cell any more.  Thus, the trickery with storing
+        # it in an attribut eof the test.
+        self.arg_flowcell = None
+        self.email_patcher = patch(
+            'flowcelltool.flowcells.emails.email_flowcell_deleted')
+        self.email_mock = self.email_patcher.start()
+
+        def save_flowcell(user, flowcell):
+            self.arg_flowcell = flowcell
+
+        self.email_mock.side_effect = save_flowcell
+
+    def tearDown(self):
+        self.email_patcher.stop()
 
     def test_render(self):
         """Test that the flow cell delete POST works"""
@@ -231,6 +270,14 @@ class TestFlowCellDeleteView(
 
         # Check resulting database state
         self.assertEqual(FlowCell.objects.all().count(), 0)
+
+        # Check call to sending emails
+        self.email_mock.assert_called_once_with(self.user, ANY)
+        m1 = model_to_dict(self.arg_flowcell)
+        del m1['id']
+        m2 = model_to_dict(self.flow_cell)
+        del m2['id']
+        self.assertEqual(m1, m2)
 
         # Check resulting response
         with self.login(self.user):

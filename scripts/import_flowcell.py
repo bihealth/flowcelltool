@@ -142,7 +142,6 @@ class V1Importer(BaseImporter):
     """Importer for RTA v1 flow cells"""
 
 
-
 class V2Importer(BaseImporter):
     """Importer for RTA v2 flow cells"""
 

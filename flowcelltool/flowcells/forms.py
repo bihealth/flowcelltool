@@ -11,13 +11,35 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.forms.models import ModelChoiceIterator, ModelChoiceField
 from django.forms.fields import ChoiceField
-from django.core.validators import MinValueValidator, RegexValidator
-from django.shortcuts import get_object_or_404
+from django.core.validators import RegexValidator
 
 from crispy_forms.helper import FormHelper
 
 from . import models
 from .widgets import IntegerRangeField
+
+
+# Helper code -----------------------------------------------------------------
+
+
+def get_object_or_none(klass, *args, **kwargs):
+    if hasattr(klass, '_default_manager'):
+        queryset = klass._default_manager.all()
+    else:
+        queryset = klass
+    try:
+        return queryset.get(*args, **kwargs)
+    except AttributeError:
+        klass__name = (
+            klass.__name__
+            if isinstance(klass, type)
+            else klass.__class__.__name__)
+        raise ValueError(
+            "First argument to get_object_or_404() must be a Model, Manager, "
+            "or QuerySet, not '%s'." % klass__name
+        )
+    except queryset.model.DoesNotExist:
+        return None
 
 
 # Advanced ModelChoice fields -------------------------------------------------
@@ -154,8 +176,10 @@ class FlowCellForm(forms.ModelForm):
     name = forms.CharField(
         max_length=100,
         validators=[
-            RegexValidator(FLOW_CELL_NAME_RE,
-                           message='Invalid flow cell name')],
+            RegexValidator(
+                FLOW_CELL_NAME_RE,
+                message=('Invalid flow cell name. Did you forgot the '
+                         'underscore between the slot and the vendor ID?'))],
         help_text=('The full flow cell name, e.g., '
                    '160303_ST-K12345_0815_A_BCDEFGHIXX_LABEL'))
 
@@ -163,6 +187,7 @@ class FlowCellForm(forms.ModelForm):
         model = models.FlowCell
 
         fields = ('name', 'description', 'num_lanes', 'status', 'operator',
+                  'demux_operator',
                   'is_paired', 'index_read_count', 'rta_version',
                   'read_length')
 
@@ -172,12 +197,16 @@ class FlowCellForm(forms.ModelForm):
             self.fields['name'].initial = self.instance.get_full_name()
 
     def clean(self):
+        if 'name' not in self.cleaned_data:
+            return self.cleaned_data  # give up, wrong format
         name_dict = re.match(
             FLOW_CELL_NAME_RE, self.cleaned_data.pop('name')).groupdict()
         self.cleaned_data['run_date'] = datetime.datetime.strptime(
             name_dict['date'], '%y%m%d').date()
-        self.cleaned_data['sequencing_machine'] = get_object_or_404(
+        self.cleaned_data['sequencing_machine'] = get_object_or_none(
             models.SequencingMachine, vendor_id=name_dict['machine_name'])
+        if self.cleaned_data['sequencing_machine'] is None:
+            self.add_error('name', 'Unknown sequencing machine')
         self.cleaned_data['run_number'] = int(name_dict['run_no'])
         self.cleaned_data['slot'] = name_dict['slot']
         self.cleaned_data['vendor_id'] = name_dict['vendor_id']
@@ -367,25 +396,20 @@ class PickColumnsForm(forms.Form):
     #: Barcode set for barcode 1
     barcode_set = forms.ModelChoiceField(
         required=False,
+        label='Barcode set 1',
         queryset=models.BarcodeSet.objects.order_by('name'))
-
-    #: Barcode set for barcode 2
-    barcode_set2 = forms.ModelChoiceField(
-        required=False,
-        queryset=models.BarcodeSet.objects.order_by('name'),
-        label='Barcode set',
-        help_text='Leave empty for no barcodes')
 
     #: Select column for barcode 1
     barcode_column = forms.IntegerField(
         min_value=1,
         required=False,
-        label='Barcode column index',
+        label='Barcode 1 column index',
         help_text='Leave empty for no barcodes. The first column has index 1')
 
     #: Barcode set for barcode 2
     barcode_set2 = forms.ModelChoiceField(
         required=False,
+        label='Barcode set 2',
         queryset=models.BarcodeSet.objects.order_by('name'),
         help_text='Leave empty for no secondary barcodes')
 
@@ -393,7 +417,7 @@ class PickColumnsForm(forms.Form):
     barcode2_column = forms.IntegerField(
         min_value=1,
         required=False,
-        label='Barcode column index',
+        label='Barcode 2 column index',
         help_text=('Leave empty for no secondary barcodes. The first column '
                    'has index 1'))
 

@@ -1,0 +1,63 @@
+<div class="row">
+  <h2 class="page-header">Flow Cell Layout</h2>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="col-md-3">Lane 1</th>
+        <th class="col-md-3">Lane 2</th>
+        <th class="col-md-3">Lane 3</th>
+        <th class="col-md-3">Lane 4</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        {% for lane in object.get_lanes|slice:":4" %}
+        <td class="col-md-3">
+          {% for lib in lane %}
+          <div class="tag-group">
+            <span title="{{ lib.barcode_set.name }}" class="tag tag-default">{{ lib.barcode_set.short_name }}</span><!--
+            --><span title="{{ lib.barcode.sequence }}" class="tag tag-info">{{ lib.barcode.name }}</span><!--
+            --><span class="tag tag-primary">{{ lib.name }}</span>
+          </div>
+          {% empty %}
+          - empty -
+          {% endfor %}
+        </td>
+        {% endfor %}
+      </tr>
+    </tbody>
+  </table>
+
+  {% if object.num_lanes >= 4 %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-md-3">Lane 5</th>
+          <th class="col-md-3">Lane 6</th>
+          <th class="col-md-3">Lane 7</th>
+          <th class="col-md-3">Lane 8</th>
+        </tr>
+      </thead>
+
+      <tbody>
+          <tr>
+            {% for lane in object.get_lanes|slice:"4:" %}
+            <td class="col-md-3">
+              {% for lib in lane %}
+              <div class="tag-group">
+                  <span title="{{ lib.barcode_set.name }}" class="tag tag-default">{{ lib.barcode_set.short_name }}</span><!--
+                  --><span title="{{ lib.barcode.name }} ({{ lib.barcode.sequence }})" class="tag tag-info">{{ lib.barcode.name }}</span><!--
+                  --><span title="{{ lib.name }} lane(s): {{ lib.get_lane_nos_pretty }}" class="tag tag-primary">{{ lib.name }}</span>
+              </div>
+              {% empty %}
+              - empty -
+              {% endfor %}
+            </td>
+            {% endfor %}
+          </tr>
+      </tbody>
+    </table>
+  {% endif %}
+</div>

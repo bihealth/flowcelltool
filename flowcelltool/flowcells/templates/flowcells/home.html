@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block content %}
 <div class="row">
@@ -11,14 +12,61 @@
     thus no permissions yet!  You will not be able to do or see anything.
   </div>
   {% else %}
-    <h3>Status</h3>
-
-      <ul>
-        <li>{{ num_flow_cells }} Flowcells</li>
-        <li>{{ num_libraries }} Libraries</li>
-        <li>{{ num_barcode_sets }} Barcode sets</li>
-      </li>
-    </div>
   {% endif %}
 </div>
+
+{% if user.groups %}
+<div class="row">
+  <h3>Status</h3>
+
+  <div class="col-lg-4 col-md-12">
+    <div class="card card-inverse bg-success" style="color: white;">
+      <div class="card-block">
+          <div style="position: absolute; bottom: 10px; right: 40px;">
+          <i class="fa fa-clone fa-5x" aria-hidden="true"></i>
+        </div>
+        <h5>Flowcells</h5>
+        <h1 class="display-3">{{ num_flow_cells|default:"0"|intcomma }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-md-12">
+    <div class="card card-inverse bg-primary" style="color: white;">
+      <div class="card-block">
+          <div style="position: absolute; bottom: 10px; right: 40px;">
+          <i class="fa fa-file fa-5x" aria-hidden="true"></i>
+        </div>
+        <h5>Libraries</h5>
+        <h1 class="display-3">{{ num_libraries|default:"0"|intcomma }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-md-12">
+    <div class="card card-inverse bg-warning" style="color: white;">
+      <div class="card-block">
+          <div style="position: absolute; bottom: 10px; right: 40px;">
+          <i class="fa fa-barcode fa-5x" aria-hidden="true"></i>
+        </div>
+        <h5>Barcode sets</h5>
+        <h1 class="display-3">{{ num_barcode_sets|default:"0"|intcomma }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 col-md-12">
+    <div class="card card-inverse bg-info" style="color: white;">
+      <div class="card-block">
+          <div style="position: absolute; bottom: 10px; right: 40px;">
+          <i class="fa fa-cube fa-5x" aria-hidden="true"></i>
+        </div>
+        <h5>Sequencers</h5>
+        <h1 class="display-3">{{ num_sequencers|default:"0"|intcomma }}</h1>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}

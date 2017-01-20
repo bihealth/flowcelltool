@@ -22,8 +22,6 @@ Create Message
     {% csrf_token %}
     {% crispy form helper 'bootstrap4' %}
 
-    {#{% bootstrap_field form.attachments field_class='multi-upload' %}#}
-
     <div class="text-xs-right mt-t-1 m-b-1">
       <a role="button" class="btn btn-secondary"
           href="{{ related_object.get_absolute_url }}">
@@ -59,7 +57,6 @@ Create Message
     margin: 0;
     opacity: 0;
     -ms-filter: 'alpha(opacity=0)';
-    font-size: 200px !important;
     direction: ltr;
     cursor: pointer;
   }

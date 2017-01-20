@@ -69,6 +69,8 @@ class MessageUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Setup djangocrispy-forms helper
+        context = super().get_context_data(**kwargs)
+        context['related_object'] = self.object.thread_object
         context['helper'] = FormHelper()
         context['helper'].form_tag = False
         context['helper'].layout = Layout(

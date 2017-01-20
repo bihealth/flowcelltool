@@ -94,6 +94,8 @@ FIXTURE_DIRS = (
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_SENDER = env('EMAIL_SENDER', default='noreply@example.com')
+EMAIL_SUBJECT_PREFIX = env('EMAIL_SUBJECT_PREFIX', default='')
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -308,3 +310,8 @@ REST_FRAMEWORK = {
 # ------------------------------------------------------------------------------
 
 REST_API = env.bool('FLOWCELLTOOL_REST_API', False)
+
+# Disable/Enable Sending of emails
+# ------------------------------------------------------------------------------
+
+FLOWCELLS_SEND_EMAILS = env.bool('FLOWCELLTOOL_SEND_EMAILS', False)

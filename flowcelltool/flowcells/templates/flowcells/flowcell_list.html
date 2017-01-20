@@ -22,11 +22,8 @@
             <th class="col-md-1">Instrument</th>
             <th class="col-md-2">Flow Cell</th>
             <th class="col-md-1">Mode</th>
-            <th class="col-md-1" title="RTA version 1.x/2.x">RTAv</th>
-            <th class="col-md-2">Operator</th>
-            <th class="col-md-1 text-right">Libraries</th>
-            <th class="col-md-1">&nbsp;</th>
-            <th class="col-md-1">&nbsp;</th>
+            <th class="col-md-4">Seq./Demux. Operator</th>
+            <th class="col-md-2 text-right" colspan="3">Libraries</th>
         </tr>
       </thead>
       <tbody>
@@ -54,8 +51,10 @@
               {% endif %}
               {{ flowcell.read_length }}
             </td>
-            <td>{{ flowcell.rta_version }}</td>
-            <td>{{ flowcell.operator }}</td>
+            <td>
+              {{ flowcell.operator }} /
+              {{ flowcell.demux_operator|default:"-" }}
+            </td>
             <td>{{ flowcell.libraries.count }}</td>
             <td class="text-xs-right">
               {% if flowcell.description %}
@@ -88,7 +87,7 @@
                     <i class="fa fa-wpforms" aria-hidden="true"></i>
                     Sheet Export
                   </a>
-                  {% has_perm 'flowcells.add_message' request.user as can_add_message %}
+                  {% has_perm 'threads.add_message' request.user as can_add_message %}
                   {% if can_add_message %}
                   <a class="dropdown-item"
                       href="{% url 'flowcell_add_message' related_pk=flowcell.pk %}"
@@ -123,6 +122,46 @@
       </tbody>
     </table>
   </div>
+
+  {% if is_paginated %}
+    <nav aria-label="Page navigation">
+      <div class="text-xs-center">
+        <ul class="pagination">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1">
+                &laquo; first
+              </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                &lsaquo; previous
+              </a>
+            </li>
+          {% endif %}
+
+          {% for i in paginator.page_range %}
+            <li class="page-item{% if page_obj.number == i %} active {% endif %}">
+              <a class="page-link" href="?page={{i}}">{{i}}</a>
+          </li>
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                next &rsaquo;
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                last &raquo;
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+  {% endif %}
 
   {% if can_add_flowcell %}
     {% include "flowcells/_flowcell_list_buttons.html" %}

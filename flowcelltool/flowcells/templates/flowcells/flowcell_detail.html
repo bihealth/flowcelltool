@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
+{% load rules %}
 
 {% block title %}Flow Cell Details {{ object.vendor_id }}{% endblock %}
 
 {% block content %}
+{% has_perm 'flowcells.change_flowcell' request.user object as can_change_flowcell %}
+{% has_perm 'flowcells.delete_flowcell' request.user object as can_delete_flowcell %}
+{% has_perm 'threads.add_message' request.user as can_add_message %}
+
 <h2>Flow Cell: {{ object.vendor_id }}</h2>
 
 {% include "flowcells/_flowcell_detail_buttons.html" %}
@@ -20,19 +25,9 @@
   {% include "flowcells/_flowcell_detail_libraries.html" %}
 </div>
 
-<!--
-<div class="row">
-  <h3>Flow Cell Layout</h3>
-</div>
--->
-
-<!--
-<div class="row">
-  <h3>Sample Sheets</h3>
-</div>
--->
-
 {% include "flowcells/_flowcell_detail_messages.html" %}
+
+{% include "flowcells/_flowcell_detail_layout.html" %}
 
 <div class="row">
   {% include "flowcells/_flowcell_detail_buttons.html" with location="bottom" %}

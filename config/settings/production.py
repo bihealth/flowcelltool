@@ -119,11 +119,11 @@ LOGGING = {
         },
     },
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
+        # 'mail_admins': {
+        #     'level': 'ERROR',
+        #     'filters': ['require_debug_false'],
+        #     'class': 'django.utils.log.AdminEmailHandler'
+        # },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -132,13 +132,13 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['console'],  # ['mail_admins'],
             'level': 'ERROR',
             'propagate': True
         },
         'django.security.DisallowedHost': {
             'level': 'ERROR',
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console'],  # ['console', 'mail_admins'],
             'propagate': True
         }
     }
@@ -146,6 +146,17 @@ LOGGING = {
 
 # Custom Admin URL, use {% url 'admin:index' %}
 ADMIN_URL = env('DJANGO_ADMIN_URL', default='admin')
+
+# EMAIL CONFIGURATION
+# ------------------------------------------------------------------------------
+EMAIL_URL = env.email_url('EMAIL_URL')
+
+EMAIL_HOST = EMAIL_URL['EMAIL_HOST']
+EMAIL_PORT = EMAIL_URL['EMAIL_PORT']
+EMAIL_BACKEND = EMAIL_URL['EMAIL_BACKEND']
+EMAIL_HOST_USER = EMAIL_URL['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = EMAIL_URL['EMAIL_HOST_PASSWORD']
+
 
 # Your production stuff: Below this line define 3rd party library settings
 # ------------------------------------------------------------------------------

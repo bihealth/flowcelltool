@@ -160,9 +160,11 @@ class FlowCellMixin:
     def _make_flow_cell(
             cls, owner, run_date, sequencing_machine, run_number, slot,
             vendor_id, label, num_lanes, status, operator, is_paired,
-            index_read_count, rta_version, read_length, description):
+            index_read_count, rta_version, read_length, description,
+            demux_operator=None):
         values = {
             'owner': owner,
+            'demux_operator': demux_operator or None,
             'run_date': run_date,
             'sequencing_machine': sequencing_machine,
             'run_number': run_number,
@@ -199,6 +201,7 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
     def test_initialization(self):
         EXPECTED = {
             'id': self.flow_cell.pk,
+            'demux_operator': None,
             'owner': self.user.pk,
             'description': 'Description',
             'sequencing_machine': self.machine.pk,
@@ -332,7 +335,9 @@ class TestLibrary(
         """Check that the lane count is compatible with lane numbers in the
         contained libraries
         """
-        library2 = self._make_library(
+        # The return value of the _make_library() call is unused so flake8
+        # complains but the side effect is important for the test!
+        self._make_library(
             self.flow_cell, 'LIB_001', models.REFERENCE_HUMAN,
             self.barcode_set, self.barcode2, [8])
         self.flow_cell.num_lanes = 4
