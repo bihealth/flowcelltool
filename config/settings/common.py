@@ -268,6 +268,19 @@ ADMIN_URL = r'^admin/'
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 
+# FLYNN WORKAROUND
+import pip
+
+try:
+    import rest_framework
+except ImportError:
+    print('Flynn issue #3932 workaround: installing rest_framework..')
+
+    pip.main([
+        'install',
+        'git+git://github.com/tomchristie/django-rest-framework.git@master#egg=djangorestframework'])
+# END FLYNN WORKAROUND
+
 # LDAP configuration
 # ------------------------------------------------------------------------------
 
