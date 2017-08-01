@@ -133,6 +133,16 @@ Setup database using ``migrate``
 
     $ flynn run /app/manage.py migrate
 
+Email configuration
+-------------------
+
+You have to set the email server as
+
+.. code-block:: shell
+
+    $ flynn env set EMAIL_URL=smtp://postamt.example.com
+
+
 LDAP on Flynn
 -------------
 
