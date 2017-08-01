@@ -273,8 +273,37 @@ DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 
 # Enable LDAP if configured
 if env.str('AUTH_LDAP_SERVER_URI', None):
-    import ldap
-    from django_auth_ldap.config import LDAPSearch
+#    import ldap
+#    from django_auth_ldap.config import LDAPSearch
+    # FLYNN WORKAROUND
+    import pip
+
+    try:
+        import ldap
+
+    except ImportError:
+        print('Flynn issue #3932 workaround: installing ldap..')
+
+        pip.main([
+            'install',
+            'git+git://github.com/holtgrewe/pyldap.git@fce3b934e9b2d7d1a538fc37d7c4ed4cfe18fae1#egg=pyldap'])
+
+        import ldap
+
+    # from django_auth_ldap.config import LDAPSearch
+
+    try:
+        from django_auth_ldap.config import LDAPSearch
+
+    except Exception:
+        print('Flynn issue #3932 workaround: installing django-auth-ldap..')
+        pip.main([
+            'install',
+            'django-auth-ldap==1.2.8'])
+
+        from django_auth_ldap.config import LDAPSearch
+    # FLYNN WORKAROUND ENDS
+
     AUTH_LDAP_SERVER_URI = env.str('AUTH_LDAP_SERVER_URI')
     AUTH_LDAP_BIND_DN = env.str('AUTH_LDAP_BIND_DN')
     AUTH_LDAP_BIND_PASSWORD = env.str('AUTH_LDAP_BIND_PASSWORD')
