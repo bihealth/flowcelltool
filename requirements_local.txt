@@ -16,7 +16,7 @@ factory_boy==2.9.2
 # improved REPL
 ipdb==0.10.3
 
-pytest-django==3.0.0
+pytest-django==3.1.2
 pytest-sugar==0.7.1
 
 # Sphinx ReadTheDocs theme
