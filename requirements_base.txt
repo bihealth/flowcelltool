@@ -42,7 +42,7 @@ django-markdown-deux==1.0.5
 # We need our own fork of pyldap such that deployment to Flynn.io works
 #
 # Depends on https://github.com/pyldap/pyldap/pull/40
-django-auth-ldap==1.2.8
+django-auth-ldap==1.3.0
 -e git://github.com/holtgrewe/pyldap.git@fce3b934e9b2d7d1a538fc37d7c4ed4cfe18fae1#egg=pyldap
 
 # Django-rules for permission checking
