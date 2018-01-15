@@ -10,7 +10,7 @@ django-test-plus==1.0.22
 factory_boy==2.9.2
 
 # pytest
-pytest-django==3.0.0
+pytest-django==3.1.2
 pytest-sugar==0.7.1
 
 # Codacy and coverage support
