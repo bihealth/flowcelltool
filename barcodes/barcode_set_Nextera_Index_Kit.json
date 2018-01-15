@@ -1,0 +1,55 @@
+{
+  "name": "Nextera Index Kit",
+  "short_name": "NIK",
+  "description": "Index barcode for the Nextera Index Kit.\r\n\r\nAll trademarks or copyrights are those of Illumina, Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no warranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "N701",
+      "sequence": "TAAGGCGA"
+    },
+    {
+      "name": "N702",
+      "sequence": "CGTACTAG"
+    },
+    {
+      "name": "N703",
+      "sequence": "AGGCAGAA"
+    },
+    {
+      "name": "N704",
+      "sequence": "TCCTGAGC"
+    },
+    {
+      "name": "N705",
+      "sequence": "GGACTCCT"
+    },
+    {
+      "name": "N706",
+      "sequence": "TAGGCATG"
+    },
+    {
+      "name": "N707",
+      "sequence": "CTCTCTAC"
+    },
+    {
+      "name": "N708",
+      "sequence": "CAGAGAGG"
+    },
+    {
+      "name": "N709",
+      "sequence": "GCTACGCT"
+    },
+    {
+      "name": "N710",
+      "sequence": "CGAGGCTG"
+    },
+    {
+      "name": "N711",
+      "sequence": "AAGAGGCA"
+    },
+    {
+      "name": "N712",
+      "sequence": "GTAGAGGA"
+    }
+  ]
+}

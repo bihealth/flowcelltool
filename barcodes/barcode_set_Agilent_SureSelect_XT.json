@@ -1,0 +1,71 @@
+{
+  "name": "Agilent SureSelect XT",
+  "short_name": "SureSelect",
+  "description": "Index barcode for the Agilent SureSelect XT kit.\r\n\r\nAll trademarks or copyrights are those of Agilent Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no\r\nwarranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "ASS01",
+      "sequence": "ATCACG"
+    },
+    {
+      "name": "ASS02",
+      "sequence": "CGATGT"
+    },
+    {
+      "name": "ASS03",
+      "sequence": "TTAGGC"
+    },
+    {
+      "name": "ASS04",
+      "sequence": "TGACCA"
+    },
+    {
+      "name": "ASS05",
+      "sequence": "ACAGTG"
+    },
+    {
+      "name": "ASS06",
+      "sequence": "GCCAAT"
+    },
+    {
+      "name": "ASS07",
+      "sequence": "CAGATC"
+    },
+    {
+      "name": "ASS08",
+      "sequence": "ACTTGA"
+    },
+    {
+      "name": "ASS09",
+      "sequence": "GATCAG"
+    },
+    {
+      "name": "ASS10",
+      "sequence": "TAGCTT"
+    },
+    {
+      "name": "ASS11",
+      "sequence": "GGCTAC"
+    },
+    {
+      "name": "ASS12",
+      "sequence": "CTTGTA"
+    },
+    {
+      "name": "ASS13",
+      "sequence": "AAACAT"
+    },
+    {
+      "name": "ASS14",
+      "sequence": "CAAAAG"
+    },
+    {
+      "name": "ASS15",
+      "sequence": "GAAACC"
+    },
+    {
+      "name": "ASS16",
+      "sequence": "AAAGCA"
+    }
+  ]
+}

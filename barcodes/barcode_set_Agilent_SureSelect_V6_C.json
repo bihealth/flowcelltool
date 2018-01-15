@@ -1,0 +1,55 @@
+{
+  "name": "Agilent SureSelect V6 C",
+  "short_name": "ASS6C",
+  "description": "Index barcode for the Agilent SureSelect V6 Kit Set C.\r\n\r\nAll trademarks or copyrights are those of Agilent Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no warranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "C01",
+      "sequence": "AACGTGAT"
+    },
+    {
+      "name": "C02",
+      "sequence": "AAACATCG"
+    },
+    {
+      "name": "C03",
+      "sequence": "ACCACTGT"
+    },
+    {
+      "name": "C04",
+      "sequence": "CAGATCTG"
+    },
+    {
+      "name": "C05",
+      "sequence": "CATCAAGT"
+    },
+    {
+      "name": "C06",
+      "sequence": "AGTACAAG"
+    },
+    {
+      "name": "C07",
+      "sequence": "CTAAGGTC"
+    },
+    {
+      "name": "C08",
+      "sequence": "AGTGGTCA"
+    },
+    {
+      "name": "C09",
+      "sequence": "AGGCTAAC"
+    },
+    {
+      "name": "C10",
+      "sequence": "AGATCGCA"
+    },
+    {
+      "name": "C11",
+      "sequence": "CGACTGGA"
+    },
+    {
+      "name": "C12",
+      "sequence": "CACCTTAC"
+    }
+  ]
+}

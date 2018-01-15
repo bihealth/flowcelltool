@@ -1,0 +1,43 @@
+{
+  "name": "Nextera XT Index 2",
+  "short_name": "NXI2",
+  "description": "Index barcode for the Nextera XT Kit.\r\n\r\nAll trademarks or copyrights are those of Illumina, Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no warranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "S501",
+      "sequence": "TAGATCGC"
+    },
+    {
+      "name": "S502",
+      "sequence": "CTCTCTAT"
+    },
+    {
+      "name": "S503",
+      "sequence": "TATCCTCT"
+    },
+    {
+      "name": "S504",
+      "sequence": "AGAGTAGA"
+    },
+    {
+      "name": "S505",
+      "sequence": "GTAAGGAG"
+    },
+    {
+      "name": "S506",
+      "sequence": "ACTGCATA"
+    },
+    {
+      "name": "S507",
+      "sequence": "AAGGAGTA"
+    },
+    {
+      "name": "S508",
+      "sequence": "CTAAGCCT"
+    },
+    {
+      "name": "S517",
+      "sequence": "GCGTAAGA"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "Agilent SureSelect V6 D",
+  "short_name": "ASS6D",
+  "description": "Index barcode for the Agilent SureSelect V6 Kit Set D.\r\n\r\nAll trademarks or copyrights are those of Agilent Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no warranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "D01",
+      "sequence": "CACTTCGA"
+    },
+    {
+      "name": "D02",
+      "sequence": "GAGTTAGC"
+    },
+    {
+      "name": "D03",
+      "sequence": "CTGGCATA"
+    },
+    {
+      "name": "D04",
+      "sequence": "ATCCTGTA"
+    },
+    {
+      "name": "D05",
+      "sequence": "AAGGTACA"
+    },
+    {
+      "name": "D06",
+      "sequence": "ACATTGGC"
+    },
+    {
+      "name": "D07",
+      "sequence": "CGACACAC"
+    },
+    {
+      "name": "D08",
+      "sequence": "ACAGCAGA"
+    },
+    {
+      "name": "D09",
+      "sequence": "CCATCCTC"
+    },
+    {
+      "name": "D10",
+      "sequence": "AAGAGATC"
+    },
+    {
+      "name": "D11",
+      "sequence": "CAAGACTA"
+    },
+    {
+      "name": "D12",
+      "sequence": "AAGACGGA"
+    }
+  ]
+}

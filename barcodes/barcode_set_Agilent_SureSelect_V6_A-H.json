@@ -1,0 +1,391 @@
+{
+  "name": "Agilent SureSelect V6 A-H",
+  "short_name": "ASS6AH",
+  "description": "Index barcode for the Agilent SureSelect V6 Kit Sets A-H.\r\n\r\nAll trademarks or copyrights are those of Agilent Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no warranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "A01",
+      "sequence": "ATGCCTAA"
+    },
+    {
+      "name": "A02",
+      "sequence": "AGCAGGAA"
+    },
+    {
+      "name": "A03",
+      "sequence": "ATCATTCC"
+    },
+    {
+      "name": "A04",
+      "sequence": "AACTCACC"
+    },
+    {
+      "name": "A05",
+      "sequence": "AACGCTTA"
+    },
+    {
+      "name": "A06",
+      "sequence": "AGCCATGC"
+    },
+    {
+      "name": "A07",
+      "sequence": "ACGTATCA"
+    },
+    {
+      "name": "A08",
+      "sequence": "CAGCGTTA"
+    },
+    {
+      "name": "A09",
+      "sequence": "CTCAATGA"
+    },
+    {
+      "name": "A10",
+      "sequence": "AATGTTGC"
+    },
+    {
+      "name": "A11",
+      "sequence": "CCAGTTCA"
+    },
+    {
+      "name": "A12",
+      "sequence": "CAAGGAGC"
+    },
+    {
+      "name": "B01",
+      "sequence": "GAATCTGA"
+    },
+    {
+      "name": "B02",
+      "sequence": "GAGCTGAA"
+    },
+    {
+      "name": "B03",
+      "sequence": "GCCACATA"
+    },
+    {
+      "name": "B04",
+      "sequence": "GCTAACGA"
+    },
+    {
+      "name": "B05",
+      "sequence": "GGAGAACA"
+    },
+    {
+      "name": "B06",
+      "sequence": "GTACGCAA"
+    },
+    {
+      "name": "B07",
+      "sequence": "GTCTGTCA"
+    },
+    {
+      "name": "B08",
+      "sequence": "TAGGATGA"
+    },
+    {
+      "name": "B09",
+      "sequence": "TCCGTCTA"
+    },
+    {
+      "name": "B10",
+      "sequence": "TGAAGAGA"
+    },
+    {
+      "name": "B11",
+      "sequence": "TGGCTTCA"
+    },
+    {
+      "name": "B12",
+      "sequence": "TTCACGCA"
+    },
+    {
+      "name": "C01",
+      "sequence": "AACGTGAT"
+    },
+    {
+      "name": "C02",
+      "sequence": "AAACATCG"
+    },
+    {
+      "name": "C03",
+      "sequence": "ACCACTGT"
+    },
+    {
+      "name": "C04",
+      "sequence": "CAGATCTG"
+    },
+    {
+      "name": "C05",
+      "sequence": "CATCAAGT"
+    },
+    {
+      "name": "C06",
+      "sequence": "AGTACAAG"
+    },
+    {
+      "name": "C07",
+      "sequence": "CTAAGGTC"
+    },
+    {
+      "name": "C08",
+      "sequence": "AGTGGTCA"
+    },
+    {
+      "name": "C09",
+      "sequence": "AGGCTAAC"
+    },
+    {
+      "name": "C10",
+      "sequence": "AGATCGCA"
+    },
+    {
+      "name": "C11",
+      "sequence": "CGACTGGA"
+    },
+    {
+      "name": "C12",
+      "sequence": "CACCTTAC"
+    },
+    {
+      "name": "D01",
+      "sequence": "CACTTCGA"
+    },
+    {
+      "name": "D02",
+      "sequence": "GAGTTAGC"
+    },
+    {
+      "name": "D03",
+      "sequence": "CTGGCATA"
+    },
+    {
+      "name": "D04",
+      "sequence": "ATCCTGTA"
+    },
+    {
+      "name": "D05",
+      "sequence": "AAGGTACA"
+    },
+    {
+      "name": "D06",
+      "sequence": "ACATTGGC"
+    },
+    {
+      "name": "D07",
+      "sequence": "CGACACAC"
+    },
+    {
+      "name": "D08",
+      "sequence": "ACAGCAGA"
+    },
+    {
+      "name": "D09",
+      "sequence": "CCATCCTC"
+    },
+    {
+      "name": "D10",
+      "sequence": "AAGAGATC"
+    },
+    {
+      "name": "D11",
+      "sequence": "CAAGACTA"
+    },
+    {
+      "name": "D12",
+      "sequence": "AAGACGGA"
+    },
+    {
+      "name": "E01",
+      "sequence": "GCCAAGAC"
+    },
+    {
+      "name": "E02",
+      "sequence": "CGAACTTA"
+    },
+    {
+      "name": "E03",
+      "sequence": "ACCTCCAA"
+    },
+    {
+      "name": "E04",
+      "sequence": "CTGTAGCC"
+    },
+    {
+      "name": "E05",
+      "sequence": "CGCTGATC"
+    },
+    {
+      "name": "E06",
+      "sequence": "ATTGAGGA"
+    },
+    {
+      "name": "E07",
+      "sequence": "CCGTGAGA"
+    },
+    {
+      "name": "E08",
+      "sequence": "CATACCAA"
+    },
+    {
+      "name": "E09",
+      "sequence": "AGATGTAC"
+    },
+    {
+      "name": "E10",
+      "sequence": "CAACCACA"
+    },
+    {
+      "name": "E11",
+      "sequence": "CCTCCTGA"
+    },
+    {
+      "name": "E12",
+      "sequence": "ACACAGAA"
+    },
+    {
+      "name": "F01",
+      "sequence": "GACTAGTA"
+    },
+    {
+      "name": "F02",
+      "sequence": "GATAGACA"
+    },
+    {
+      "name": "F03",
+      "sequence": "GCGAGTAA"
+    },
+    {
+      "name": "F04",
+      "sequence": "GCTCGGTA"
+    },
+    {
+      "name": "F05",
+      "sequence": "GGTGCGAA"
+    },
+    {
+      "name": "F06",
+      "sequence": "GTCGTAGA"
+    },
+    {
+      "name": "F07",
+      "sequence": "GTGTTCTA"
+    },
+    {
+      "name": "F08",
+      "sequence": "TATCAGCA"
+    },
+    {
+      "name": "F09",
+      "sequence": "TCTTCACA"
+    },
+    {
+      "name": "F10",
+      "sequence": "TGGAACAA"
+    },
+    {
+      "name": "F11",
+      "sequence": "TGGTGGTA"
+    },
+    {
+      "name": "F12",
+      "sequence": "GAACAGGC"
+    },
+    {
+      "name": "G01",
+      "sequence": "ATTGGCTC"
+    },
+    {
+      "name": "G02",
+      "sequence": "AAGGACAC"
+    },
+    {
+      "name": "G03",
+      "sequence": "ACTATGCA"
+    },
+    {
+      "name": "G04",
+      "sequence": "ACACGACC"
+    },
+    {
+      "name": "G05",
+      "sequence": "CCTAATCC"
+    },
+    {
+      "name": "G06",
+      "sequence": "AGAGTCAA"
+    },
+    {
+      "name": "G07",
+      "sequence": "CAATGGAA"
+    },
+    {
+      "name": "G08",
+      "sequence": "ATAGCGAC"
+    },
+    {
+      "name": "G09",
+      "sequence": "CCGAAGTA"
+    },
+    {
+      "name": "G10",
+      "sequence": "CCTCTATC"
+    },
+    {
+      "name": "G11",
+      "sequence": "AACAACCA"
+    },
+    {
+      "name": "G12",
+      "sequence": "AACCGAGA"
+    },
+    {
+      "name": "H01",
+      "sequence": "GATGAATC"
+    },
+    {
+      "name": "H02",
+      "sequence": "GACAGTGC"
+    },
+    {
+      "name": "H03",
+      "sequence": "CGGATTGC"
+    },
+    {
+      "name": "H04",
+      "sequence": "AGTCACTA"
+    },
+    {
+      "name": "H05",
+      "sequence": "CTGAGCCA"
+    },
+    {
+      "name": "H06",
+      "sequence": "CCGACAAC"
+    },
+    {
+      "name": "H07",
+      "sequence": "AGCACCTC"
+    },
+    {
+      "name": "H08",
+      "sequence": "ACGCTCGA"
+    },
+    {
+      "name": "H09",
+      "sequence": "CGCATACA"
+    },
+    {
+      "name": "H10",
+      "sequence": "ACAGATTC"
+    },
+    {
+      "name": "H11",
+      "sequence": "AATCCGTC"
+    },
+    {
+      "name": "H12",
+      "sequence": "ACAAGCTA"
+    }
+  ]
+}

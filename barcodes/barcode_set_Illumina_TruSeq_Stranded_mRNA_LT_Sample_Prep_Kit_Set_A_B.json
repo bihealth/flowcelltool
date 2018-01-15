@@ -1,0 +1,103 @@
+{
+  "name": "Illumina TruSeq Stranded mRNA LT Sample Prep Kit Set A+B",
+  "short_name": "TSMRAB",
+  "description": "Index barcode for the Illumina TruSeq Stranded mRNA LT Sample Prep\nKit Set A+B.\n\nAll trademarks or copyrights are those of Illumina, Inc.\n\nThe sequences here are used in the hope that they are useful, no\nwarranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "AR001",
+      "sequence": "ATCACG"
+    },
+    {
+      "name": "AR002",
+      "sequence": "CGATGT"
+    },
+    {
+      "name": "AR003",
+      "sequence": "TTAGGC"
+    },
+    {
+      "name": "AR004",
+      "sequence": "TGACCA"
+    },
+    {
+      "name": "AR005",
+      "sequence": "ACAGTG"
+    },
+    {
+      "name": "AR006",
+      "sequence": "GCCAAT"
+    },
+    {
+      "name": "AR007",
+      "sequence": "CAGATC"
+    },
+    {
+      "name": "AR008",
+      "sequence": "ACTTGA"
+    },
+    {
+      "name": "AR009",
+      "sequence": "GATCAG"
+    },
+    {
+      "name": "AR010",
+      "sequence": "TAGCTT"
+    },
+    {
+      "name": "AR011",
+      "sequence": "GGCTAC"
+    },
+    {
+      "name": "AR012",
+      "sequence": "CTTGTA"
+    },
+    {
+      "name": "AR013",
+      "sequence": "AGTCAA"
+    },
+    {
+      "name": "AR014",
+      "sequence": "AGTTCC"
+    },
+    {
+      "name": "AR015",
+      "sequence": "ATGTCA"
+    },
+    {
+      "name": "AR016",
+      "sequence": "CCGTCC"
+    },
+    {
+      "name": "AR018",
+      "sequence": "GTCCGC"
+    },
+    {
+      "name": "AR019",
+      "sequence": "GTGAAA"
+    },
+    {
+      "name": "AR020",
+      "sequence": "GTGGCC"
+    },
+    {
+      "name": "AR021",
+      "sequence": "GTTTCG"
+    },
+    {
+      "name": "AR022",
+      "sequence": "CGTACG"
+    },
+    {
+      "name": "AR023",
+      "sequence": "GAGTGG"
+    },
+    {
+      "name": "AR025",
+      "sequence": "ACTGAT"
+    },
+    {
+      "name": "AR027",
+      "sequence": "ATTCCT"
+    }
+  ]
+}

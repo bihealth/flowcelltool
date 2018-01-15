@@ -1,0 +1,55 @@
+{
+  "name": "Illumina TruSeq Stranded mRNA LT Sample Prep Kit Set A",
+  "short_name": "TSMRA",
+  "description": "Index barcode for the Illumina TruSeq Stranded mRNA LT Sample Prep\r\nKit Set A.\r\n\r\nAll trademarks or copyrights are those of Illumina, Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no\r\nwarranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "AR002",
+      "sequence": "CGATGT"
+    },
+    {
+      "name": "AR004",
+      "sequence": "TGACCA"
+    },
+    {
+      "name": "AR005",
+      "sequence": "ACAGTG"
+    },
+    {
+      "name": "AR006",
+      "sequence": "GCCAAT"
+    },
+    {
+      "name": "AR007",
+      "sequence": "CAGATC"
+    },
+    {
+      "name": "AR012",
+      "sequence": "CTTGTA"
+    },
+    {
+      "name": "AR013",
+      "sequence": "AGTCAA"
+    },
+    {
+      "name": "AR014",
+      "sequence": "AGTTCC"
+    },
+    {
+      "name": "AR015",
+      "sequence": "ATGTCA"
+    },
+    {
+      "name": "AR016",
+      "sequence": "CCGTCC"
+    },
+    {
+      "name": "AR018",
+      "sequence": "GTCCGC"
+    },
+    {
+      "name": "AR019",
+      "sequence": "GTGAAA"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "ScriptSeq Index PCR Primers",
+  "short_name": "SIPR",
+  "description": "Index barcode for the Illumina ScriptSeqTM Index PCR Primers.\r\n\r\nAll trademarks or copyrights are those of Illumina, Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no warranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "01",
+      "sequence": "ATCACG"
+    },
+    {
+      "name": "02",
+      "sequence": "CGATGT"
+    },
+    {
+      "name": "03",
+      "sequence": "TTAGGC"
+    },
+    {
+      "name": "04",
+      "sequence": "TGACCA"
+    },
+    {
+      "name": "05",
+      "sequence": "ACAGTG"
+    },
+    {
+      "name": "06",
+      "sequence": "GCCAAT"
+    },
+    {
+      "name": "07",
+      "sequence": "CAGATC"
+    },
+    {
+      "name": "08",
+      "sequence": "ACTTGA"
+    },
+    {
+      "name": "09",
+      "sequence": "GATCAG"
+    },
+    {
+      "name": "10",
+      "sequence": "TAGCTT"
+    },
+    {
+      "name": "11",
+      "sequence": "GGCTAC"
+    },
+    {
+      "name": "12",
+      "sequence": "CTTGTA"
+    }
+  ]
+}

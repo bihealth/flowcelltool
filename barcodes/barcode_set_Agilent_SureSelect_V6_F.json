@@ -1,0 +1,55 @@
+{
+  "name": "Agilent SureSelect V6 F",
+  "short_name": "ASS6F",
+  "description": "Index barcode for the Agilent SureSelect V6 Kit Set F.\r\n\r\nAll trademarks or copyrights are those of Agilent Inc.\r\n\r\nThe sequences here are used in the hope that they are useful, no warranty of any kind is implied.",
+  "entries": [
+    {
+      "name": "F01",
+      "sequence": "GACTAGTA"
+    },
+    {
+      "name": "F02",
+      "sequence": "GATAGACA"
+    },
+    {
+      "name": "F03",
+      "sequence": "GCGAGTAA"
+    },
+    {
+      "name": "F04",
+      "sequence": "GCTCGGTA"
+    },
+    {
+      "name": "F05",
+      "sequence": "GGTGCGAA"
+    },
+    {
+      "name": "F06",
+      "sequence": "GTCGTAGA"
+    },
+    {
+      "name": "F07",
+      "sequence": "GTGTTCTA"
+    },
+    {
+      "name": "F08",
+      "sequence": "TATCAGCA"
+    },
+    {
+      "name": "F09",
+      "sequence": "TCTTCACA"
+    },
+    {
+      "name": "F10",
+      "sequence": "TGGAACAA"
+    },
+    {
+      "name": "F11",
+      "sequence": "TGGTGGTA"
+    },
+    {
+      "name": "F12",
+      "sequence": "GAACAGGC"
+    }
+  ]
+}
