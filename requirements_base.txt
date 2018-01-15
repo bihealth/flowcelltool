@@ -58,7 +58,7 @@ django-multiupload==0.5.2
 -e git://github.com/tomchristie/django-rest-framework.git@master#egg=djangorestframework
 # djangorestframework==3.4.7
 Markdown==2.6.11
-django_filter==0.15.2
+django_filter==1.1.0
 rest-framework-generic-relations==1.1.0
 
 # Django form wizards
