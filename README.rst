@@ -36,7 +36,7 @@ Features
 - Web-based GUI for your HTS flow cells
 - Web-based GUI for editing adapter barcode sets
 - Export to bcl2fastq v1 and v2 sample sheets
-- Easy to deploy on [Flynn.io](https://flynn.io/) an open source Heroku clone for hosting on in-house hardware
+- Easy to deploy on `Flynn.io <https://flynn.io/>`_ an open source Heroku clone for hosting on in-house hardware
 
 Prequisites
 -----------
