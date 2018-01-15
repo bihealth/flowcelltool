@@ -29,7 +29,7 @@ class Message(TimeStampedModel):
     object_id = models.PositiveIntegerField()
     thread_object = GenericForeignKey('content_type', 'object_id')
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     title = models.CharField(
         blank=True, null=True, max_length=200,
@@ -55,7 +55,7 @@ class AttachmentFile(TimeStampedModel):
 
 
 class Attachment(TimeStampedModel):
-    message = models.ForeignKey(Message, related_name='attachments')
+    message = models.ForeignKey(Message, related_name='attachments', on_delete=models.CASCADE)
     payload = models.FileField(
         upload_to='threads.AttachmentFile/bytes/filename/mimetype')
 

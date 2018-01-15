@@ -1,5 +1,5 @@
 # Local development dependencies go here
--r base.txt
+-r test.txt
 
 coverage==4.4.2
 django-coverage-plugin==1.5.0
@@ -8,11 +8,7 @@ django-extensions==1.9.9
 Werkzeug==0.14.1
 django-test-plus==1.0.22
 factory_boy==2.9.2
-
-# Temporary workaround to fix issue https://github.com/pydanny/cookiecutter-django/issues/827
-# It will be removed when django-debug-toolbar publish the new version on pypi
--e git+https://github.com/jazzband/django-debug-toolbar.git@637b0b73bc684f6ea600dca5ca1bb1f090fcee93#egg=django-debug-toolbar
-#django-debug-toolbar==1.5
+django-debug-toolbar==1.9.1
 
 # improved REPL
 ipdb==0.10.3

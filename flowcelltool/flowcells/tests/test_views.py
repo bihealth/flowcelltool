@@ -9,7 +9,7 @@ from unittest.mock import patch, ANY
 
 from test_plus.test import TestCase
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.models import model_to_dict
 from django.test import Client
 from django.contrib.contenttypes.models import ContentType

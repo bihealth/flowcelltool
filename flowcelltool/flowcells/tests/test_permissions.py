@@ -7,7 +7,7 @@ We only test the "GET" actions as the protection is on a per-CBV level
 import datetime
 
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from test_plus.test import TestCase
 
