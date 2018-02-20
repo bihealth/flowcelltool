@@ -18,6 +18,17 @@ APPS_DIR = ROOT_DIR.path('flowcelltool')
 
 env = environ.Env()
 
+# .env file, should load only in development environment
+READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=False)
+
+if READ_DOT_ENV_FILE:
+    # Operating System Environment variables have precedence over variables
+    # defined in the .env file, that is to say variables from the .env files
+    # will only be used if not defined as environment variables.
+    env_file = str(ROOT_DIR.path('.env'))
+    env.read_env(env_file)
+
+
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
 DJANGO_APPS = (
