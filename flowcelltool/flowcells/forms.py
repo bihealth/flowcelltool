@@ -374,6 +374,20 @@ class PasteTSVForm(forms.Form):
         help_text='Copy-and paste fields from Excel here',
         widget=forms.Textarea)
 
+    def clean(self):
+        payload = self.cleaned_data.get('payload')
+        if not payload:
+            self.add_error('payload', 'No data found')
+            return self.cleaned_data
+        for l in payload.splitlines():
+            if len(l.split('\t')) < 3:
+                self.add_error(
+                    'payload',
+                    'Expected at least 3 tab-separated columns, '
+                    'please check your data')
+                break
+        return self.cleaned_data
+
 
 class PickColumnsForm(forms.Form):
     """Second step in the XLS copy-and-paste wizard
@@ -399,7 +413,7 @@ class PickColumnsForm(forms.Form):
 
     #: Barcode set for barcode 1
     barcode_set = forms.ModelChoiceField(
-        required=True,
+        required=False,
         label='Barcode set 1',
         queryset=models.BarcodeSet.objects.order_by('name'))
 
@@ -439,6 +453,24 @@ class PickColumnsForm(forms.Form):
         required=True,
         label='Lane column index',
         help_text='The first column has index 1')
+
+    def __init__(self, row_count=None, col_count=None, *args, **kwargs):
+        super(PickColumnsForm, self).__init__(*args, **kwargs)
+        self.row_count = row_count
+        self.col_count = col_count
+
+    def clean(self):
+        if not self.cleaned_data.get('barcode_set'):
+            self.add_error('barcode_set', 'Please select a barcode set')
+        for f in [
+                'sample_column', 'barcode_column', 'barcode_colum',
+                'lane_numbers_column']:
+            col_field = self.cleaned_data.get(f)
+            if col_field and col_field > self.col_count:
+                self.add_error(f, 'Column out of data range')
+        first_row = self.cleaned_data.get('first_row')
+        if first_row and first_row > self.row_count:
+            self.add_error('first_row', 'Row out of data range')
 
 
 class ConfirmExtractionForm(forms.Form):

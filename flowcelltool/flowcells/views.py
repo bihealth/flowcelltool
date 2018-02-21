@@ -587,6 +587,17 @@ class FlowCellExtractLibrariesView(
         }
     }
 
+    def get_form_kwargs(self, step):
+        """Pass URL arguments to form"""
+        kwargs = super(FlowCellExtractLibrariesView, self).get_form_kwargs(step)
+        if step == 'pick_columns':
+            table_rows, table_ncols = self._extract_payload(
+                self.get_cleaned_data_for_step('paste_tsv')['payload'])
+            kwargs.update({
+                'row_count': len(table_rows),
+                'col_count': len(table_ncols)})
+        return kwargs
+
     def get_template_names(self):
         """Return name of current template"""
         return self.TEMPLATES[self.steps.current]
