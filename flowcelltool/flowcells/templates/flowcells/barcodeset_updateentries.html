@@ -5,13 +5,12 @@
 {% block title %}Update Barcode Set Entries{% endblock %}
 
 {% block content %}
-<div class="container">
   <h2>Update Barcode Set Entries</h2>
 
   <form method="post">
     {% crispy formset helper %}
 
-    <div class="text-xs-right mt-t-1 m-b-1">
+    <div class="text-right mb-3">
       <a role="button" class="btn btn-secondary"
           href="{% url 'barcodeset_view' pk=object.pk %}">
         <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
@@ -27,7 +26,5 @@
       </button>
     </div>
   </form>
-</div>
 
-</div>
 {% endblock content %}

@@ -6,7 +6,6 @@
 {% block title %}Sequencing Machines{% endblock %}
 
 {% block content %}
-<div class="row">
   <h2>Sequencing Machines</h2>
 
   {% has_perm 'flowcells.add_sequencingmachine' request.user as can_add_sequencingmachine %}
@@ -43,14 +42,14 @@
         <td>
           {{ machine.description|markdown }}
         </td>
-        <td class="text-xs-right">
-          <div class="btn-group">
+        <td class="text-right">
+          <div class="btn-group" role="group">
             <button class="btn btn-secondary btn-sm dropdown-toggle"
                 type="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
               <i class="fa fa-cog" aria-hidden="true"></i>
             </button>
-            <div class="dropdown-menu">
+            <div class="dropdown-menu dropdown-menu-right">
               <a class="dropdown-item" href="{% url 'instrument_view' pk=machine.pk %}">
                 <i class="fa fa-eye" aria-hidden="true"></i>
                 View
@@ -80,5 +79,4 @@
   {% if can_add_sequencingmachine %}
     {% include "flowcells/_sequencingmachine_list_buttons.html" %}
   {% endif %}
-</div>
 {% endblock %}

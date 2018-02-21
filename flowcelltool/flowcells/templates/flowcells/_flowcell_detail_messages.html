@@ -3,11 +3,11 @@
 {% load flowcells_tags %}
 
 {% if object.messages.all %}
-<div class="row">
+<div>
   <h3>Messages</h3>
 
   {% for message in object.messages.all %}
-    <div class="card">
+    <div class="card mb-3">
       <div class="card-header">
           {{ message.title }}
           <small>
@@ -39,7 +39,7 @@
           {% endif %}
       </div>
       {% if message.body %}
-        <div class="card-block">
+        <div class="card-body">
           <p class="card-text">
             {% if message.mime_type == "text/markdown" %}
               {{ message.body|markdown }}
@@ -50,7 +50,7 @@
         </div>
       {% endif %}
       {% if message.attachments %}
-        <div class="card-block">
+        <div class="card-body">
           <h5>Attachments</h5>
           <ul class="list-group list-group-flush">
             {% for attachment in message.attachments.all %}

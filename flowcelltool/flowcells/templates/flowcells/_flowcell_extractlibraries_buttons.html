@@ -1,28 +1,30 @@
-<div class="text-xs-right mt-t-1 m-b-1">
-  <a role="button" class="btn btn-secondary"
-      href="{% url 'flowcell_view' pk=object.pk %}">
-    <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-    Cancel
-  </a>
-  {% if wizard.steps.prev %}
-    <button type="submit" name="wizard_goto_step" value="{{ wizard.steps.first }}" class="btn btn-secondary">
+<div class="text-right mb-3">
+  <div class="btn-group" role="group">
+    <a role="button" class="btn btn-secondary"
+        href="{% url 'flowcell_view' pk=object.pk %}">
       <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-      First Step
-    </button>
-    <button type="submit" name="wizard_goto_step" value="{{ wizard.steps.prev }}" class="btn btn-primary">
-      <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-      Previous Step
-    </button>
-  {% endif %}
-  {% if wizard.steps.last != wizard.steps.current %}
-    <button type="submit" name="submit" value="{{ wizard.steps.prev }}" class="btn btn-primary">
-      <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-      Next Step
-    </button>
-  {% else %}
-    <button type="submit" name="submit" value="{{ wizard.steps.prev }}" class="btn btn-primary">
-      <i class="fa fa-check" aria-hidden="true"></i>
-      Finish
-    </button>
-  {% endif %}
+      Cancel
+    </a>
+    {% if wizard.steps.prev %}
+      <button type="submit" name="wizard_goto_step" value="{{ wizard.steps.first }}" class="btn btn-secondary">
+        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+        First Step
+      </button>
+      <button type="submit" name="wizard_goto_step" value="{{ wizard.steps.prev }}" class="btn btn-primary">
+        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+        Previous Step
+      </button>
+    {% endif %}
+    {% if wizard.steps.last != wizard.steps.current %}
+      <button type="submit" name="submit" value="{{ wizard.steps.prev }}" class="btn btn-primary">
+        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+        Next Step
+      </button>
+    {% else %}
+      <button type="submit" name="submit" value="{{ wizard.steps.prev }}" class="btn btn-primary">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Finish
+      </button>
+    {% endif %}
+  </div>
 </div>

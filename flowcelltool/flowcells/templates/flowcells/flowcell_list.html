@@ -5,7 +5,6 @@
 {% block title %}Flow Cells{% endblock %}
 
 {% block content %}
-<div class="row">
   <h2>Flow Cells</h2>
 
   {% has_perm 'flowcells.add_flowcell' request.user as can_add_flowcell %}
@@ -13,17 +12,16 @@
     {% include "flowcells/_flowcell_list_buttons.html" %}
   {% endif %}
 
-  <div class="list-group">
     <table class="table table-hover table-striped">
       <thead>
-        <tr class="row">
-            <th class="col-md-1">Date</th>
-            <th class="col-md-1">Status</th>
-            <th class="col-md-1">Instrument</th>
-            <th class="col-md-2">Flow Cell</th>
-            <th class="col-md-1">Mode</th>
-            <th class="col-md-4">Seq./Demux. Operator</th>
-            <th class="col-md-2 text-right" colspan="3">Libraries</th>
+        <tr>
+          <th class="col-md-1">Date</th>
+          <th class="col-md-1">Status</th>
+          <th class="col-md-1">Instrument</th>
+          <th class="col-md-2">Flow Cell</th>
+          <th class="col-md-1">Mode</th>
+          <th class="col-md-4">Seq./Demux. Operator</th>
+          <th class="col-md-2 text-right" colspan="3">Libraries</th>
         </tr>
       </thead>
       <tbody>
@@ -56,7 +54,7 @@
               {{ flowcell.demux_operator|default:"-" }}
             </td>
             <td>{{ flowcell.libraries.count }}</td>
-            <td class="text-xs-right">
+            <td class="text-right">
               {% if flowcell.description %}
                 <i class="fa fa-comment-o" aria-hidden="true" title="{{ flowcell.description }}"></i>
               {% endif %}
@@ -67,14 +65,14 @@
                 <i class="fa fa-files-o" aria-hidden="true" title="{{ flowcell.count_files }} file(s)"></i>
               {% endif %}
             </td>
-            <td class="text-xs-right">
-              <div class="btn-group">
+            <td class="text-right">
+              <div class="btn-group" role="group">
                 <button class="btn btn-secondary btn-sm dropdown-toggle"
                     type="button" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
                   <i class="fa fa-cog" aria-hidden="true"></i>
                 </button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu dropdown-menu-right">
                   <a class="dropdown-item" href="{% url 'flowcell_view' pk=flowcell.pk %}">
                     <i class="fa fa-eye" aria-hidden="true"></i>
                     View
@@ -98,7 +96,7 @@
                   {% endif %}
                   {% has_perm 'flowcells.change_flowcell' request.user flowcell as can_change_flowcell %}
                   {% if can_change_flowcell %}
-                    <a class="dropdown-item" href="{% url 'flowcell_update' pk=flowcell.pk %}">\
+                    <a class="dropdown-item" href="{% url 'flowcell_update' pk=flowcell.pk %}">
                       <i class="fa fa-pencil" aria-hidden="true"></i>
                       Update
                     </a>
@@ -121,11 +119,10 @@
         {% endfor %}
       </tbody>
     </table>
-  </div>
 
   {% if is_paginated %}
     <nav aria-label="Page navigation">
-      <div class="text-xs-center">
+      <div class="text-center">
         <ul class="pagination">
           {% if page_obj.has_previous %}
             <li class="page-item">
@@ -167,5 +164,4 @@
     {% include "flowcells/_flowcell_list_buttons.html" %}
   {% endif %}
 
-</div>
 {% endblock content %}

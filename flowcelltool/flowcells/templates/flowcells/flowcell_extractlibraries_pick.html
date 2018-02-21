@@ -1,7 +1,7 @@
 {% extends "flowcells/flowcell_extractlibraries.html" %}
 
 {% block table_preview %}
-<div class="row">
+<div>
   <h2>Data Preview</h2>
 
   <p>
@@ -12,16 +12,16 @@
   <table class="table table-striped table-hover">
     <thead>
       <tr>
-        <td>&nbsp;</td>
+        <th>&nbsp;</th>
         {% for _ in table_cols %}
-        <th>{{ forloop.counter }}</td>
+        <th>{{ forloop.counter }}</th>
         {% endfor %}
       </tr>
     </thead>
     <tbody>
       {% for row in table_rows %}
         <tr>
-          <th>{{ forloop.counter }}</td>
+          <td>{{ forloop.counter }}</td>
           {% for field in row %}
             <td>{{ field|default:"&nbsp;" }}</td>
           {% endfor %}

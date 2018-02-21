@@ -5,13 +5,13 @@
 {% block title %}Update Flow Cell Libraries{% endblock %}
 
 {% block content %}
-<div class="container">
+
   <h2>Update Flow Cell Libraries</h2>
 
   <form method="post">
     {% crispy formset helper %}
 
-    <div class="text-xs-right mt-t-1 m-b-1">
+    <div class="text-right mb-3">
       <a role="button" class="btn btn-secondary"
           href="{% url 'flowcell_view' pk=object.pk %}">
         <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
@@ -29,7 +29,6 @@
   </form>
 </div>
 
-</div>
 {% endblock content %}
 
 {% block javascript %}

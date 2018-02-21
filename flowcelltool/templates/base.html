@@ -15,62 +15,31 @@
     <![endif]-->
 
     {% block css %}
-    <!-- Latest compiled and minified Bootstrap 4 Alpha 5 CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+
+    <!-- Bootstrap 4 Stable CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <!-- Your stuff: Third-party CSS libraries go here -->
 
     <!-- This file stores project-specific CSS -->
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
 
-    <!-- Fix table header column to body sizing -->
-    <style type="text/css">
-    table td[class*=col-], table th[class*=col-] {
-      position: static;
-      display: table-cell;
-      float: none;
-    }
-
-    .col-centered{
-      float: none;
-      margin: 0 auto;
-    }
-
-    .form-signin input[type="text"] {
-      margin-bottom: -1px;
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0;
-    }
-    .form-signin input[type="password"] {
-      margin-bottom: 10px;
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-    }
-    </style>
     {% endblock %}
   </head>
 
   <body>
 
     <div class="m-b-1">
-      <nav class="navbar navbar-dark navbar-static-top bg-inverse">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-          <a class="navbar-brand" href="/">Flowcell Tool</a>
-          <button type="button" class="navbar-toggler hidden-sm-up pull-xs-right" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
-            &#9776;
+          <a class="navbar-brand" href="{% url 'home' %}">Flowcell Tool</a>
+          <button type="button" class="navbar-toggler pull-xs-right" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
+            <span class="navbar-toggler-icon"></span>
           </button>
 
           <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-toggleable-xs" id="bs-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-              <!--
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'home' %}">
-                  <i class="fa fa-home" aria-hidden="true"></i>
-                  Home
-                </a>
-              </li>
-              -->
+          <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+            <ul class="navbar-nav mr-auto text-nowrap">
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'flowcell_list' %}">
                   <i class="fa fa-clone" aria-hidden="true"></i>
@@ -97,10 +66,10 @@
               </li>
             </ul>
 
-            <ul class="nav navbar-nav pull-xs-right">
+            <ul class="navbar-nav ml-auto text-nowrap">
               {% has_perm 'flowcells.search' request.user flowcell as can_search %}
               {% if can_search and not is_search %}
-              <li class="nav-item">
+              <li class="nav-item mr-2">
                 <form action="{% url 'search' %}" method="GET" class="form-inline">
                   <div class="input-group">
                     <input type="text" class="form-control" name="q" placeholder="Search Term">
@@ -148,9 +117,11 @@
           {% endfor %}
       {% endif %}
 
-      {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
-      {% endblock content %}
+      <div class="container-fluid px-0 py-3">
+        {% block content %}
+          <p>Use this document as a way to quick start any new project.</p>
+        {% endblock content %}
+      </div>
 
     </div> <!-- /container -->
 
@@ -160,10 +131,10 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     {% block javascript %}
-      <!-- Required by Bootstrap v4 Alpha 4 -->
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/js/tether.min.js" integrity="sha384-XTs3FgkjiBgo8qjEjBk0tGmf3wPrWtA6coPfQDfFEY8AnYJwjalXCiosYRBIBZX8" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+      <!-- Required by Bootstrap v4 Stable -->
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
       <!-- Your stuff: Third-party javascript libraries go here -->
 
       <!-- place project specific Javascript in this file -->
