@@ -588,7 +588,7 @@ class FlowCellExtractLibrariesView(
     }
 
     def get_form_kwargs(self, step):
-        """Pass URL arguments to form"""
+        """Pass extra arguments to form"""
         kwargs = super(FlowCellExtractLibrariesView, self).get_form_kwargs(step)
         if step == 'pick_columns':
             table_rows, table_ncols = self._extract_payload(
