@@ -110,7 +110,7 @@ class SequencingMachineDeleteView(
 
 class BarcodeSetListView(
         LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    """Shows a list of sequencing machines"""
+    """Shows a list of barcodes"""
 
     permission_required = 'flowcells.list_barcodeset'
 
@@ -119,7 +119,7 @@ class BarcodeSetListView(
 
 class BarcodeSetCreateView(
         LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    """View for creating sequencing machine"""
+    """View for creating barcode set"""
 
     permission_required = 'flowcells.add_barcodeset'
 
@@ -131,7 +131,7 @@ class BarcodeSetCreateView(
 
 class BarcodeSetDetailView(
         LoginRequiredMixin, PermissionRequiredMixin, DetailView):
-    """View detail of sequencing machine"""
+    """View detail of barcode set"""
 
     permission_required = 'flowcells.view_barcodeset'
 
@@ -140,7 +140,7 @@ class BarcodeSetDetailView(
 
 class BarcodeSetUpdateView(
         LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    """View for updating sequencing machines"""
+    """View for updating barcode sets"""
 
     permission_required = 'flowcells.change_barcodeset'
 
@@ -152,7 +152,7 @@ class BarcodeSetUpdateView(
 
 class BarcodeSetDeleteView(
         LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
-    """View for deleting sequencing machines"""
+    """View for deleting barcode sets"""
 
     permission_required = 'flowcells.delete_barcodeset'
 
@@ -685,7 +685,7 @@ class FlowCellExtractLibrariesView(
             return list(sorted(candidates, key=lambda x: x[0]))[0][1]
 
     @classmethod
-    def _extract_payload(self, payload):
+    def _extract_payload(cls, payload):
         """Convert payload TSV to array of arrays with same dimension"""
         table = []
         rows = payload.replace('\r\n', '\n').split('\n')
@@ -704,7 +704,7 @@ class FlowCellExtractLibrariesView(
 
 
 class SearchView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
-    """Shows a list of sequencing machines"""
+    """Shows search results"""
 
     permission_required = 'flowcells.search'
 
@@ -716,7 +716,7 @@ class SearchView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         context['is_search'] = True
         if query:
             context['results'] = models.Library.objects.filter(
-                name__contains=query)
+                name__icontains=query)
         else:
             context['results'] = []
         context['query'] = query
