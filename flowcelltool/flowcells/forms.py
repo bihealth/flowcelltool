@@ -281,8 +281,12 @@ class BarcodeSelect(forms.Select):
                 selected_choices.remove(option_value)
         else:
             selected_html = ''
+        if option_model and hasattr(option_model, 'barcode_set_id'):
+            set_id = option_model.barcode_set_id
+        else:
+            set_id = ''
         return format_html('<option data-set-id="{}" value="{}"{}>{}</option>',
-                           '',
+                           set_id,
                            option_value,
                            selected_html,
                            force_text(option_label))
