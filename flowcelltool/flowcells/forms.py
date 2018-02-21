@@ -395,7 +395,7 @@ class PickColumnsForm(forms.Form):
 
     #: Barcode set for barcode 1
     barcode_set = forms.ModelChoiceField(
-        required=False,
+        required=True,
         label='Barcode set 1',
         queryset=models.BarcodeSet.objects.order_by('name'))
 
