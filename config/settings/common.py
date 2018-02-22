@@ -296,9 +296,9 @@ except ImportError:
 # ------------------------------------------------------------------------------
 
 # Enable LDAP if configured
-if env.str('AUTH_LDAP_SERVER_URI', None):
-#    import ldap
-#    from django_auth_ldap.config import LDAPSearch
+if env.bool('ENABLE_LDAP', None) is True:
+    # import ldap
+    # from django_auth_ldap.config import LDAPSearch
     # FLYNN WORKAROUND
     import pip
 
@@ -328,24 +328,61 @@ if env.str('AUTH_LDAP_SERVER_URI', None):
         from django_auth_ldap.config import LDAPSearch
     # FLYNN WORKAROUND ENDS
 
-    AUTH_LDAP_SERVER_URI = env.str('AUTH_LDAP_SERVER_URI')
-    AUTH_LDAP_BIND_DN = env.str('AUTH_LDAP_BIND_DN')
-    AUTH_LDAP_BIND_PASSWORD = env.str('AUTH_LDAP_BIND_PASSWORD')
-    AUTH_LDAP_CONNECTION_OPTIONS = {
-        ldap.OPT_REFERRALS: 0
-    }
-    AUTHENTICATION_BACKENDS = tuple(itertools.chain(
-        ('django_auth_ldap.backend.LDAPBackend',),
-        AUTHENTICATION_BACKENDS,
-    ))
-    AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        env.str('AUTH_LDAP_USER_SEARCH_BASE'),
-        ldap.SCOPE_SUBTREE, '(sAMAccountName=%(user)s)')
-    AUTH_LDAP_USER_ATTR_MAP = {
+    # Default values
+    LDAP_DEFAULT_CONN_OPTIONS = {
+        ldap.OPT_REFERRALS: 0}
+    LDAP_DEFAULT_FILTERSTR = '(sAMAccountName=%(user)s)'
+    LDAP_DEFAULT_ATTR_MAP = {
         'first_name': 'givenName',
         'last_name': 'sn',
-        'email': 'mail',
-    }
+        'email': 'mail'}
+
+    # Primary LDAP server
+    AUTH_LDAP_SERVER_URI = env.str('AUTH_LDAP_SERVER_URI', None)
+    AUTH_LDAP_BIND_DN = env.str('AUTH_LDAP_BIND_DN', None)
+    AUTH_LDAP_BIND_PASSWORD = env.str('AUTH_LDAP_BIND_PASSWORD', None)
+    AUTH_LDAP_CONNECTION_OPTIONS = LDAP_DEFAULT_CONN_OPTIONS
+
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(
+        env.str('AUTH_LDAP_USER_SEARCH_BASE', None),
+        ldap.SCOPE_SUBTREE, LDAP_DEFAULT_FILTERSTR)
+    AUTH_LDAP_USER_ATTR_MAP = LDAP_DEFAULT_ATTR_MAP
+    AUTH_LDAP_USERNAME_DOMAIN = env.str('AUTH_LDAP_USERNAME_DOMAIN', None)
+
+    AUTHENTICATION_BACKENDS = tuple(itertools.chain(
+        ('flowcelltool.users.backends.PrimaryLDAPBackend',),
+        AUTHENTICATION_BACKENDS,
+    ))
+
+    # Secondary LDAP server (optional)
+    AUTH_LDAP2_USERNAME_SUFFIX = None
+
+    if env.bool('ENABLE_LDAP_SECONDARY', None) is True:
+        # Primary LDAP server
+        AUTH_LDAP2_SERVER_URI = env.str('AUTH_LDAP2_SERVER_URI', None)
+        AUTH_LDAP2_BIND_DN = env.str('AUTH_LDAP2_BIND_DN', None)
+        AUTH_LDAP2_BIND_PASSWORD = env.str('AUTH_LDAP2_BIND_PASSWORD', None)
+        AUTH_LDAP2_CONNECTION_OPTIONS = LDAP_DEFAULT_CONN_OPTIONS
+
+        AUTH_LDAP2_USER_SEARCH = LDAPSearch(
+            env.str('AUTH_LDAP2_USER_SEARCH_BASE', None),
+            ldap.SCOPE_SUBTREE, LDAP_DEFAULT_FILTERSTR)
+        AUTH_LDAP2_USER_ATTR_MAP = LDAP_DEFAULT_ATTR_MAP
+        AUTH_LDAP2_USERNAME_DOMAIN = env.str('AUTH_LDAP2_USERNAME_DOMAIN', None)
+
+        AUTHENTICATION_BACKENDS = tuple(itertools.chain(
+            ('flowcelltool.users.backends.SecondaryLDAPBackend',),
+            AUTHENTICATION_BACKENDS,
+        ))
+
+    if DEBUG:
+        import logging, logging.handlers
+        logfile = "django-ldap-debug.log"
+        my_logger = logging.getLogger('django_auth_ldap')
+        my_logger.setLevel(logging.DEBUG)
+        handler = logging.handlers.RotatingFileHandler(
+            logfile, maxBytes=1024 * 500, backupCount=5)
+        my_logger.addHandler(handler)
 
 
 # Django REST Framework Configuration

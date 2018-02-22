@@ -58,10 +58,28 @@ For this, set the following environment variables:
 
 .. code-block:: shell
 
+    export ENABLE_LDAP=1
     export AUTH_LDAP_BIND_DN='CN=user,DC=example,DC=com'
     export AUTH_LDAP_BIND_PASSWORD='password'
     export AUTH_LDAP_SERVER_URI='ldap://activedirectory.example.com'
     export AUTH_LDAP_USER_SEARCH_BASE='DC=example,DC=com'
+    export AUTH_LDAP_USERNAME_DOMAIN='YOURDOMAIN'
+
+The tool also supports an optional secondary LDAP server.
+To enable it, set the following environment variables:
+
+.. code-block:: shell
+
+    export ENABLE_LDAP_SECONDARY=1
+    export AUTH_LDAP2_BIND_DN='CN=user,DC=example,DC=com'
+    export AUTH_LDAP2_BIND_PASSWORD='password'
+    export AUTH_LDAP2_SERVER_URI='ldap://activedirectory.example.com'
+    export AUTH_LDAP2_USER_SEARCH_BASE='DC=example,DC=com'
+    export AUTH_LDAP_USERNAME_DOMAIN='YOURDOMAIN2'
+
+Note that for users logging in via LDAP, the username must be in form of
+``username@YOURDOMAIN``.
+
 
 Deployment to Flynn
 ===================
