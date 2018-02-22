@@ -594,8 +594,8 @@ class FlowCellExtractLibrariesView(
             table_rows, table_ncols = self._extract_payload(
                 self.get_cleaned_data_for_step('paste_tsv')['payload'])
             kwargs.update({
-                'row_count': len(table_rows),
-                'col_count': len(table_ncols)})
+                'table_rows': table_rows,
+                'table_ncols': table_ncols})
         return kwargs
 
     def get_template_names(self):

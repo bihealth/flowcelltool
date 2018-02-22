@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import pagerange
 import re
 
 from django import forms
@@ -243,6 +244,9 @@ EXTRA_LIBRARY_FORMS = 10
 LIBRARY_FIELDS = ('name', 'reference', 'barcode_set', 'barcode',
                   'barcode_set2', 'barcode2', 'lane_numbers')
 
+#: Regex for library name
+LIBRARY_NAME_REGEX = r'^[a-zA-Z0-9_\-]+$'
+
 
 class BarcodeSelect(forms.Select):
     """Barcode selection, adds "data-barcode-set" attribute to <option>
@@ -295,6 +299,14 @@ class BarcodeSelect(forms.Select):
 class LibraryForm(forms.ModelForm):
     """Form for handling library entries (table rows in the form set)"""
 
+    name = forms.CharField(
+        required=False,
+        max_length=100,
+        validators=[
+            RegexValidator(
+                LIBRARY_NAME_REGEX,
+                message=('Invalid library name. Alphanumerics, underscores '
+                         'and dashes are allowed.'))])
     barcode_set = forms.ModelChoiceField(
         required=False,
         queryset=models.BarcodeSet.objects.order_by('name'))
@@ -454,23 +466,48 @@ class PickColumnsForm(forms.Form):
         label='Lane column index',
         help_text='The first column has index 1')
 
-    def __init__(self, row_count=None, col_count=None, *args, **kwargs):
+    def __init__(self, table_rows=None, table_ncols=None, *args, **kwargs):
         super(PickColumnsForm, self).__init__(*args, **kwargs)
-        self.row_count = row_count
-        self.col_count = col_count
+        self.table_rows = table_rows
+        self.table_ncols = table_ncols
 
     def clean(self):
         if not self.cleaned_data.get('barcode_set'):
             self.add_error('barcode_set', 'Please select a barcode set')
+        # Validate column range
         for f in [
                 'sample_column', 'barcode_column', 'barcode_colum',
                 'lane_numbers_column']:
             col_field = self.cleaned_data.get(f)
-            if col_field and col_field > self.col_count:
+            if col_field and col_field > len(self.table_ncols):
                 self.add_error(f, 'Column out of data range')
+        # Validate row range
         first_row = self.cleaned_data.get('first_row')
-        if first_row and first_row > self.row_count:
+        if first_row and first_row > len(self.table_rows):
             self.add_error('first_row', 'Row out of data range')
+        # Validate sample column
+        sample_col = self.cleaned_data.get('sample_column')
+        if sample_col:
+            for row in self.table_rows:
+                if not re.match(LIBRARY_NAME_REGEX, row[sample_col - 1]):
+                    self.add_error(
+                        'sample_column',
+                        'Sample names may only contain alphanumerics, '
+                        'underscores and dashes. Did you select the correct '
+                        'column?')
+                    break
+        # Validate lane column
+        lane_col = self.cleaned_data.get('lane_numbers_column')
+        if lane_col:
+            for row in self.table_rows:
+                try:
+                    pagerange.PageRange(row[lane_col - 1])
+                except ValueError:
+                    self.add_error(
+                        'lane_numbers_column',
+                        'Invalid page range(s) found. Did you select the '
+                        'correct column?')
+                    break
 
 
 class ConfirmExtractionForm(forms.Form):
