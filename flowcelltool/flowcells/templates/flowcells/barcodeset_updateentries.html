@@ -29,3 +29,13 @@
     </div>
   </form>
 {% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('table thead tr th:last').after(
+        '<th for="div_id_form-0-DELETE" class="control-label">Delete</th>');
+    });
+  </script>
+{% endblock %}
