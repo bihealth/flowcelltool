@@ -76,9 +76,9 @@ def email_flowcell_created(user, flowcell, request=None):
     if not settings.FLOWCELLS_SEND_EMAILS:
         return
     # Gather groups to send emails to
-    TO_GROUPS = (rules.DEMUX_ADMIN, rules.DEMUX_OPERATOR)
+    to_groups = (rules.DEMUX_ADMIN, rules.DEMUX_OPERATOR)
     # Build queries and perform the actual sending of emails
-    queries = [Q(groups__name=group_name) for group_name in TO_GROUPS]
+    queries = [Q(groups__name=group_name) for group_name in to_groups]
     queries.append(Q(is_superuser=True))
     queries.append(Q(pk=user.pk))
     if flowcell.demux_operator:
@@ -98,11 +98,11 @@ def email_flowcell_created(user, flowcell, request=None):
         'user': user,
     }
     # Create email data tuple generator
-    TEMPLATE_SUBJECT = (
+    template_subject = (
         '{EMAIL_SUBJECT_PREFIX}{user} created new flow cell {full_name}')
     emails = (
         (
-            TEMPLATE_SUBJECT.format(**vals),
+            template_subject.format(**vals),
             TEMPLATE_FLOWCELL_CREATED.format(recipient=u, **vals),
             settings.EMAIL_SENDER,
             [u.email]
@@ -116,9 +116,9 @@ def email_flowcell_updated(user, flowcell, request=None):
     if not settings.FLOWCELLS_SEND_EMAILS:
         return
     # Gather groups to send emails to
-    TO_GROUPS = (rules.DEMUX_ADMIN, rules.DEMUX_OPERATOR)
+    to_groups = (rules.DEMUX_ADMIN, rules.DEMUX_OPERATOR)
     # Build queries and perform the actual sending of emails
-    queries = [Q(groups__name=group_name) for group_name in TO_GROUPS]
+    queries = [Q(groups__name=group_name) for group_name in to_groups]
     queries.append(Q(is_superuser=True))
     queries.append(Q(pk=user.pk))
     if flowcell.owner:
@@ -138,11 +138,11 @@ def email_flowcell_updated(user, flowcell, request=None):
         'user': user,
     }
     # Create email data tuple generator
-    TEMPLATE_SUBJECT = (
+    template_subject = (
         '{EMAIL_SUBJECT_PREFIX}{user} updated flow cell {full_name}')
     emails = (
         (
-            TEMPLATE_SUBJECT.format(**vals),
+            template_subject.format(**vals),
             TEMPLATE_FLOWCELL_UPDATED.format(recipient=u, **vals),
             settings.EMAIL_SENDER,
             [u.email]
@@ -156,9 +156,9 @@ def email_flowcell_deleted(user, flowcell, request=None):
     if not settings.FLOWCELLS_SEND_EMAILS:
         return
     # Gather groups to send emails to
-    TO_GROUPS = (rules.DEMUX_ADMIN, rules.DEMUX_OPERATOR)
+    to_groups = (rules.DEMUX_ADMIN, rules.DEMUX_OPERATOR)
     # Build queries and perform the actual sending of emails
-    queries = [Q(groups__name=group_name) for group_name in TO_GROUPS]
+    queries = [Q(groups__name=group_name) for group_name in to_groups]
     queries.append(Q(is_superuser=True))
     queries.append(Q(pk=user.pk))
     if flowcell.owner:
@@ -174,11 +174,11 @@ def email_flowcell_deleted(user, flowcell, request=None):
         'user': user,
     }
     # Create email data tuple generator
-    TEMPLATE_SUBJECT = (
+    template_subject = (
         '{EMAIL_SUBJECT_PREFIX}{user} deleted flow cell {full_name}')
     emails = (
         (
-            TEMPLATE_SUBJECT.format(**vals),
+            template_subject.format(**vals),
             TEMPLATE_FLOWCELL_DELETED.format(recipient=u, **vals),
             settings.EMAIL_SENDER,
             [u.email]

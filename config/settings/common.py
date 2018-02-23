@@ -13,7 +13,8 @@ from __future__ import absolute_import, unicode_literals
 import environ
 import itertools
 
-ROOT_DIR = environ.Path(__file__) - 3  # (flowcelltool/config/settings/common.py - 3 = flowcelltool/)
+# (flowcelltool/config/settings/common.py - 3 = flowcelltool/)
+ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path('flowcelltool')
 
 env = environ.Env()
@@ -104,7 +105,9 @@ FIXTURE_DIRS = (
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = env(
+    'DJANGO_EMAIL_BACKEND',
+    default='django.core.mail.backends.smtp.EmailBackend')
 EMAIL_SENDER = env('EMAIL_SENDER', default='noreply@example.com')
 EMAIL_SUBJECT_PREFIX = env('EMAIL_SUBJECT_PREFIX', default='')
 
@@ -230,16 +233,20 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'NumericPasswordValidator',
     },
 ]
 
@@ -289,7 +296,8 @@ except ImportError:
 
     pip.main([
         'install',
-        'git+git://github.com/tomchristie/django-rest-framework.git@master#egg=djangorestframework'])
+        'git+git://github.com/tomchristie/django-rest-framework.git@'
+        'master#egg=djangorestframework'])
 # END FLYNN WORKAROUND
 
 # LDAP configuration
@@ -355,7 +363,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',  # TODO: use rules engine
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100
 }
 

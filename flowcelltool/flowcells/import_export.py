@@ -184,7 +184,7 @@ class FlowCellLoader:  # pylint:disable=too-few-public-methods
 
 def revcomp(s):
     """Reverse complement function"""
-    MAP = {
+    comp_map = {
         'A': 'T',
         'a': 't',
         'C': 'G',
@@ -194,7 +194,7 @@ def revcomp(s):
         'T': 'A',
         't': 'a',
     }
-    return ''.join(reversed([MAP.get(x, x) for x in s]))
+    return ''.join(reversed([comp_map.get(x, x) for x in s]))
 
 
 def identity(s):

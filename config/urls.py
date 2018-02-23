@@ -17,7 +17,8 @@ if settings.REST_API:
 
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
+    url(r'^about/$', TemplateView.as_view(
+        template_name='pages/about.html'), name='about'),
 
     # Django db file storage
     url(r'^files/', include('db_file_storage.urls')),
@@ -33,15 +34,18 @@ urlpatterns = [
     url(r'^flowcells/', include('flowcelltool.flowcells.urls')),
 
     # Messages with attachments
-    url(r'^threads/', include('flowcelltool.threads.urls', namespace='threads')),
+    url(
+        r'^threads/',
+        include('flowcelltool.threads.urls', namespace='threads')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.REST_API:
-    # Only enable REST API if explicitely enabled as it currently is experimental
+    # Only enable REST API if explicitely enabled as it is experimental
     urlpatterns += [
         # Django REST framework auth hook-in
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+        url(r'^api-auth/', include(
+            'rest_framework.urls', namespace='rest_framework')),
 
         # Flowcells API
         url(r'^api/', include(rest_api_urls.ROUTER.urls)),
@@ -52,9 +56,18 @@ if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
     # these url in browser to see how these error pages look like.
     urlpatterns += [
-        url(r'^400/$', default_views.bad_request, kwargs={'exception': Exception('Bad Request!')}),
-        url(r'^403/$', default_views.permission_denied, kwargs={'exception': Exception('Permission Denied')}),
-        url(r'^404/$', default_views.page_not_found, kwargs={'exception': Exception('Page not Found')}),
+        url(
+            r'^400/$',
+            default_views.bad_request,
+            kwargs={'exception': Exception('Bad Request!')}),
+        url(
+            r'^403/$',
+            default_views.permission_denied,
+            kwargs={'exception': Exception('Permission Denied')}),
+        url(
+            r'^404/$',
+            default_views.page_not_found,
+            kwargs={'exception': Exception('Page not Found')}),
         url(r'^500/$', default_views.server_error),
     ]
     if 'debug_toolbar' in settings.INSTALLED_APPS:
