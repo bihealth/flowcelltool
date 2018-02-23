@@ -310,7 +310,8 @@ if env.bool('ENABLE_LDAP', None) is True:
 
         pip.main([
             'install',
-            'git+git://github.com/holtgrewe/pyldap.git@fce3b934e9b2d7d1a538fc37d7c4ed4cfe18fae1#egg=pyldap'])
+            'git+git://github.com/holtgrewe/pyldap.git@'
+            'fce3b934e9b2d7d1a538fc37d7c4ed4cfe18fae1#egg=pyldap'])
 
         import ldap
 
@@ -368,7 +369,7 @@ if env.bool('ENABLE_LDAP', None) is True:
             env.str('AUTH_LDAP2_USER_SEARCH_BASE', None),
             ldap.SCOPE_SUBTREE, LDAP_DEFAULT_FILTERSTR)
         AUTH_LDAP2_USER_ATTR_MAP = LDAP_DEFAULT_ATTR_MAP
-        AUTH_LDAP2_USERNAME_DOMAIN = env.str('AUTH_LDAP2_USERNAME_DOMAIN', None)
+        AUTH_LDAP2_USERNAME_DOMAIN = env.str('AUTH_LDAP2_USERNAME_DOMAIN')
 
         AUTHENTICATION_BACKENDS = tuple(itertools.chain(
             ('flowcelltool.users.backends.SecondaryLDAPBackend',),

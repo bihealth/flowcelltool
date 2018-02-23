@@ -54,7 +54,8 @@ LDAP/ActiveDirectory Setup
 --------------------------
 
 You can setup the tool to use LDAP/ActiveDirectory for logging into your web app.
-For this, set the following environment variables:
+For this, set the following environment variables.
+**NOTE:** The ``AUTH_LDAP_USERNAME_DOMAIN`` variable is optional.
 
 .. code-block:: shell
 
@@ -65,8 +66,10 @@ For this, set the following environment variables:
     export AUTH_LDAP_USER_SEARCH_BASE='DC=example,DC=com'
     export AUTH_LDAP_USERNAME_DOMAIN='YOURDOMAIN'
 
-The tool also supports an optional secondary LDAP server.
-To enable it, set the following environment variables:
+The tool also supports an optional secondary LDAP server. To enable it, set the
+following environment variables.
+**NOTE:** The ``AUTH_LDAP2_USERNAME_DOMAIN`` variable is **required** if the
+secondary LDAP server is enabled.
 
 .. code-block:: shell
 
@@ -78,7 +81,10 @@ To enable it, set the following environment variables:
     export AUTH_LDAP_USERNAME_DOMAIN='YOURDOMAIN2'
 
 Note that for users logging in via LDAP, the username must be in form of
-``username@YOURDOMAIN``.
+``username@YOURDOMAIN`` if the ``AUTH_LDAP*_USERNAME_DOMAIN`` variable is set.
+
+If you alter the username domain configuration once the tool is in use, you must
+manually alter the user names already found in the Django Postgres database.
 
 
 Deployment to Flynn
