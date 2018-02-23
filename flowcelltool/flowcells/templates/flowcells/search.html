@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
   <h2>Search</h2>
 
   <form method="GET" action="{% url 'search' %}">
     <div class="input-group">
       <input value="{{ query }}" type="text" class="form-control" name="q" placeholder="Search Term">
-      <span class="input-group-btn">
+      <span class="input-group-append">
         <button class="btn btn-primary" type="submit">Go!</button>
       </span>
     </div>
@@ -28,5 +27,4 @@
     {% endfor %}
   </ul>
   {% endif %}
-</div>
 {% endblock %}

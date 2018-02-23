@@ -110,7 +110,7 @@ class SequencingMachineDeleteView(
 
 class BarcodeSetListView(
         LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    """Shows a list of sequencing machines"""
+    """Shows a list of barcodes"""
 
     permission_required = 'flowcells.list_barcodeset'
 
@@ -119,7 +119,7 @@ class BarcodeSetListView(
 
 class BarcodeSetCreateView(
         LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    """View for creating sequencing machine"""
+    """View for creating barcode set"""
 
     permission_required = 'flowcells.add_barcodeset'
 
@@ -131,7 +131,7 @@ class BarcodeSetCreateView(
 
 class BarcodeSetDetailView(
         LoginRequiredMixin, PermissionRequiredMixin, DetailView):
-    """View detail of sequencing machine"""
+    """View detail of barcode set"""
 
     permission_required = 'flowcells.view_barcodeset'
 
@@ -140,7 +140,7 @@ class BarcodeSetDetailView(
 
 class BarcodeSetUpdateView(
         LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    """View for updating sequencing machines"""
+    """View for updating barcode sets"""
 
     permission_required = 'flowcells.change_barcodeset'
 
@@ -152,7 +152,7 @@ class BarcodeSetUpdateView(
 
 class BarcodeSetDeleteView(
         LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
-    """View for deleting sequencing machines"""
+    """View for deleting barcode sets"""
 
     permission_required = 'flowcells.delete_barcodeset'
 
@@ -587,6 +587,17 @@ class FlowCellExtractLibrariesView(
         }
     }
 
+    def get_form_kwargs(self, step):
+        """Pass extra arguments to form"""
+        kwargs = super(FlowCellExtractLibrariesView, self).get_form_kwargs(step)
+        if step == 'pick_columns':
+            table_rows, table_ncols = self._extract_payload(
+                self.get_cleaned_data_for_step('paste_tsv')['payload'])
+            kwargs.update({
+                'table_rows': table_rows,
+                'table_ncols': table_ncols})
+        return kwargs
+
     def get_template_names(self):
         """Return name of current template"""
         return self.TEMPLATES[self.steps.current]
@@ -677,15 +688,15 @@ class FlowCellExtractLibrariesView(
                 break
             else:
                 m = re.match(r'([1-9]+)$', entry.name[:-(len(suffix))])
-                l = 0 if not m else len(m.groups(1))
-                candidates.append((l, entry))
+                le = 0 if not m else len(m.groups(1))
+                candidates.append((le, entry))
         if not candidates:
             return None
         else:
             return list(sorted(candidates, key=lambda x: x[0]))[0][1]
 
     @classmethod
-    def _extract_payload(self, payload):
+    def _extract_payload(cls, payload):
         """Convert payload TSV to array of arrays with same dimension"""
         table = []
         rows = payload.replace('\r\n', '\n').split('\n')
@@ -704,7 +715,7 @@ class FlowCellExtractLibrariesView(
 
 
 class SearchView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
-    """Shows a list of sequencing machines"""
+    """Shows search results"""
 
     permission_required = 'flowcells.search'
 
@@ -716,7 +727,7 @@ class SearchView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         context['is_search'] = True
         if query:
             context['results'] = models.Library.objects.filter(
-                name__contains=query)
+                name__icontains=query)
         else:
             context['results'] = []
         context['query'] = query

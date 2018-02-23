@@ -36,7 +36,11 @@
         -
         {% endif %}
       </td>
-      <td>{{ lib.barcode.sequence }}</td>
+      <td>{{ lib.barcode.sequence }}
+        {% if object.index_read_count > 1 %}
+          / {{ lib.barcode2.sequence }}
+        {% endif %}  
+      </td>
       <td>{{ lib.lane_numbers|integer_range }}</td>
     </tr>
     {% endfor %}

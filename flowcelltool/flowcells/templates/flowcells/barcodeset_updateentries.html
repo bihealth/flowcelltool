@@ -5,29 +5,37 @@
 {% block title %}Update Barcode Set Entries{% endblock %}
 
 {% block content %}
-<div class="container">
   <h2>Update Barcode Set Entries</h2>
 
   <form method="post">
     {% crispy formset helper %}
 
-    <div class="text-xs-right mt-t-1 m-b-1">
-      <a role="button" class="btn btn-secondary"
-          href="{% url 'barcodeset_view' pk=object.pk %}">
-        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-        Cancel
-      </a>
-      <button type="submit" name="submit_more" value="submit_more" class="btn btn-primary">
-        <i class="fa fa-plus" aria-hidden="true"></i>
-        Save and add more
-      </button>
-      <button type="submit" name="submit" value="submit" class="btn btn-primary">
-        <i class="fa fa-check" aria-hidden="true"></i>
-        Save
-      </button>
+    <div class="text-right mb-3">
+      <div class="btn-group" role="group">
+        <a role="button" class="btn btn-secondary"
+            href="{% url 'barcodeset_view' pk=object.pk %}">
+          <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+          Cancel
+        </a>
+        <button type="submit" name="submit_more" value="submit_more" class="btn btn-primary">
+          <i class="fa fa-plus" aria-hidden="true"></i>
+          Save and add more
+        </button>
+        <button type="submit" name="submit" value="submit" class="btn btn-primary">
+          <i class="fa fa-check" aria-hidden="true"></i>
+          Save
+        </button>
+      </div>
     </div>
   </form>
-</div>
-
-</div>
 {% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('table thead tr th:last').after(
+        '<th for="div_id_form-0-DELETE" class="control-label">Delete</th>');
+    });
+  </script>
+{% endblock %}

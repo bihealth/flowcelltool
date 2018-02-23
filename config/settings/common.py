@@ -13,10 +13,22 @@ from __future__ import absolute_import, unicode_literals
 import environ
 import itertools
 
-ROOT_DIR = environ.Path(__file__) - 3  # (flowcelltool/config/settings/common.py - 3 = flowcelltool/)
+# (flowcelltool/config/settings/common.py - 3 = flowcelltool/)
+ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path('flowcelltool')
 
 env = environ.Env()
+
+# .env file, should load only in development environment
+READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=False)
+
+if READ_DOT_ENV_FILE:
+    # Operating System Environment variables have precedence over variables
+    # defined in the .env file, that is to say variables from the .env files
+    # will only be used if not defined as environment variables.
+    env_file = str(ROOT_DIR.path('.env'))
+    env.read_env(env_file)
+
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -86,14 +98,16 @@ DEBUG = env.bool('DJANGO_DEBUG', False)
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS # noqa
 FIXTURE_DIRS = (
     str(APPS_DIR.path('fixtures')),
 )
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = env(
+    'DJANGO_EMAIL_BACKEND',
+    default='django.core.mail.backends.smtp.EmailBackend')
 EMAIL_SENDER = env('EMAIL_SENDER', default='noreply@example.com')
 EMAIL_SUBJECT_PREFIX = env('EMAIL_SUBJECT_PREFIX', default='')
 
@@ -144,22 +158,22 @@ USE_TZ = True
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#templates
 TEMPLATES = [
     {
-        # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND
+        # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND    # noqa
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
         'DIRS': [
             str(APPS_DIR.path('templates')),
         ],
         'OPTIONS': {
-            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
+            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug   # noqa
             'debug': DEBUG,
-            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
-            # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types
+            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders # noqa
+            # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types # noqa
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
             ],
-            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
+            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors  # noqa
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -175,7 +189,7 @@ TEMPLATES = [
     },
 ]
 
-# See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
+# See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs # noqa
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # STATIC FILE CONFIGURATION
@@ -186,12 +200,12 @@ STATIC_ROOT = str(ROOT_DIR('staticfiles'))
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
 
-# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS # noqa
 STATICFILES_DIRS = (
     str(APPS_DIR.path('static')),
 )
 
-# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders # noqa
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -219,16 +233,20 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'NumericPasswordValidator',
     },
 ]
 
@@ -278,16 +296,17 @@ except ImportError:
 
     pip.main([
         'install',
-        'git+git://github.com/tomchristie/django-rest-framework.git@master#egg=djangorestframework'])
+        'git+git://github.com/tomchristie/django-rest-framework.git@'
+        'master#egg=djangorestframework'])
 # END FLYNN WORKAROUND
 
 # LDAP configuration
 # ------------------------------------------------------------------------------
 
 # Enable LDAP if configured
-if env.str('AUTH_LDAP_SERVER_URI', None):
-#    import ldap
-#    from django_auth_ldap.config import LDAPSearch
+if env.bool('ENABLE_LDAP', None) is True:
+    # import ldap
+    # from django_auth_ldap.config import LDAPSearch
     # FLYNN WORKAROUND
     import pip
 
@@ -299,7 +318,8 @@ if env.str('AUTH_LDAP_SERVER_URI', None):
 
         pip.main([
             'install',
-            'git+git://github.com/holtgrewe/pyldap.git@fce3b934e9b2d7d1a538fc37d7c4ed4cfe18fae1#egg=pyldap'])
+            'git+git://github.com/holtgrewe/pyldap.git@'
+            'fce3b934e9b2d7d1a538fc37d7c4ed4cfe18fae1#egg=pyldap'])
 
         import ldap
 
@@ -317,25 +337,52 @@ if env.str('AUTH_LDAP_SERVER_URI', None):
         from django_auth_ldap.config import LDAPSearch
     # FLYNN WORKAROUND ENDS
 
-    AUTH_LDAP_SERVER_URI = env.str('AUTH_LDAP_SERVER_URI')
-    AUTH_LDAP_BIND_DN = env.str('AUTH_LDAP_BIND_DN')
-    AUTH_LDAP_BIND_PASSWORD = env.str('AUTH_LDAP_BIND_PASSWORD')
-    AUTH_LDAP_CONNECTION_OPTIONS = {
-        ldap.OPT_REFERRALS: 0
-    }
-    AUTHENTICATION_BACKENDS = tuple(itertools.chain(
-        ('django_auth_ldap.backend.LDAPBackend',),
-        AUTHENTICATION_BACKENDS,
-    ))
-    AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        env.str('AUTH_LDAP_USER_SEARCH_BASE'),
-        ldap.SCOPE_SUBTREE, '(sAMAccountName=%(user)s)')
-    AUTH_LDAP_USER_ATTR_MAP = {
+    # Default values
+    LDAP_DEFAULT_CONN_OPTIONS = {
+        ldap.OPT_REFERRALS: 0}
+    LDAP_DEFAULT_FILTERSTR = '(sAMAccountName=%(user)s)'
+    LDAP_DEFAULT_ATTR_MAP = {
         'first_name': 'givenName',
         'last_name': 'sn',
-        'email': 'mail',
-    }
+        'email': 'mail'}
 
+    # Primary LDAP server
+    AUTH_LDAP_SERVER_URI = env.str('AUTH_LDAP_SERVER_URI', None)
+    AUTH_LDAP_BIND_DN = env.str('AUTH_LDAP_BIND_DN', None)
+    AUTH_LDAP_BIND_PASSWORD = env.str('AUTH_LDAP_BIND_PASSWORD', None)
+    AUTH_LDAP_CONNECTION_OPTIONS = LDAP_DEFAULT_CONN_OPTIONS
+
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(
+        env.str('AUTH_LDAP_USER_SEARCH_BASE', None),
+        ldap.SCOPE_SUBTREE, LDAP_DEFAULT_FILTERSTR)
+    AUTH_LDAP_USER_ATTR_MAP = LDAP_DEFAULT_ATTR_MAP
+    AUTH_LDAP_USERNAME_DOMAIN = env.str('AUTH_LDAP_USERNAME_DOMAIN', None)
+
+    AUTHENTICATION_BACKENDS = tuple(itertools.chain(
+        ('flowcelltool.users.backends.PrimaryLDAPBackend',),
+        AUTHENTICATION_BACKENDS,
+    ))
+
+    # Secondary LDAP server (optional)
+    AUTH_LDAP2_USERNAME_SUFFIX = None
+
+    if env.bool('ENABLE_LDAP_SECONDARY', None) is True:
+        # Primary LDAP server
+        AUTH_LDAP2_SERVER_URI = env.str('AUTH_LDAP2_SERVER_URI', None)
+        AUTH_LDAP2_BIND_DN = env.str('AUTH_LDAP2_BIND_DN', None)
+        AUTH_LDAP2_BIND_PASSWORD = env.str('AUTH_LDAP2_BIND_PASSWORD', None)
+        AUTH_LDAP2_CONNECTION_OPTIONS = LDAP_DEFAULT_CONN_OPTIONS
+
+        AUTH_LDAP2_USER_SEARCH = LDAPSearch(
+            env.str('AUTH_LDAP2_USER_SEARCH_BASE', None),
+            ldap.SCOPE_SUBTREE, LDAP_DEFAULT_FILTERSTR)
+        AUTH_LDAP2_USER_ATTR_MAP = LDAP_DEFAULT_ATTR_MAP
+        AUTH_LDAP2_USERNAME_DOMAIN = env.str('AUTH_LDAP2_USERNAME_DOMAIN')
+
+        AUTHENTICATION_BACKENDS = tuple(itertools.chain(
+            ('flowcelltool.users.backends.SecondaryLDAPBackend',),
+            AUTHENTICATION_BACKENDS,
+        ))
 
 # Django REST Framework Configuration
 # ------------------------------------------------------------------------------
@@ -344,7 +391,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',  # TODO: use rules engine
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100
 }
 

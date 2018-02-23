@@ -6,7 +6,6 @@
 {% block title %}Barcode Sets{% endblock %}
 
 {% block content %}
-<div class="row">
   <h2>Barcode Sets</h2>
 
   {% has_perm 'flowcells.add_barcodeset' request.user as can_add_barcodeset %}
@@ -14,77 +13,74 @@
     {% include "flowcells/_barcodeset_list_buttons.html" %}
   {% endif %}
 
-  <div class="list-group">
-    <table class="table table-hover table-striped">
-      <thead>
-        <tr class="row">
-            <th class="col-md-4">Name</th>
-            <th class="col-md-2">Short Name</th>
-            <th class="col-md-6">Description</th>
-            <th>&nbsp;</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for barcode_set in object_list %}
-          <tr>
-            <td>
-              <a href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
-              {{ barcode_set.name }}
-              </a>
-            </td>
-            <td>
-              <a href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
-                {{ barcode_set.short_name }}
-              </a>
-            </td>
-            <td>{{ barcode_set.description|default:"-"|markdown }}</td>
+  <table class="table table-hover table-striped">
+    <thead>
+      <tr>
+          <th class="col-md-4">Name</th>
+          <th class="col-md-2">Short Name</th>
+          <th class="col-md-6">Description</th>
+          <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for barcode_set in object_list %}
+        <tr>
+          <td>
+            <a href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
+            {{ barcode_set.name }}
+            </a>
+          </td>
+          <td>
+            <a href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
+              {{ barcode_set.short_name }}
+            </a>
+          </td>
+          <td>{{ barcode_set.description|default:"-"|markdown }}</td>
 
-            <td>
-              <div class="btn-group">
-                <button class="btn btn-secondary btn-sm dropdown-toggle"
-                    type="button" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-cog" aria-hidden="true"></i>
-                </button>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
-                    <i class="fa fa-eye" aria-hidden="true"></i>
-                    View
+          <td>
+            <div class="btn-group" role="group">
+              <button class="btn btn-secondary btn-sm dropdown-toggle"
+                  type="button" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-cog" aria-hidden="true"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
+                  <i class="fa fa-eye" aria-hidden="true"></i>
+                  View
+                </a>
+                <a class="dropdown-item" href="{% url 'barcodeset_export' pk=barcode_set.pk %}">
+                  <i class="fa fa-download" aria-hidden="true"></i>
+                  Export
+                </a>
+                {% has_perm 'flowcells.change_barcodeset' request.user barcode_set as can_change_barcodeset %}
+                {% if can_change_barcodeset %}
+                  <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Update
                   </a>
-                  <a class="dropdown-item" href="{% url 'barcodeset_export' pk=barcode_set.pk %}">
-                    <i class="fa fa-download" aria-hidden="true"></i>
-                    Export
+                  <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">
+                    <i class="fa fa-table" aria-hidden="true"></i>
+                    Update Entries
                   </a>
-                  {% has_perm 'flowcells.change_barcodeset' request.user barcode_set as can_change_barcodeset %}
-                  {% if can_change_barcodeset %}
-                    <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">
-                      <i class="fa fa-pencil" aria-hidden="true"></i>
-                      Update
-                    </a>
-                    <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">
-                      <i class="fa fa-table" aria-hidden="true"></i>
-                      Update Entries
-                    </a>
-                  {% endif %}
-                  {% has_perm 'flowcells.delete_barcodeset' request.user barcode_set as can_delete_barcodeset %}
-                  {% if can_delete_barcodeset %}
-                    <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">
-                      <i class="fa fa-eraser" aria-hidden="true"></i>
-                      Delete
-                    </a>
-                  {% endif %}
-                </div>
+                {% endif %}
+                {% has_perm 'flowcells.delete_barcodeset' request.user barcode_set as can_delete_barcodeset %}
+                {% if can_delete_barcodeset %}
+                  <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">
+                    <i class="fa fa-eraser" aria-hidden="true"></i>
+                    Delete
+                  </a>
+                {% endif %}
               </div>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
   {% if can_add_barcodeset %}
     {% include "flowcells/_barcodeset_list_buttons.html" %}
   {% endif %}
 
-</div>
 {% endblock content %}

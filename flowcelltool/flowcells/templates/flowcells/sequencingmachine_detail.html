@@ -4,7 +4,6 @@
 {% block title %}Sequencing Machine Details {{ object.vendor_id }}{% endblock %}
 
 {% block content %}
-<div class="row">
   <h2>Sequencing Machine: {{ object.vendor_id }}</h2>
 
   {% include "flowcells/_sequencingmachine_detail_buttons.html" with location="top" %}
@@ -14,6 +13,4 @@
   {% include "flowcells/_sequencingmachine_detail_properties.html" %}
 
   {% include "flowcells/_sequencingmachine_detail_buttons.html" with location="bottom" %}
-</div>
-
 {% endblock %}

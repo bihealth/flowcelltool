@@ -6,9 +6,11 @@
 {% block content %}
 <h2>Flow Cell Sheet for {{ object.vendor_id }}</h2>
 
-{% include "flowcells/_flowcell_sheet_buttons.html" %}
+<div>
+  {% include "flowcells/_flowcell_sheet_buttons.html" %}
+</div>
 
-<div class="row">
+<div>
   <h3>Sample Sheet</h3>
 
   <!-- Nav tabs -->
@@ -25,7 +27,7 @@
   </ul>
 
   <!-- Tab panes -->
-  <div class="tab-content">
+  <div class="tab-content mb-3">
     <div class="tab-pane active" id="yaml" role="tabpanel">
       <div style="position: relative; float: right;">
         <button class="btn btn-secondary btn-copy" data-clipboard-action="copy" data-clipboard-target="#texarea-yaml" style="position: absolute; top: 8px; right: 20px;">
@@ -57,7 +59,7 @@
 </div>
 
 
-<div class="row" style="margin-top: 20px;">
+<div>
   {% include "flowcells/_flowcell_sheet_buttons.html" %}
 </div>
 

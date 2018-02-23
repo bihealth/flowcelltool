@@ -66,7 +66,6 @@ class BaseImporter:
     def run(self):
         params = self._build_flowcell_info()
         params['libraries'] = []
-        decoders = [coreapi.codecs.CoreJSONCodec(), coreapi.codecs.JSONCodec()]
         client = coreapi.Client(
             transports=[self._build_auth_transport()])
         schema = client.get(self.api_url + '/schema')
@@ -79,7 +78,6 @@ class BaseImporter:
             'attachments': [],
         }
         print(params)
-        message = client.action(schema, ['messages', 'create'], params=params)
         for fname in (RUN_PARAMETERS_XML, RUN_INFO_XML):
             path = os.path.join(self.args.flowcell_dir, fname)
             with open(path, 'rb') as f:

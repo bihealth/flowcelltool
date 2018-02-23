@@ -1,17 +1,17 @@
 {% load crispy_forms_filters %}
 
-<div class="row">
-  <div class="btn-group pull-right">
+<div class="text-right mb-3">
+  <div class="btn-group" role="group">
     <a class="btn btn-secondary" role="button"
         href="{% url 'flowcell_list' %}">
       <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
       Back to List
     </a>
-    <div class="btn-group">
+    <div class="btn-group" role="group">
       <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton-{{ location }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Actions
       </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-{{ location }}">
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton-{{ location }}">
         <a class="dropdown-item" href="{% url 'flowcell_export' pk=object.pk %}">
           <i class="fa fa-download" aria-hidden="true"></i>
           Export
@@ -68,9 +68,9 @@
 </div>
 
 {% if can_change_flowcell %}
-<div class="row" style="margin-top: 12px">
+<div class="my-3">
   <div class="collapse" id="collapse-{{ location }}">
-    <div class="card card-block">
+    <div class="card card-body">
       <form action="{% url 'flowcell_updatelibraries' pk=object.pk %}"
           method="get">
         {% crispy prefill_form helper %}

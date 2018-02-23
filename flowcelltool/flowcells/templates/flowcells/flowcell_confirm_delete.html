@@ -4,7 +4,6 @@
 {% block title %}Confirm deletion of {{ object.vendor_id }}{% endblock %}
 
 {% block content %}
-<div class="row">
   <h2>Confirm deletion of {{ object.vendor_id }}</h2>
 
   <p>
@@ -15,18 +14,18 @@
   {% include "flowcells/_flowcell_detail_properties.html" %}
 
   <form method="post">{% csrf_token %}
-    <div class="mt-t-1 m-b-1">
-      <a role="button" class="btn btn-secondary"
-          href="{% url 'flowcell_view' pk=object.pk %}">
-        <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-        Cancel
-      </a>
-      <button type="submit" class="btn btn-danger">
-        <i class="fa fa-times" aria-hidden="true"></i>
-          Delete
-      </button>
+    <div class="text-right mb-3">
+      <div class="btn-group" role="group">
+        <a role="button" class="btn btn-secondary"
+            href="{% url 'flowcell_view' pk=object.pk %}">
+          <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+          Cancel
+        </a>
+        <button type="submit" class="btn btn-danger">
+          <i class="fa fa-times" aria-hidden="true"></i>
+            Delete
+        </button>
+      </div>
     </div>
   </form>
-</div>
-
 {% endblock %}

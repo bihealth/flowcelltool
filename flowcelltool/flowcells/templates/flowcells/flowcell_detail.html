@@ -11,15 +11,17 @@
 
 <h2>Flow Cell: {{ object.vendor_id }}</h2>
 
-{% include "flowcells/_flowcell_detail_buttons.html" %}
+<div>
+  {% include "flowcells/_flowcell_detail_buttons.html" %}
+</div>
 
-<div class="row">
+<div>
   <h3>Details</h3>
 
   {% include "flowcells/_flowcell_detail_properties.html" with location="top" %}
 </div>
 
-<div class="row">
+<div>
   <h3>Libraries</h3>
 
   {% include "flowcells/_flowcell_detail_libraries.html" %}
@@ -29,7 +31,7 @@
 
 {% include "flowcells/_flowcell_detail_layout.html" %}
 
-<div class="row">
+<div>
   {% include "flowcells/_flowcell_detail_buttons.html" with location="bottom" %}
 </div>
 

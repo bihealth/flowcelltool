@@ -20,7 +20,7 @@ Start server
 
 .. code-block:: shell
 
-    $ ./manage.py startserver
+    $ ./manage.py runserver
 
 Now go to http://localhost:8080/admin, login and create a user for yourself.
 Set the *super user* flag to the user to give him full permissions.
