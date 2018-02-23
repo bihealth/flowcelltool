@@ -30,8 +30,8 @@ MIDDLEWARE = WHITENOISE_MIDDLEWARE + MIDDLEWARE
 
 # SECURITY CONFIGURATION
 # ------------------------------------------------------------------------------
-# See https://docs.djangoproject.com/en/1.9/ref/middleware/#module-django.middleware.security
-# and https://docs.djangoproject.com/ja/1.9/howto/deployment/checklist/#run-manage-py-check-deploy
+# See https://docs.djangoproject.com/en/1.9/ref/middleware/#module-django.middleware.security   # noqa
+# and https://docs.djangoproject.com/ja/1.9/howto/deployment/checklist/#run-manage-py-check-deploy  # noqa
 
 # set this to 60 seconds and then to 518400 when you can prove it works
 SECURE_HSTS_SECONDS = 60
@@ -92,7 +92,7 @@ CACHES = {
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'IGNORE_EXCEPTIONS': True,  # mimics memcache behavior.
-                                        # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior
+                                        # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior   # noqa
         }
     }
 }
