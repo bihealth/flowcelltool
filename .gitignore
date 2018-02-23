@@ -1,3 +1,5 @@
+ansible/inventory
+
 ### OSX ###
 .DS_Store
 .AppleDouble

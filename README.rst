@@ -9,10 +9,6 @@ Flowcell Tool
         :target: https://flowcelltool.readthedocs.io/en/flowcelltool/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/bihealth/flowcelltool/shield.svg
-        :target: https://pyup.io/repos/github/bihealth/flowcelltool/
-        :alt: Updates
-
 .. image:: https://api.codacy.com/project/badge/Grade/2272054a44fd41a6a8075f5d1bd44901
         :target: https://www.codacy.com/app/manuel-holtgrewe/flowcelltool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bihealth/flowcelltool&amp;utm_campaign=Badge_Grade
         :alt: Codacy Analysis
@@ -25,10 +21,15 @@ Flowcell Tool
         :alt: Landscape Health
         :target: https://landscape.io/github/bihealth/flowcelltool
 
+.. image:: https://www.herokucdn.com/deploy/button.svg
+        :height: 20px
+        :alt: Deploy to Heroku
+        :target: https://heroku.com/deploy?template=https://github.com/bihealth/flowcelltool/tree/features/deploy-to-heroku
+
 Simple management of HTS Flowcells for demultiplexing
 
 - Free software: MIT license
-- Documentation: https://flowcelltool.readthedocs.io.
+- Documentation: https://flowcelltool.readthedocs.io
 
 Features
 --------

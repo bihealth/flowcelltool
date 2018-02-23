@@ -1,0 +1,2 @@
+# No ldap for RTD
+-r requirements_test.txt

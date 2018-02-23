@@ -1,2 +1,0 @@
-# No ldap for RTD
--r test.txt

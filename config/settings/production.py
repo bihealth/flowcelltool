@@ -104,7 +104,7 @@ CACHES = {
                                         # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior   # noqa
         }
     }
-}    
+}
 '''
 
 

@@ -1,0 +1,32 @@
+{
+  "name": "Flowcelltool",
+  "description": "Simple management of Illumina sequencing flowcells",
+  "repository": "https://github.com/bihealth/flowcelltool",
+  "keywords": ["bioinformatics", "sequencing", "demultiplexing"],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": {
+      "description": "The Django environment to use",
+      "value": "config.settings.production"
+    },
+    "DJANGO_SECRET_KEY": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    },
+    "DJANGO_ALLOWED_HOSTS": {
+      "description": "Allowed hosts",
+      "value": "*"
+    },
+    "FLOWCELLTOOL_INITIAL_ROOT_PASSWORD": {
+      "description": "Initial root password",
+      "generator": "secret"
+    }
+  },
+  "scripts": {
+    "postdeploy": "bash .heroku/post-deploy.sh"
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql"
+    }
+  ]
+}
