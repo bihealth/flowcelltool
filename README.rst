@@ -47,7 +47,7 @@ Prequisites
 Installation
 ------------
 
-- See [installation manual](http://flowcelltool.readthedocs.io/en/latest/)
+- See `installation manual <http://flowcelltool.readthedocs.io/en/latest/>`_
 
 Environment Variables
 ---------------------
