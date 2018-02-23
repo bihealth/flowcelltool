@@ -688,8 +688,8 @@ class FlowCellExtractLibrariesView(
                 break
             else:
                 m = re.match(r'([1-9]+)$', entry.name[:-(len(suffix))])
-                l = 0 if not m else len(m.groups(1))
-                candidates.append((l, entry))
+                le = 0 if not m else len(m.groups(1))
+                candidates.append((le, entry))
         if not candidates:
             return None
         else:
