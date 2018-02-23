@@ -1,16 +1,3 @@
-# Test dependencies go here.
--r base.txt
-
-coverage==4.5.1
-django-coverage-plugin==1.5.0
-pycodestyle==2.3.1
-flake8==3.5.0 # pyup: != 2.6.0
-django-test-plus==1.0.22
-factory_boy==2.10.0
-
-# pytest
-pytest-django==3.1.2
-pytest-sugar==0.9.1
-
-# Codacy and coverage support
-codacy-coverage==1.3.10
+# This file is here because many Platforms as a Service look for
+#	requirements.txt in the root directory of a project.
+-r requirements/production.txt
