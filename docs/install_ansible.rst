@@ -27,7 +27,7 @@ First, clone the repository from Github and get the latest stable version.
 .. code-block:: shell
 
     $ git clone git@github.com:bihealth/flowcelltool.git
-    $ git checkout features/deploy-to-heroku
+    $ git checkout v0.1.0
 
 Create an ``inventory`` file in the ``ansible`` sub directory with the remote server's hostname.
 

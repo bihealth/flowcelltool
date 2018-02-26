@@ -23,7 +23,7 @@ Click on the following button to start the installation.
 .. image:: images/button.svg
     :align: center
     :alt: Deploy to Heroku
-    :target: https://heroku.com/deploy?template=https://github.com/bihealth/flowcelltool/tree/features/deploy-to-heroku
+    :target: https://heroku.com/deploy?template=https://github.com/bihealth/flowcelltool/tree/v0.1.0
 
 You will be directed to the Heroku website.
 

@@ -24,7 +24,7 @@ Flowcell Tool
 .. image:: https://www.herokucdn.com/deploy/button.svg
         :height: 20px
         :alt: Deploy to Heroku
-        :target: https://heroku.com/deploy?template=https://github.com/bihealth/flowcelltool/tree/features/deploy-to-heroku
+        :target: https://heroku.com/deploy?template=https://github.com/bihealth/flowcelltool/tree/v0.1.0
 
 Simple management of HTS Flowcells for demultiplexing
 

@@ -21,7 +21,7 @@ First, clone the repository from Github and get the latest stable version.
 .. code-block:: shell
 
     $ git clone git@github.com:bihealth/flowcelltool.git
-    $ git checkout features/deploy-to-heroku
+    $ git checkout v0.1.0
 
 Then, create a new Flynn app
 
