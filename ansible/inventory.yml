@@ -1,0 +1,25 @@
+---
+flowcelltool-servers:
+    hosts:
+        cubi-ucsc-test:
+            ansible_host: '172.16.96.183'
+
+            # Postgres Configuration
+            #
+            # Postgres database to create
+            FLOWCELLTOOL_DB: 'flowcelltool'
+            # User to use for connecting to postgres server
+            FLOWCELLTOOL_PG_USER: 'flowcelltool'
+            # Password of user defined above
+            FLOWCELLTOOL_PG_PASSWORD: 'flowcellpass'
+
+            # Flowcelltool Configuration
+            #
+            # Version of Flowcelltool to install
+            FLOWCELLTOOL_VERSION: 'features/deploy-to-heroku'
+            # Super user name to create
+            FLOWCELLTOOL_SUPERUSER: root
+            # Super user password to set
+            FLOWCELLTOOL_SUPERUSER_PW: password
+            # Generate using `pwgen -N 1 40`
+            DJANGO_SECRET_KEY: 'Ahgheechee2aet7eepheePhioghahcahcu8Ahjui'

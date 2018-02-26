@@ -1,0 +1,31 @@
+[Unit]
+Description=Production version of Flowcelltool
+Requires=nginx.service postgresql.service
+Wants=memcached.service
+Before=nginx.service
+After=postgresql.service
+
+[Service]
+WorkingDirectory=/srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}
+Environment="DATABASE_URL=postgresql://{{ FLOWCELLTOOL_PG_USER }}:{{ FLOWCELLTOOL_PG_PASSWORD }}@127.0.0.1/{{ FLOWCELLTOOL_DB }}"
+Environment="DJANGO_ALLOWED_HOSTS=*"
+Environment="DJANGO_SECRET_KEY={{ DJANGO_SECRET_KEY }}"
+Environment="DJANGO_SETTINGS_MODULE=config.settings.production"
+PIDFile=/run/flowcelltool_production.pid
+Type=forking
+KillMode=process
+Restart=restart-always
+ExecStart=/srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv/bin/gunicorn \
+          config.wsgi                                                    \
+          --group nobody                                                 \
+          --user flowcelltool                                            \
+          --workers 4                                                    \
+          --bind=127.0.0.1:8000                                          \
+          --pid=/run/flowcelltool_production.pid                         \
+          --pythonpath=/srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}      \
+          --error-logfile=/var/log/flowcelltool_production.error         \
+          --daemon                                                       \
+
+[Install]
+# When should this service be triggered? (this is the equivalent of SysV's runlevel 3)
+WantedBy=multi-user.target

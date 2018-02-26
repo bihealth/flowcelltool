@@ -1,44 +1,19 @@
+.. _getting_started:
+
 ===============
 Getting Started
 ===============
 
-.. warning::
+This section gives an overview of how the application works.
+Flowcelltool allows you to manage flow cells on libraries with a graphical and then create sample sheets for the Illumina demultiplexing software.
+To facilitate this, you will need to register your sequencing devices (for configuring dual indexing workflow used) and the adapter barcode sequence used.
 
-   This is provisional information and needs some work.
+The overall workflow after the initial installation is:
 
-Development Setup
------------------
+1. `Create or import adapter barcode libraries <import_barcodes>`_
+2. `Register your sequencers <create_sequencers>`_
+3. `Manage the users in the datbase <manage_user>`_
 
-Create a super user (e.g., root)
+Once this is complete, you can start
 
-.. code-block:: shell
-
-    $ ./manage.py createsuperuser
-    [follow the prompts]
-
-Start server
-
-.. code-block:: shell
-
-    $ ./manage.py runserver
-
-Now go to http://localhost:8080/admin, login and create a user for yourself.
-Set the *super user* flag to the user to give him full permissions.
-
-Then, go to http://localhost:8080/, logout, login as your user and go on with Import Barcodes guide.
-
-Flynn Setup
------------
-
-
-Create a super user (e.g., root)
-
-.. code-block:: shell
-
-    $ flynn run /app/manage.py createsuperuser
-    [follow the prompts]
-
-Your server is already running, go to
-
-Now go to https://flynnhost/admin, login and create a user for yourself.
-Set the *super user* flag to the user to give him full permissions.
+- `Adding your flow cells <add_flowcells>`_.

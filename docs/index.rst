@@ -1,11 +1,6 @@
 Welcome to Flowcelltool's documentation!
 =========================================
 
-.. warning::
-
-   Flowcelltool is currently not stable and under active development.
-   Things will change and break, at least until the first v0.1 release.
-
 Flowcelltool is a Django web application for the management of Illumina flow cells.
 The documentation is split into three parts (accessible through the navigation on the left):
 
@@ -17,11 +12,6 @@ Manual
 
 Project Info
     More information on the project, including the changelog, list of contributing authors, and contribution instructions.
-
-Screenshot
-----------
-
-* TODO
 
 Dependencies
 ------------
@@ -38,15 +28,20 @@ Features
 * Authentication via LDAP/ActiveDirectory or local users
 * Easily deployable to Heroku/Flynn.io/Docker (12 factor app), follows Two Scoops of Python best pratice
 
+`The Project repository can be found on Github.com <https://github.com/bihealth/flowcelltool>`_.
+
 .. toctree::
     :caption: Installation & Getting Started
     :name: getting-started
     :hidden:
     :maxdepth: 1
 
-    installation
-    getting_started
-    rest_api
+    install
+    install_heroku
+    install_flynn
+    install_ansible
+    install_local
+    install_advanced
 
 .. toctree::
     :caption: User Manual
@@ -55,10 +50,11 @@ Features
     :maxdepth: 1
     :titlesonly:
 
-    import_barcodes
-    create_sequencers
-    add_flowcells
-    admin_users
+    getting_started
+    manage_barcodes
+    manage_sequencers
+    manage_flowcells
+    manage_users
 
 .. toctree::
     :caption: Project Info

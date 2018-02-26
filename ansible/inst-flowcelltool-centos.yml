@@ -1,0 +1,254 @@
+# Ansible playbook for the installation of Flowcelltool on CentOS 7.4
+---
+
+# Prerequisites =============================================================
+
+- name: Install Ansible Dependencies
+  hosts: flowcelltool-servers
+  user: root
+  tasks:
+  - name: Install python-psycopg2 for Ansible
+    yum: name=python-psycopg2 state=present
+
+  - name: Install misc dependencies
+    yum: name={{ item }} state=present
+    with_items:
+    - gcc
+    - openldap-clients
+    - openldap-devel
+
+# Python 3 Installation =====================================================
+
+- name: Install Python 3.6
+  hosts: flowcelltool-servers
+  user: root
+  tasks:
+  - name: Make community Python 3 packages available
+    yum: name=https://centos7.iuscommunity.org/ius-release.rpm state=present
+
+  - name: Install Python 3 packages
+    yum: name={{ item }} state=present
+    with_items:
+    - python36u
+    - python36u-pip
+    - python36u-devel
+    - python36u-psycopg2
+
+  - name: Install virtualenv
+    command: pip3.6 install virtualenv
+    args:
+      creates: /usr/bin/virtualenv
+
+# PostgreSQL Installation ===================================================
+
+- name: Install and Setup PostgreSQL
+  hosts: flowcelltool-servers
+  user: root
+  tasks:
+  - name: Install Postgres dependencies
+    yum: name={{ item }} state=present
+    with_items:
+    - postgresql-server
+    - postgresql-devel
+
+  - name: Initialize PostgreSQL database cluster
+    command: postgresql-setup initdb
+    args:
+      creates: /var/lib/pgsql/data/PG_VERSION
+
+  - name: Allow md5 authentication from localhost
+    copy:
+      src: pg_hba.conf
+      dest: /var/lib/pgsql/data/pg_hba.conf
+      owner: postgres
+      group: postgres
+      mode: u=rw,go=
+    register: pg_hba_conf
+
+  - name: Restart and enable PostgreSQL server
+    systemd: name=postgresql state=restarted enabled=yes
+    when: pg_hba_conf|changed
+
+  - name: Start and enable PostgreSQL server
+    systemd: name=postgresql state=started enabled=yes
+    when: not (pg_hba_conf|changed)
+
+# Reverse Proxy Installation ================================================
+
+- name: Reverse-proxy installation (+self-signed SSL cert setup)
+  hosts: flowcelltool-servers
+  user: root
+  tasks:
+  - name: Install nginx
+    yum: name=nginx state=present
+
+  - name: Start and enable nginx
+    systemd: name=nginx state=started enabled=yes
+
+  - name: Create /etc/ssl/private
+    file:
+      state: directory
+      dest: /etc/nginx/ssl
+      mode: 0700
+
+  - name: Create self-signed SSL certificate and key
+    command: >
+      openssl req -new -nodes -x509 -subj "/CN=127.0.0.1"
+        -days 3650 -keyout /etc/nginx/ssl/server.key
+        -out /etc/nginx/ssl/server.crt -extensions v3_ca
+    args:
+      creates: /etc/nginx/ssl/server.crt
+    register: nginx_server_crt
+
+  - name: Fix mode on server.key
+    file:
+      path: /etc/nginx/ssl/server.key
+      owner: nginx
+      group: nginx
+      mode: u=rw,go=
+
+  - name: Configure nginx
+    copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+    register: nginx_conf
+
+  - name: Restart nginx
+    systemd: name=nginx state=restarted
+    when: (nginx_conf|changed) or (nginx_server_crt|changed)
+
+# PostgreSQL Database and User ==============================================
+
+- name: Flowcelltool PostgreSQL Setup
+  hosts: flowcelltool-servers
+  user: root
+  tasks:
+  - name: Create flowcelltool database in PG database
+    become_user: postgres
+    become: yes
+    postgresql_db:
+      name: "{{ FLOWCELLTOOL_DB }}"
+
+  - name: Create user and grant permissions on PG database
+    become_user: postgres
+    become: yes
+    postgresql_user:
+      db: "{{ FLOWCELLTOOL_DB }}"
+      name: "{{ FLOWCELLTOOL_PG_USER }}"
+      encrypted: yes
+      password: "md5{{ [FLOWCELLTOOL_PG_PASSWORD, FLOWCELLTOOL_PG_USER]|join('')|hash('md5') }}"
+      priv: ALL
+
+# Flowcelltool App Installation =============================================
+
+- name: Deploy Flowcelltool Source Code
+  hosts: flowcelltool-servers
+  user: root
+  tasks:
+  - name: Create user for flowcelltool
+    user:
+      name: flowcelltool
+      home: /srv/flowcelltool
+      group: nobody
+
+  - name: Ensure clone target exists
+    file:
+      recurse: yes
+      state: directory
+      dest: /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}
+      owner: flowcelltool
+      group: nobody
+
+  - name: Clone Flowcelltool source code
+    git:
+      repo: https://github.com/bihealth/flowcelltool.git
+      dest: /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}
+      version: '{{ FLOWCELLTOOL_VERSION }}'
+
+# Create Initial User =======================================================
+
+- name: Flowcelltool Setup
+  hosts: flowcelltool-servers
+  environment:
+    DATABASE_URL: 'postgresql://{{ FLOWCELLTOOL_PG_USER }}:{{ FLOWCELLTOOL_PG_PASSWORD }}@127.0.0.1/{{ FLOWCELLTOOL_DB }}'
+    DJANGO_ALLOWED_HOSTS: '*'
+    DJANGO_SECRET_KEY: '{{ DJANGO_SECRET_KEY }}'
+    DJANGO_SETTINGS_MODULE: 'config.settings.production'
+    FLOWCELLTOOL_SUPERUSER: "{{ FLOWCELLTOOL_SUPERUSER }}"
+    FLOWCELLTOOL_SUPERUSER_PW: "{{ FLOWCELLTOOL_SUPERUSER_PW }}"
+    FLOWCELLTOOL_VERSION: "{{ FLOWCELLTOOL_VERSION }}"
+  user: root
+  become: True
+  become_user: flowcelltool
+  tasks:
+  - name: Ensure virtual env target exists
+    file:
+      recurse: yes
+      state: directory
+      dest: "/srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv"
+      owner: flowcelltool
+      group: nobody
+
+  - name: Create virtualenv environment
+    shell: |
+      trap "rm -rf /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv" ERR
+      virtualenv -p /usr/bin/python3.6 /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv
+      source /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv/bin/activate
+      pip install -r /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}/requirements_paas.txt
+    args:
+      creates: /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv/bin/activate
+
+  - name: Django - prepare static files
+    shell: |
+      source /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv/bin/activate
+
+      python manage.py collectstatic --no-input
+    args:
+      chdir: /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}
+
+
+  # We will always migrate...
+  - name: Django - migrate database
+    shell: |
+      source /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv/bin/activate
+
+      python manage.py migrate
+    args:
+      chdir: /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}
+
+  # .. but only create the super user unless previously created.
+  - name: Django - create superuser
+    shell: |
+      source /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}-venv/bin/activate
+      echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('{{ FLOWCELLTOOL_SUPERUSER }}', 'admin@example.com', '{{ FLOWCELLTOOL_SUPERUSER_PW }}')" \
+      | python manage.py shell
+      touch /srv/flowcelltool/.superuser-created
+    args:
+      chdir: /srv/flowcelltool/{{ FLOWCELLTOOL_VERSION }}
+      creates: /srv/flowcelltool/.superuser-created
+
+# Register Flowcelltool with systemd ========================================
+
+- name: Flowcelltool Setup
+  hosts: flowcelltool-servers
+  environment:
+    DATABASE_URL: 'postgresql://{{ FLOWCELLTOOL_PG_USER }}:{{ FLOWCELLTOOL_PG_PASSWORD }}@127.0.0.1/{{ FLOWCELLTOOL_DB }}'
+    DJANGO_ALLOWED_HOSTS: '*'
+    DJANGO_SECRET_KEY: '{{ DJANGO_SECRET_KEY }}'
+    DJANGO_SETTINGS_MODULE: 'config.settings.production'
+    FLOWCELLTOOL_SUPERUSER: "{{ FLOWCELLTOOL_SUPERUSER }}"
+    FLOWCELLTOOL_SUPERUSER_PW: "{{ FLOWCELLTOOL_SUPERUSER_PW }}"
+    FLOWCELLTOOL_VERSION: "{{ FLOWCELLTOOL_VERSION }}"
+  user: root
+  tasks:
+  - name: Install flowcelltool systemd unit file
+    template:
+      src: flowcelltool.service.j2
+      dest: /etc/systemd/system/flowcelltool.service
+
+  - name: Start flowcelltool systemd unit
+    systemd:
+      state: started
+      name: flowcelltool
+      enabled: yes
+      daemon_reload: yes
