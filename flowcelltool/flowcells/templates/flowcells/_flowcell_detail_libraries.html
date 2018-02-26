@@ -3,12 +3,12 @@
 <table class="table table-striped table-hover">
   <thead>
     <tr>
-        <th class="col-md-3">Name</th>
-        <th class="col-md-1">Reference</th>
-        <th class="col-md-3">Index Set</th>
-        <th class="col-md-2">Index</th>
-        <th class="col-md-2">Index Seq.</th>
-        <th class="col-md-1">Lanes</th>
+        <th class="col-3">Name</th>
+        <th class="col-1">Reference</th>
+        <th class="col-3">Index Set</th>
+        <th class="col-2">Index</th>
+        <th class="col-2">Index Seq.</th>
+        <th class="col-1">Lanes</th>
     </tr>
   </thead>
   <tbody>
@@ -39,7 +39,7 @@
       <td>{{ lib.barcode.sequence }}
         {% if object.index_read_count > 1 %}
           / {{ lib.barcode2.sequence }}
-        {% endif %}  
+        {% endif %}
       </td>
       <td>{{ lib.lane_numbers|integer_range }}</td>
     </tr>
