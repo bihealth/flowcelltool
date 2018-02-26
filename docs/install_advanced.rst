@@ -74,7 +74,7 @@ The configuration of ``AUTH_LDAP_USERNAME_DOMAIN`` is **required** when using tw
     export AUTH_LDAP2_BIND_PASSWORD='password'
     export AUTH_LDAP2_SERVER_URI='ldap://activedirectory.example.com'
     export AUTH_LDAP2_USER_SEARCH_BASE='DC=example,DC=com'
-    export AUTH_LDAP_USERNAME_DOMAIN='YOURDOMAIN2'
+    export AUTH_LDAP2_USERNAME_DOMAIN='YOURDOMAIN2'
 
 Note that for users logging in via LDAP, the username must be in form of ``username@YOURDOMAIN`` if the ``AUTH_LDAP*_USERNAME_DOMAIN`` variable is set.
 
