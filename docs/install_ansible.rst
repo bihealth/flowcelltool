@@ -54,7 +54,7 @@ In a more refined Ansible setup, you would use vault-encrypted host variables.
                 # Flowcelltool Configuration
                 #
                 # Version of Flowcelltool to install
-                FLOWCELLTOOL_VERSION: 'features/deploy-to-heroku'
+                FLOWCELLTOOL_VERSION: 'stable'
                 # Super user name to create
                 FLOWCELLTOOL_SUPERUSER: root
                 # Super user password to set
