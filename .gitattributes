@@ -1,1 +1,2 @@
 * text=auto
+flowcelltool/_version.py export-subst
