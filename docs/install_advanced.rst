@@ -81,3 +81,9 @@ Note that for users logging in via LDAP, the username must be in form of ``usern
 .. note::
 
     If you alter the username domain configuration once the tool is in use, you must manually alter the user names already found in the Django Postgres database.
+
+-------------
+Login Message
+-------------
+
+You can specify a message to display on the login screen by setting the environment variable ``LOGIN_MESSAGE``.

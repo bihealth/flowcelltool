@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
+{% load global_tags %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
   <div class="col-md-4 mx-auto my-3">
     <h2>Login</h2>
+
+    {% getenv "LOGIN_MESSAGE" as login_message %}
+    {% if login_message %}
+      <p>{{ login_message }}</p>
+    {% endif %}
 
     <form class="form-signin" method="post">
       {% csrf_token %}

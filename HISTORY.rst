@@ -6,6 +6,7 @@ History
 HEAD
 ----
 
+- Allowing to specify message on login screen.
 - Adding version to stick footer.
 
 ------
