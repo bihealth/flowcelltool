@@ -6,6 +6,8 @@ History
 HEAD
 ----
 
+- Adding version to stick footer.
+
 ------
 v0.1.1
 ------

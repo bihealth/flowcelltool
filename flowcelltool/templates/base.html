@@ -1,5 +1,6 @@
 {% load staticfiles i18n %}<!DOCTYPE html>
 {% load rules %}
+{% load version_tags %}
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -126,6 +127,14 @@
     </div> <!-- /container -->
 
     {% block modal %}{% endblock modal %}
+
+
+
+    <footer class="footer">
+      <div class="container text-right">
+        <span class="text-muted">Flowcelltool v{% app_version %}</span>
+      </div>
+    </footer>
 
     <!-- Le javascript
     ================================================== -->
