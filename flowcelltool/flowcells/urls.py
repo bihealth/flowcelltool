@@ -2,6 +2,8 @@
 from django.conf.urls import url
 
 from . import views
+from .api_v1 import views as api_v1_views
+
 
 urlpatterns = [
     # SequencingMachine related -----------------------------------------------
@@ -149,4 +151,72 @@ urlpatterns = [
         view=views.SearchView.as_view(),
         name='search',
     ),
+]
+
+# API
+urlpatterns += [
+    # SequencingMachine related -----------------------------------------------
+
+    url(
+        regex=r'api/v1/instrument/list$',
+        view=api_v1_views.SequencingMachineListApiView.as_view(),
+        name='instrument_list_api',
+    ),
+    url(
+        regex=r'api/v1/instrument/view/(?P<pk>\d+)$',
+        view=api_v1_views.SequencingMachineDetailApiView.as_view(),
+        name='instrument_view_api',
+    ),
+    url(
+        regex=r'api/v1/instrument/by_vendor_id/(?P<vendor_id>.+)$',
+        view=api_v1_views.SequencingMachineByVendorIdApiView.as_view(),
+        name='instrument_by_vendor_id_api',
+    ),
+
+    # BarcodeSet related ------------------------------------------------------
+
+    url(
+        regex=r'api/v1/barcodeset/list$',
+        view=api_v1_views.BarcodeSetListApiView.as_view(),
+        name='barcodeset_list_api',
+    ),
+    url(
+        regex=r'api/v1/barcodeset/view/(?P<pk>\d+)$',
+        view=api_v1_views.BarcodeSetDetailApiView.as_view(),
+        name='barcodeset_view_api',
+    ),
+
+    # FlowCell related --------------------------------------------------------
+
+    url(
+        regex=r'api/v1/flowcell/list$',
+        view=api_v1_views.FlowCellListApiView.as_view(),
+        name='flowcell_list_api',
+    ),
+    url(
+        regex=r'api/v1/flowcell/view/(?P<pk>\d+)$',
+        view=api_v1_views.FlowCellDetailApiView.as_view(),
+        name='flowcell_view_api',
+    ),
+    url(
+        regex=r'api/v1/flowcell/by_vendor_id/(?P<vendor_id>.+)$',
+        view=api_v1_views.FlowCellByVendorIdApiView.as_view(),
+        name='flowcell_by_vendor_id_api',
+    ),
+    url(
+        regex=r'api/v1/flowcell/sample_sheet/(?P<pk>\d+)$',
+        view=api_v1_views.FlowCellSampleSheetApiView.as_view(),
+        name='flowcell_sample_sheet_api',
+    ),
+
+    # Message related ----------------------------------------------------------
+
+    url(
+        regex=r'api/v1/flowcell/list_messages/(?P<related_pk>\d+)$',
+        view=api_v1_views.MessageListApiView.as_view(),
+        name='flowcell_list_messages_api',
+    ),
+
+    # /flowcells/api/v1/flowcell/add_message/:related_pk
+    # TODO
 ]

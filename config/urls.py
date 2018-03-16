@@ -11,10 +11,6 @@ from django.views import defaults as default_views
 
 from flowcelltool.flowcells.views import HomeView
 
-if settings.REST_API:
-    from rest_framework.schemas import get_schema_view
-    from flowcelltool.rest_api import urls as rest_api_urls
-
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^about/$', TemplateView.as_view(
@@ -39,18 +35,6 @@ urlpatterns = [
         include('flowcelltool.threads.urls', namespace='threads')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-if settings.REST_API:
-    # Only enable REST API if explicitely enabled as it is experimental
-    urlpatterns += [
-        # Django REST framework auth hook-in
-        url(r'^api-auth/', include(
-            'rest_framework.urls', namespace='rest_framework')),
-
-        # Flowcells API
-        url(r'^api/', include(rest_api_urls.ROUTER.urls)),
-        url(r'^api/schema', get_schema_view(title='Flowcelltool API')),
-    ]
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

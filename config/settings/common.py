@@ -400,11 +400,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100
 }
 
-# Disable/Enable REST API
-# ------------------------------------------------------------------------------
-
-REST_API = env.bool('FLOWCELLTOOL_REST_API', False)
-
 # Disable/Enable Sending of emails
 # ------------------------------------------------------------------------------
 

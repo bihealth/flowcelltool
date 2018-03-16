@@ -166,7 +166,7 @@ class FlowCellLoader:  # pylint:disable=too-few-public-methods
                 if library.get('barcode_set2'):
                     barcode_set2 = get_object_or_404(
                         BarcodeSet, short_name=library.get('barcode_set2'))
-                    qs = barcode_set.entries.filter(
+                    qs = barcode_set2.entries.filter(
                         name=library.get('barcode_name2'))
                     if qs.count() != 1:
                         raise ValidationError('Invalid barcode 2')
