@@ -343,6 +343,20 @@ class FlowCellDetailView(
         context['helper'] = FormHelper()
         context['helper'].form_tag = False
         context['helper'].form_method = 'GET'
+        # Properly sort the adapters information
+        context['info_adapters'] = []
+        for info in self.object.info_adapters:
+            sorted_info = dict(info)
+            sorted_info['per_lane'] = dict(sorted(info['per_lane'].items()))
+            for key in info['per_lane']:
+                for seq, num in sorted(
+                        info['per_lane'][key].items(), key=lambda x: x[1], reverse=True):
+                    sorted_info['per_lane'][key][seq] = {
+                        'num': num,
+                        'ratio': 100.0 * num / info['num_indexed_reads'],
+                    }
+            print(sorted_info)
+            context['info_adapters'].append(sorted_info)
         return context
 
 

@@ -20,8 +20,18 @@ urlpatterns += router.urls
 
 urlpatterns += [
     url(
-        regex=r'^flowcell/by_vendor_id/(?P<vendor_id>.+)$',
+        regex=r'^flowcell/by_vendor_id/(?P<vendor_id>.+)/$',
         view=views.FlowCellViewSet.as_view({'get': 'by_vendor_id'}),
         name='flowcell_by_vendor_id',
     ),
+]
+
+# Add special views
+
+urlpatterns += [
+    url(
+        regex=r'^flowcell/(?P<pk>\d+)/update/$',
+        view=views.FlowCellUpdateAdaptersView.as_view(),
+        name='flowcell_update_info_adapters',
+    )
 ]

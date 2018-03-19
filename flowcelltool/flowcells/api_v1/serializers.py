@@ -4,6 +4,7 @@ from dry_rest_permissions.generics import DRYPermissionsField
 from ..models import BarcodeSetEntry, BarcodeSet, FlowCell, SequencingMachine
 from ...threads.models import Message
 
+
 class SequencingMachineSerializer(serializers.ModelSerializer):
     class Meta:
         model = SequencingMachine
@@ -35,11 +36,27 @@ class FlowCellSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FlowCell
-        fields = ('pk', 'owner', 'created', 'modified', 'run_date', 'run_number', 'slot', 'vendor_id',
-                  'label', 'description', 'num_lanes', 'status', 'operator',
+        fields = ('pk', 'owner', 'created', 'modified', 'run_date', 'run_number', 'slot',
+                  'vendor_id', 'label', 'description', 'num_lanes', 'status', 'operator',
                   'is_paired', 'index_read_count', 'rta_version', 'read_length',
-                  '_permissions')
-        read_only_fields = ('pk', 'owner', 'created', 'modified')
+                  'info_adapters', 'info_quality_scores', '_permissions')
+        read_only_fields = ('pk', 'owner', 'created', 'modified', 'info_adapters',
+                            'info_quality_scores')
+
+
+class FlowCellPostSequencingSerializer(serializers.ModelSerializer):
+    """Serializer that provides write access to the ``info_adapters`` and ``info_quality_scores``
+    fields.
+    """
+    _permissions = DRYPermissionsField()
+
+    # TODO: add validation to JSON, for now we trust authenticated users as long as the JSON
+    # TODO: is valid
+
+    class Meta:
+        model = FlowCell
+        fields = ('pk', 'info_adapters', 'info_quality_scores', 'status', '_permissions')
+        read_only_fields = ('pk', '_permissions')
 
 
 class FlowCellMessageSerializer(serializers.ModelSerializer):

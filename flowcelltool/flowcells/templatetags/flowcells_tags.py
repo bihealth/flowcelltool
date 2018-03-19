@@ -7,7 +7,7 @@ import pagerange
 register = template.Library()
 
 
-@register.filter('sizify')
+@register.filter
 def sizify(value):
     """
     Simple kb/mb/gb size snippet for templates:
@@ -26,7 +26,7 @@ def sizify(value):
     return '%s %s' % (str(round(value, 2)), ext)
 
 
-@register.filter('fa_mime_type')
+@register.filter
 def fa_mime_type(value):
     mapping = {
         'application/pdf': 'file-pdf-o',
@@ -37,6 +37,11 @@ def fa_mime_type(value):
     return mapping.get(value, 'file-o')
 
 
-@register.filter('integer_range')
+@register.filter
 def integer_range(value):
     return pagerange.PageRange(value).range
+
+
+@register.filter
+def multiply(value, arg):
+    return value * arg

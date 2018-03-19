@@ -1,0 +1,39 @@
+{% load flowcells_tags %}
+
+{% if info_adapters %}
+<div>
+  <p>
+    The following adapter information has been posted for this flowcell.
+  </p>
+
+  {% for info in info_adapters %}
+  <h4>Adapter {{ forloop.counter }}</h4>
+
+  <p>
+    Based on the first {{ info.num_indexed_reads }}, showing adapters with more than
+    {{ info.min_read_threshold|multiply:100 }}%
+  </p>
+
+  <ul>
+    {% for key, histo in info.per_lane.items %}
+      <li>
+        {{ key }}
+        <ul>
+          {% for seq, item in histo.items %}
+            <li>
+              {{ seq }}: {{ item.num }} ({{ item.ratio }} %)
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+</div>
+{% else %}
+<div>
+  <p>
+    No adapter information has been registered yet for this flowcell.
+  </p>
+</div>
+{% endif %}

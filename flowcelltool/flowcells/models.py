@@ -4,10 +4,8 @@
 from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, JSONField
 from django.contrib.contenttypes.fields import GenericRelation
-
-import rules
 
 from flowcelltool.users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -473,6 +471,21 @@ class FlowCell(TimeStampedModel):
         Message, content_type_field='content_type',
         object_id_field='object_id')
 
+    #: Description of the adapters seen in the actual BCL data.  The structure is a list of the
+    #: following structure:
+    #:
+    #:     {
+    #:         "num_indexed_reads": <number of reads that were read>,
+    #:         "lower_thresh": <lower threshold on adapter portion to keep>,
+    #:         "per_lane": {
+    #:             adapter_seq: count for adapter_seq, count in top_count_adapters
+    #:         },
+    #:     }
+    info_adapters = JSONField(null=True, blank=True)
+
+    #: Summary information on the raw quality scores as extracted from BCL data.
+    info_quality_scores = JSONField(null=True, blank=True)
+
     def get_full_name(self):
         """Return full flow cell name"""
         if all(not x for x in (self.run_date, self.sequencing_machine,
@@ -520,7 +533,6 @@ class FlowCell(TimeStampedModel):
                     'Library {} is on lane [{}] (> {})'.format(
                         library.name, list(sorted(library.lane_numbers)),
                         self.num_lanes))
-
 
     def count_files(self):
         """Return total number of attached files"""

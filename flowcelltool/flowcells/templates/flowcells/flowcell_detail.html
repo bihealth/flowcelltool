@@ -28,6 +28,9 @@
   <li class="nav-item">
     <a class="nav-link" id="layout-tab" data-toggle="tab" href="#layout" role="tab" aria-controls="layout" aria-selected="false">Layout</a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link" id="adapters-tab" data-toggle="tab" href="#adapters" role="tab" aria-controls="adapters" aria-selected="false">Adapters</a>
+  </li>
 </ul>
 
 <div class="tab-content" id="flowcell-tab-content">
@@ -41,7 +44,10 @@
     {% include "flowcells/_flowcell_detail_messages.html" %}
   </div>
   <div class="tab-pane fade pt-2" id="layout" role="tabpanel" aria-labelledby="layout-tab">
-{% include "flowcells/_flowcell_detail_layout.html" %}
+    {% include "flowcells/_flowcell_detail_layout.html" %}
+  </div>
+  <div class="tab-pane fade pt-2" id="adapters" role="tabpanel" aria-labelledby="adapters-tab">
+    {% include "flowcells/_flowcell_detail_adapters.html" %}
   </div>
 </div>
 

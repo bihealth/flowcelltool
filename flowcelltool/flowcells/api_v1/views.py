@@ -3,7 +3,9 @@ from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.decorators import detail_route
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.reverse import reverse
@@ -15,7 +17,8 @@ from .serializers import (
     BarcodeSetSerializer,
     FlowCellMessageSerializer,
     FlowCellSerializer,
-    SequencingMachineSerializer)
+    SequencingMachineSerializer,
+    FlowCellPostSequencingSerializer)
 
 
 # SequencingMachine API Views -------------------------------------------------
@@ -84,6 +87,22 @@ class FlowCellViewSet(viewsets.ReadOnlyModelViewSet):
         return HttpResponseRedirect(redirect_to=reverse(
             'flowcell-detail', kwargs={'pk': pk}, request=request))
 
+
+class FlowCellUpdateAdaptersView(APIView):
+    """View for updating the ``status``, ``info_adapters``, and ``info_quality_scores`` fields."""
+
+    #: Permissions will be checked manually beyond being logged in.
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, pk):
+        flowcell = get_object_or_404(FlowCell, pk=pk)
+        if not request.user.has_perm('flowcells.change_flowcell', flowcell):
+            raise PermissionDenied('Access not allowed')
+        serializer = FlowCellPostSequencingSerializer(flowcell, data=request.data)
+        serializer.is_valid(True)
+        serializer.save()
+        return HttpResponseRedirect(redirect_to=reverse(
+            'flowcell-detail', kwargs={'pk': pk}, request=request))
 
 
 # Message API Views -----------------------------------------------------------
