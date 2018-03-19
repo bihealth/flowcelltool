@@ -45,3 +45,9 @@ def integer_range(value):
 @register.filter
 def multiply(value, arg):
     return value * arg
+
+
+@register.filter
+def startswith(text, starts):
+    return text.startswith(starts)
+

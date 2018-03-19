@@ -12,29 +12,284 @@
   border-color: #eed3d7;
 }
 
-/* This is a fix for the bootstrap4 alpha release */
-@media (max-width: 47.9em) {
-  .navbar-nav .nav-item {
-    float: none;
-    width: 100%;
-    display: inline-block;
-  }
-
-  .navbar-nav .nav-item + .nav-item {
-    margin-left: 0;
-  }
-
-  .nav.navbar-nav.pull-xs-right {
-    float: none !important;
-  }
-}
-
 /* Display django-debug-toolbar.
    See https://github.com/django-debug-toolbar/django-debug-toolbar/issues/742
    and https://github.com/pydanny/cookiecutter-django/issues/317
 */
 [hidden][style="display: block;"] {
   display: block !important;
+}
+
+/*****************************
+ Project specific styles below
+******************************/
+
+/* Flexbox page setup */
+
+body {
+  margin: 0;
+}
+
+body,
+html,
+.omics-base-container {
+  height: 100%;
+}
+
+.omics-base-container,
+.omics-content-container {
+  display: flex;
+}
+
+.omics-base-container {
+  flex-direction: column;
+}
+
+.omics-content-container
+{
+  height: 100%;
+  overflow-y: hidden;
+}
+
+.onics-top-container {
+  flex-direction: column;
+}
+
+.omics-titlebar-container {
+  width: 100%;
+  min-height: 20px;
+  flex: 1;
+}
+
+.omics-content-left {
+  height: 100%;
+  flex: 0 0 90px;
+  overflow: hidden;
+}
+
+.omics-content-right {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+
+.omics-sub-navbar-container {
+  width: 100%;
+  min-height: 20px;
+  flex: 0 0 auto;
+}
+
+.omics-app-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  flex: auto;
+}
+
+.omics-app-content {
+  padding: 28px;
+  max-width: 1500px;
+  flex: auto;
+}
+
+/* Containers */
+
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.container-fluid {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+nav.omics-base-navbar {
+  padding-left: 28px;
+  padding-right: 38px;
+}
+
+nav.omics-base-navbar ul li.nav-item {
+  white-space: nowrap;
+}
+
+.omics-navbar-search {
+  padding-right: 24px;
+}
+
+.omics-navbar-user-dropdown {
+  z-index: 1100;
+}
+
+div.omics-alert-container {
+  margin-bottom: 0;
+}
+
+div.omics-subtitle-container {
+  padding-top: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dfdfdf;
+}
+
+.omics-pr-navbar {
+  padding-left: 28px;
+  padding-right: 38px;
+  border-radius: 0;
+  margin-bottom: 0;
+  vertical-align: middle;
+  min-height: 50px;
+}
+
+.omics-pr-navbar i {
+  min-width: 15px;
+  display: inline-block;
+}
+
+.omics-pr-sidebar {
+  width: 90px;
+  max-width: 90px;
+  padding-top: 2px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+div.omics-pr-content-title {
+  vertical-align: bottom;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #dfdfdf;
+}
+
+div.omics-page-container {
+  padding-top: 24px;
+}
+
+.omics-details-app-button {
+  padding-top: 4px;
+  padding-right: 0;
+}
+
+.omics-pr-sidebar-nav {
+  width: 100%;
+}
+
+.omics-pr-sidebar-nav-ul {
+  width: 100%;
+}
+
+.omics-pr-sidebar-nav-ul li {
+  width: 100%;
+  font-size: 75%;
+  line-height: normal;
+  padding-bottom: 8px;
+  position: relative;
+}
+
+/* Notch visualizaton for sidebar */
+.omics-pr-sidebar-nav-ul li.active:after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-right: 12px solid #ffffff;
+    border-bottom: 12px solid transparent;
+}
+
+.omics-pr-sidebar-nav-ul li i {
+  padding-bottom: 4px;
+  font-size: 32px;
+}
+
+a.omics-nav-link-last {
+  padding-right: 0 !important;
+}
+
+.omics-input-group {
+  white-space: nowrap;
+}
+
+.omics-header-input-group {
+  white-space: nowrap;
+  padding-right: 0;
+  width: 300px;
+  max-width: 600px;
+}
+
+.omics-header-input-group button {
+  height: 32px;
+  padding-top: 3px;
+}
+
+.omics-header-input-group a {
+  height: 32px;
+  padding-top: 3px;
+}
+
+.omics-header-input-group input.form-control {
+  height: 32px;
+}
+
+.omics-horizontal-radio {
+  padding-right: 18px;
+}
+
+/* Navbar site app links */
+@media screen and (min-width: 767px) {
+  /* Notch visualizaton for top bar */
+  .omics-navbar-siteapp-item {
+    text-align: center;
+  }
+
+  /* Notch visualizaton for top bar */
+  .omics-navbar-siteapp-item.active:after {
+    content: "";
+    position: absolute;
+    margin-left: -9px;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-bottom: 12px solid #ffffff;
+    border-right: 12px solid transparent;
+  }
+}
+
+/* Responsive modifications */
+
+.omics-navbar-alt-item {
+  display: none;
+}
+
+/* Navbar */
+/* Note: 767px is where navbar-expand-md is triggered in Bootstrap 4 */
+@media screen and (max-width: 767px) {
+  .omics-navbar-user-dropdown {
+    display: none;
+  }
+
+  .omics-navbar-alt-item {
+    display: inherit;
+  }
+
+  .omics-navbar-search {
+    width: 250px;
+    padding-top: 10px;
+  }
+}
+
+/* Sidebar */
+@media screen and (max-width: 1000px) {
+  .omics-content-left {
+    display: none !important;
+  }
+
+  .omics-siderbar-alt-btn {
+    display: inherit !important;
+  }
 }
 
 /* Badge group, for flow cell layout view */
@@ -80,21 +335,10 @@
     }
 }
 
-/* Sticky footer styles */
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
+.omics-footer {
   width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  line-height: 60px; /* Vertically center the text there */
+  height: 36px;
+  line-height: 36px;
+  margin-top: 0;
   background-color: #f5f5f5;
 }

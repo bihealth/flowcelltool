@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^logout/$', auth_views.logout_then_login, name='logout'),
 
     # User profiles
-    url(r'^profile/', include('flowcelltool.users.urls')),
+    url(r'^profile/', include('flowcelltool.users.urls', namespace='users')),
 
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, admin.site.urls),

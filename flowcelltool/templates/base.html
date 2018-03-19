@@ -1,6 +1,8 @@
 {% load staticfiles i18n %}<!DOCTYPE html>
 {% load rules %}
 {% load global_tags %}
+{% load flowcells_tags %}
+
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -15,150 +17,207 @@
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
+    <!-- Required by Bootstrap v4 beta -->
+    <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
     {% block css %}
 
-    <!-- Bootstrap 4 Stable CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <!-- CSS includes -->
 
-    <!-- Your stuff: Third-party CSS libraries go here -->
+      <!-- Fix for pull-right/pull-left bug when including imports -->
+      <style type="text/css">
+        .pull-right {
+          float: right;
+        }
 
-    <!-- This file stores project-specific CSS -->
-    <link href="{% static 'css/project.css' %}" rel="stylesheet">
+        .pull-left {
+          float: left;
+        }
+      </style>
 
-    {% endblock %}
+      <!-- Local Font Awesome Icons -->
+      <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
+
+      <!-- Bootstrap 4 beta CSS -->
+      <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+
+      <!-- Project-specific CSS -->
+      <link href="{% static 'css/project.css' %}" rel="stylesheet">
+
+    {% endblock css %}
+
+    {% block head_extend %}
+      {# Extended head stuff from apps goes here #}
+    {% endblock head_extend %}
   </head>
 
   <body>
 
-    <div class="m-b-1">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-          <a class="navbar-brand" href="{% url 'home' %}">Flowcell Tool</a>
-          <button type="button" class="navbar-toggler pull-xs-right" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+    <div class="omics-base-container">
+      <div class="omics-top-container">
+        <div class="m-b-1 omics-titlebar-container">
+          <nav class="navbar navbar-expand-md navbar-dark bg-dark omics-base-navbar" id="omics-base-navbar">
+            <a class="navbar-brand" id="omics-base-navbar-brand" href="/">Flowcelltool</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
 
-          <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
-            <ul class="navbar-nav mr-auto text-nowrap">
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'flowcell_list' %}">
-                  <i class="fa fa-clone" aria-hidden="true"></i>
-                  Flow Cells
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'instrument_list' %}">
-                  <i class="fa fa-cube" aria-hidden="true"></i>
-                  Sequencers
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'barcodeset_list' %}">
-                  <i class="fa fa-barcode" aria-hidden="true"></i>
-                  Barcodes
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">
-                  <i class="fa fa-info-circle" aria-hidden="true"></i>
-                  About
-                </a>
-              </li>
-            </ul>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav ml-auto" id="omics-base-navbar-nav">
 
-            <ul class="navbar-nav ml-auto text-nowrap">
-              {% has_perm 'flowcells.search' request.user flowcell as can_search %}
-              {% if can_search and not is_search %}
-              <li class="nav-item mr-2">
-                <form action="{% url 'search' %}" method="GET" class="form-inline">
-                  <div class="input-group">
-                    <input type="text" class="form-control" name="q" placeholder="Search Term">
-                    <span class="input-group-btn">
-                      <button class="btn btn-primary" type="submit">Go!</button>
-                    </span>
+                {% if request.user.is_superuser %}
+                  <li class="nav-item">
+                    <a class="nav-link"
+                       href="{% url 'admin:index' %}"
+                       id="site-admin"><i class="fa fa-fw fa-wrench"></i> Site Admin</a>
+                  </li>
+                {% endif %}
+
+                {# Search #}
+                {% has_perm 'flowcells.search' request.user flowcell as can_search %}
+                {% if can_search and not is_search %}
+                  <li class="nav-item omics-navbar-search">
+                    <form class="form-inline" method="get" action="{% url 'search' %}">
+                      <div class="input-group omics-input-group">
+                        <input class="form-control" type="text"
+                               placeholder="Search term" name="s" aria-label="Search term"
+                               id="omics-nav-search-input" value="{{ search_input }}">
+                         <div class="input-group-append">
+                           <button class="btn btn-outline-success" type="submit" id="omics-nav-search-submit">Search</button>
+                         </div>
+                      </div>
+                    </form>
+                  </li>
+                {% endif %}
+
+                {# Help link #}
+                {% comment %}
+                <li class="nav-item">
+                  <a class="nav-link"
+                     id="site-help-link"><i class="fa fa-fw fa-info-circle"></i> Help</a>
+                </li>
+                {% endcomment %}
+
+                {# Hidden user menu options for responsive menu #}
+                <li class="nav-item omics-navbar-alt-item">
+                  <a class="nav-link"
+                     href="{{ request.user.get_absolute_url }}"
+                     id="omics-alt-navbar-link-user-details"><i class="fa fa-fw fa-user-circle-o"></i> User Profile</a>
+                </li>
+
+                <li>
+                    <a class="nav-link omics-navbar-alt-item"
+                       href="{% url 'users:token_list' %}"
+                       id="omics-alt-navbar-link-user-token-list"><i class="fa fa-fw fa-key"></i> API Tokens
+                    </a>
+                </li>
+
+                <li class="nav-item omics-navbar-alt-item">
+                  <a class="nav-link text-danger"
+                     href="{% url 'logout' %}"
+                     id="omics-alt-nav-link-sign-out"><i class="fa fa-fw fa-sign-out"></i> Sign Out</a>
+                </li>
+
+                {# Normal user menu #}
+                <li class="nav-item omics-navbar-user-dropdown">
+                  <a class="nav-link omics-nav-link-last dropdown-toggle {% if not request.user.is_authenticated %}disabled{% endif %}"
+                     id="omics-navbar-user-dropdown{% if not request.user.is_authenticated%}-disabled{% endif %}"
+                     data-toggle="dropdown">
+                    <i class="fa fa-fw fa-user"></i>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right omics-navbar-user-dropdown">
+                    <div class="dropdown-header">{% if request.user.name %}{{ request.user.name }}<br />{% endif %}{{ request.user.username }}</div>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{{ request.user.get_absolute_url }}" id="omics-navbar-link-user-details">
+                      <i class="fa fa-fw fa-user-circle-o"></i> User Profile
+                    </a>
+                    <a class="dropdown-item" href="{% url 'users:token_list' %}" id="omics-navbar-link-user-token-list">
+                      <i class="fa fa-fw fa-key"></i> API Tokens
+                    </a>
+                    <a class="dropdown-item text-danger" href="{% url 'logout' %}" id="omics-navbar-link-logout">
+                      <i class="fa fa-fw fa-sign-out"></i> Sign Out
+                    </a>
                   </div>
-                </form>
-              </li>
-              {% endif %}
-              {% if request.user.is_superuser %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'admin:index' %}">
-                    <i class="fa fa-empire" aria-hidden="true"></i>
-                    Site Admin
-                  </a>
                 </li>
-              {% endif %}
-              {% if request.user.is_authenticated %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'logout' %}">
-                    <i class="fa fa-sign-out" aria-hidden="true"></i>
-                    {% trans "Log Out" %}
-                  </a>
-                </li>
-              {% else %}
-                <li class="nav-item">
-                  <a id="log-in-link" class="nav-link" href="{% url 'login' %}">
-                    <i class="fa fa-sign-in" aria-hidden="true"></i>
-                    {% trans "Log In" %}
-                  </a>
-                </li>
-              {% endif %}
-            </ul>
+              </ul>
+            </div>
+
+          </nav>
+        </div>
+
+      </div> <!-- /omics-top-container -->
+
+      <div class="omics-content-container">
+        {# Sidebar #}
+        <div class="omics-content-left">
+          <div class="col h-100 bg-dark text-center omics-pr-sidebar" id="omics-pr-sidebar">
+            <nav class="nav navbar-expand-lg navbar-dark bg-dark omics-pr-sidebar-nav">
+              <div class="collapse navbar-collapse" id="omics-pr-sidebar-navbar">
+                <ul class="navbar-nav flex-column omics-pr-sidebar-nav-ul">
+                  <li id="omics-pr-nav-home" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <a class="nav-link"
+                       href="{% url 'home' %}"
+                       id="omics-pr-nav-home-link">
+                      <i class="fa fa-home"></i><br />Home
+                    </a>
+                  </li>
+
+                  <li id="omics-pr-nav-flowcells" class="nav-item {% if request.resolver_match.url_name|startswith:'flowcell' %}active{% endif %}">
+                    <a class="nav-link"
+                       href="{% url 'flowcell_list' %}"
+                       id="omics-pr-nav-flowcell-link">
+                      <i class="fa fa-clone"></i><br />Flowcells
+                    </a>
+                  </li>
+
+                  <li id="omics-pr-nav-barcodes" class="nav-item {% if request.resolver_match.url_name|startswith:'barcodeset' %}active{% endif %}">
+                    <a class="nav-link"
+                       href="{% url 'barcodeset_list' %}"
+                       id="omics-pr-nav-barcode-link">
+                      <i class="fa fa-barcode"></i><br />Barcodes
+                    </a>
+                  </li>
+
+                  <li id="omics-pr-nav-instruments" class="nav-item {% if request.resolver_match.url_name|startswith:'instrument' %}active{% endif %}">
+                    <a class="nav-link"
+                       href="{% url 'instrument_list' %}"
+                       id="omics-pr-nav-instrument-link">
+                      <i class="fa fa-cube"></i><br />Flowcells
+                    </a>
+                  </li>
+
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </div><!-- /omics-content-left -->
+
+        {# Content #}
+        <div class="omics-content-right">
+          <div class="omics-app-container">
+            <div class="omics-app-content">
+              {% block content %}
+                <p>Use this document as a way to quick start any new project.</p>
+              {% endblock content %}
+            </div>
+
+            <div class="omics-footer">
+              <div class="text-sm-center text-muted small">
+                Flowcelltool v{% app_version %}
+              </div>
+            </div>
           </div>
         </div>
-      </nav>
-    </div>
-
-    <div class="container">
-
-      {% if messages %}
-          {% for message in messages %}
-              <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
-          {% endfor %}
-      {% endif %}
-
-      <div class="container-fluid px-0 py-3">
-        {% block content %}
-          <p>Use this document as a way to quick start any new project.</p>
-        {% endblock content %}
       </div>
 
-    </div> <!-- /container -->
-
-    {% block modal %}{% endblock modal %}
-
-
-
-    <footer class="footer">
-      <div class="container text-right">
-        <span class="text-muted">Flowcelltool v{% app_version %}</span>
-      </div>
-    </footer>
-
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    {% block javascript %}
-      <!-- Required by Bootstrap v4 Stable -->
-      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-      <!-- Your stuff: Third-party javascript libraries go here -->
-
-      <!-- place project specific Javascript in this file -->
-
-      <script src="{% static 'js/project.js' %}"></script>
-
-      <!-- Font Awesome Icons -->
-      <script src="https://use.fontawesome.com/2544dc715c.js"></script>
-
-      <!-- Copy to Clipboard -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.12/clipboard.min.js"></script>
-      <script type="application/javascript">
-        var clipboard = new Clipboard('.btn-copy');
-      </script>
-    {% endblock javascript %}
+      {% block modal %}{% endblock modal %}
+    </div> <!-- /omics-base-container -->
   </body>
 </html>
 

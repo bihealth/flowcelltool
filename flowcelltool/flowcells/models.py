@@ -335,6 +335,9 @@ FLOWCELL_STATUS_SEQ_FAILED = 'seq_failed'
 #: Flow cell status key for demultiplexing started
 FLOWCELL_STATUS_DEMUX_STARTED = 'demux_started'
 
+#: Flow cell status key for demultiplexing failed
+FLOWCELL_STATUS_DEMUX_FAILED = 'demux_failed'
+
 #: Flow cell status key for demultiplexing complete
 FLOWCELL_STATUS_DEMUX_COMPLETE = 'demux_complete'
 
@@ -357,6 +360,8 @@ FLOWCELL_STATUS_CHOICES = (
     (FLOWCELL_STATUS_SEQ_FAILED, 'sequencing failed'),
     #: demultiplexing has been completed
     (FLOWCELL_STATUS_DEMUX_COMPLETE, 'demultiplexing complete'),
+    #: demultiplexing has failed
+    (FLOWCELL_STATUS_DEMUX_FAILED, 'demultiplexing failed'),
     #: demultiplexing running, the demultiplexing operator started filling
     #: out the sample sheet in the flow cell tool and goes on running the
     #: demultiplexing
