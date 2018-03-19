@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.contenttypes.fields import GenericRelation
 
+import rules
+
 from flowcelltool.users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from model_utils.models import TimeStampedModel
@@ -41,7 +43,7 @@ MACHINE_MODEL_HISEQ3000 = 'HiSeq3000'
 #: Key value for machine model HiSeq4000
 MACHINE_MODEL_HISEQ4000 = 'HiSeq4000'
 
-#: Key value for "other" machine models
+#: Key value for 'other' machine models
 MACHINE_MODEL_OTHER = 'other'
 
 #: Choices for machine models
@@ -116,6 +118,43 @@ class SequencingMachine(TimeStampedModel):
     def get_absolute_url(self):
         return reverse('instrument_view', kwargs={'pk': self.pk})
 
+    # Permissions -------------------------------------------------------------
+
+    # The boilerplate below ("DRY permissions") hooks up the DRY REST permission system into our
+    # django-rules based system.
+
+    @staticmethod
+    def has_None_permission(request):
+        # TODO: why do we need this? Only for the automatically generated UI?
+        return False
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_list_permission(request):
+        return request.user.has_perm('flowcells.list_sequencingmachine')
+
+    @staticmethod
+    def has_create_permission(request):
+        return request.user.has_perm('flowcells.add_sequencingmachine')
+
+    def has_object_retrieve_permission(self, request):
+        return request.user.has_perm('flowcells.view_sequencingmachine', self)
+
+    def has_object_update_permission(self, request):
+        return request.user.has_perm('flowcells.change_sequencingmachine', self)
+
+    def has_object_destroy_permission(self, request):
+        return request.user.has_perm('flowcells.delete_sequencingmachine', self)
+
+    # Boilerplate str/repr ----------------------------------------------------
+
     def __str__(self):
         tpl = 'SequencingMachine({})'
         vals = (self.vendor_id, self.label, self.description,
@@ -156,6 +195,43 @@ class BarcodeSet(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('barcodeset_view', kwargs={'pk': self.pk})
+
+    # Permissions -------------------------------------------------------------
+
+    # The boilerplate below ("DRY permissions") hooks up the DRY REST permission system into our
+    # django-rules based system.
+
+    @staticmethod
+    def has_None_permission(request):
+        # TODO: why do we need this? Only for the automatically generated UI?
+        return False
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_list_permission(request):
+        return request.user.has_perm('flowcells.list_barcodeset')
+
+    @staticmethod
+    def has_create_permission(request):
+        return request.user.has_perm('flowcells.add_barcodeset')
+
+    def has_object_retrieve_permission(self, request):
+        return request.user.has_perm('flowcells.view_barcodeset', self)
+
+    def has_object_update_permission(self, request):
+        return request.user.has_perm('flowcells.change_barcodeset', self)
+
+    def has_object_destroy_permission(self, request):
+        return request.user.has_perm('flowcells.delete_barcodeset', self)
+
+    # Boilerplate str/repr ----------------------------------------------------
 
     def __str__(self):
         return '{} ({})'.format(self.name, self.short_name)
@@ -200,6 +276,43 @@ class BarcodeSetEntry(TimeStampedModel):
             if qs.filter(barcode_set=self.barcode_set).exists():
                 raise ValidationError(
                     'Barcode {} must be unique in barcode set!'.format(key))
+
+    # Permissions -------------------------------------------------------------
+
+    # The boilerplate below ("DRY permissions") hooks up the DRY REST permission system into our
+    # django-rules based system.
+
+    @staticmethod
+    def has_None_permission(request):
+        # TODO: why do we need this? Only for the automatically generated UI?
+        return False
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_list_permission(request):
+        return request.user.has_perm('flowcells.list_barcodesetentry')
+
+    @staticmethod
+    def has_create_permission(request):
+        return request.user.has_perm('flowcells.add_barcodesetentry')
+
+    def has_object_retrieve_permission(self, request):
+        return request.user.has_perm('flowcells.view_barcodesetentry', self)
+
+    def has_object_update_permission(self, request):
+        return request.user.has_perm('flowcells.change_barcodesetentry', self)
+
+    def has_object_destroy_permission(self, request):
+        return request.user.has_perm('flowcells.delete_barcodesetentry', self)
+
+    # Boilerplate str/repr ----------------------------------------------------
 
     def __str__(self):
         return '{} ({})'.format(self.name, self.sequence)
@@ -266,7 +379,7 @@ RTA_VERSION_V1 = 1
 #: RTA version key for v2
 RTA_VERSION_V2 = 2
 
-#: RTA version key for "other"
+#: RTA version key for 'other'
 RTA_VERSION_OTHER = 0
 
 #: RTA version used for a flow cell
@@ -408,16 +521,6 @@ class FlowCell(TimeStampedModel):
                         library.name, list(sorted(library.lane_numbers)),
                         self.num_lanes))
 
-    def __str__(self):
-        return str(self.get_full_name())
-
-    def __repr__(self):
-        tpl = 'FlowCell({})'
-        values = (self.run_date, self.sequencing_machine, self.run_number,
-                  self.slot, self.vendor_id, self.label, self.num_lanes,
-                  self.status, self.operator, self.is_paired,
-                  self.index_read_count, self.rta_version, self.read_length)
-        return tpl.format(', '.join(repr(v) for v in values))
 
     def count_files(self):
         """Return total number of attached files"""
@@ -428,6 +531,62 @@ class FlowCell(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('flowcell_view', kwargs={'pk': self.pk})
+
+    # Permissions -------------------------------------------------------------
+
+    # The boilerplate below ("DRY permissions") hooks up the DRY REST permission system into our
+    # django-rules based system.
+
+    @staticmethod
+    def has_None_permission(request):
+        # TODO: why do we need this? Only for the automatically generated UI?
+        return False
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_list_permission(request):
+        return request.user.has_perm('flowcells.list_flowcell')
+
+    @staticmethod
+    def has_create_permission(request):
+        return request.user.has_perm('flowcells.add_flowcell')
+
+    def has_object_retrieve_permission(self, request):
+        return request.user.has_perm('flowcells.view_flowcell', self)
+
+    def has_object_sample_sheet_permission(self, request):
+        """Special action for building sample sheet, same as retrieve."""
+        return self.has_object_retrieve_permission(request)
+
+    def has_object_by_vendor_id_permission(self, request):
+        """Special action for querying by vendor id, same as retrieve."""
+        return self.has_object_retrieve_permission(request)
+
+    def has_object_update_permission(self, request):
+        return request.user.has_perm('flowcells.change_flowcell', self)
+
+    def has_object_destroy_permission(self, request):
+        return request.user.has_perm('flowcells.delete_flowcell', self)
+
+    # Boilerplate str/repr ----------------------------------------------------
+
+    def __str__(self):
+        return str(self.get_full_name())
+
+    def __repr__(self):
+        tpl = 'FlowCell({})'
+        values = (self.run_date, self.sequencing_machine, self.run_number,
+                  self.slot, self.vendor_id, self.label, self.num_lanes,
+                  self.status, self.operator, self.is_paired,
+                  self.index_read_count, self.rta_version, self.read_length)
+        return tpl.format(', '.join(repr(v) for v in values))
 
 
 #: Reference used for identifying human samples
@@ -578,6 +737,43 @@ class Library(TimeStampedModel):
             'description': 'on flow cell {}'.format(
                 self.flow_cell.vendor_id)
         }
+
+    # Permissions -------------------------------------------------------------
+
+    # The boilerplate below ("DRY permissions") hooks up the DRY REST permission system into our
+    # django-rules based system.
+
+    @staticmethod
+    def has_None_permission(request):
+        # TODO: why do we need this? Only for the automatically generated UI?
+        return False
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_list_permission(request):
+        return request.user.has_perm('flowcells.list_library')
+
+    @staticmethod
+    def has_create_permission(request):
+        return request.user.has_perm('flowcells.add_library')
+
+    def has_object_retrieve_permission(self, request):
+        return request.user.has_perm('flowcells.view_library', self)
+
+    def has_object_update_permission(self, request):
+        return request.user.has_perm('flowcells.change_library', self)
+
+    def has_object_destroy_permission(self, request):
+        return request.user.has_perm('flowcells.delete_library', self)
+
+    # Boilerplate str/repr ----------------------------------------------------
 
     def __str__(self):
         values = (

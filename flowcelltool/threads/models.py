@@ -39,6 +39,43 @@ class Message(TimeStampedModel):
     mime_type = models.CharField(max_length=50, default='text/plain',
                                  choices=FORMAT_CHOICES)
 
+    # Permissions -------------------------------------------------------------
+
+    # The boilerplate below ("DRY permissions") hooks up the DRY REST permission system into our
+    # django-rules based system.
+
+    @staticmethod
+    def has_None_permission(request):
+        # TODO: why do we need this? Only for the automatically generated UI?
+        return False
+
+    @staticmethod
+    def has_read_permission(request):
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_list_permission(request):
+        return request.user.has_perm('threads.list_message')
+
+    @staticmethod
+    def has_create_permission(request):
+        return request.user.has_perm('threads.add_message')
+
+    def has_object_retrieve_permission(self, request):
+        return request.user.has_perm('threads.view_message', self)
+
+    def has_object_update_permission(self, request):
+        return request.user.has_perm('threads.change_message', self)
+
+    def has_object_destroy_permission(self, request):
+        return request.user.has_perm('threads.delete_message', self)
+
+    # Boilerplate str/repr ----------------------------------------------------
+
     def __str__(self):
         return 'Message({}, {}, {})'.format(self.title, self.author.username,
                                             self.body)

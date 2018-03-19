@@ -6,7 +6,9 @@ History
 HEAD
 ----
 
-- Allowing to specify message on login screen.
+- Adding unstable API, mostly read-only except for what is needed for automated demultiplexing and QC.
+- Adding UI for generating REST API login tokens.
+- Allowing to specify message on login screen via environment variable.
 - Adding version to stick footer.
 
 ------
