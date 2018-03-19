@@ -15,21 +15,35 @@
   {% include "flowcells/_flowcell_detail_buttons.html" %}
 </div>
 
-<div>
-  <h3>Details</h3>
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="home" aria-selected="true">Details</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="libraries-tab" data-toggle="tab" href="#libraries" role="tab" aria-controls="libraries" aria-selected="false">Libraries</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="messages-tab" data-toggle="tab" href="#messages" role="tab" aria-controls="messages" aria-selected="false">Messages</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="layout-tab" data-toggle="tab" href="#layout" role="tab" aria-controls="layout" aria-selected="false">Layout</a>
+  </li>
+</ul>
 
-  {% include "flowcells/_flowcell_detail_properties.html" with location="top" %}
-</div>
-
-<div>
-  <h3>Libraries</h3>
-
-  {% include "flowcells/_flowcell_detail_libraries.html" %}
-</div>
-
-{% include "flowcells/_flowcell_detail_messages.html" %}
-
+<div class="tab-content" id="flowcell-tab-content">
+  <div class="tab-pane fade show active pt-2" id="details" role="tabpanel" aria-labelledby="home-tab">
+    {% include "flowcells/_flowcell_detail_properties.html" with location="top" %}
+  </div>
+  <div class="tab-pane fade pt-2" id="libraries" role="tabpanel" aria-labelledby="libraries-tab">
+    {% include "flowcells/_flowcell_detail_libraries.html" %}
+  </div>
+  <div class="tab-pane fade pt-2" id="messages" role="tabpanel" aria-labelledby="messages-tab">
+    {% include "flowcells/_flowcell_detail_messages.html" %}
+  </div>
+  <div class="tab-pane fade pt-2" id="layout" role="tabpanel" aria-labelledby="layout-tab">
 {% include "flowcells/_flowcell_detail_layout.html" %}
+  </div>
+</div>
 
 <div>
   {% include "flowcells/_flowcell_detail_buttons.html" with location="bottom" %}

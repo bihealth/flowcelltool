@@ -186,10 +186,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 # Your stuff: custom template context processors go here
             ],
-            # https://docs.djangoproject.com/en/1.10/topics/templates/#module-django.template.backends.django  # noqa
-            'libraries': {
-                'flowcells_tags': 'flowcelltool.flowcells.templatetags.global_tags',
-            },
         },
     },
 ]

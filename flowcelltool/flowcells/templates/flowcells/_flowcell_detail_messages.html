@@ -4,8 +4,6 @@
 
 {% if object.messages.all %}
 <div>
-  <h3>Messages</h3>
-
   {% for message in object.messages.all %}
     <div class="card mb-3">
       <div class="card-header">
@@ -41,15 +39,19 @@
       {% if message.body %}
         <div class="card-body">
           <p class="card-text">
-            {% if message.mime_type == "text/markdown" %}
-              {{ message.body|markdown }}
+            {% if not message.body %}
+              [no message]
             {% else %}
-              {{ message.body|linebreaksbr }}
+              {% if message.mime_type == "text/markdown" %}
+                {{ message.body|markdown }}
+              {% else %}
+                {{ message.body|linebreaksbr }}
+              {% endif %}
             {% endif %}
           </p>
         </div>
       {% endif %}
-      {% if message.attachments %}
+      {% if message.attachments.count %}
         <div class="card-body">
           <h5>Attachments</h5>
           <ul class="list-group list-group-flush">
