@@ -56,6 +56,7 @@ THIRD_PARTY_APPS = (
     'rules.apps.AutodiscoverRulesConfig',  # django rules engine
     'db_file_storage',  # storing files in database
     'rest_framework',     # Django REST Framework (DRF)
+    'knox',  # Django REST Knox
     'generic_relations',  # generic relations for DRF
     'formtools',  # for form wizards
 )
@@ -290,20 +291,6 @@ ADMIN_URL = r'^admin/'
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 
-# FLYNN WORKAROUND
-import pip
-
-try:
-    import rest_framework
-except ImportError:
-    print('Flynn issue #3932 workaround: installing rest_framework..')
-
-    pip.main([
-        'install',
-        'git+git://github.com/tomchristie/django-rest-framework.git@'
-        'master#egg=djangorestframework'])
-# END FLYNN WORKAROUND
-
 # LDAP configuration
 # ------------------------------------------------------------------------------
 
@@ -392,9 +379,13 @@ if env.bool('ENABLE_LDAP', None) is True:
 # ------------------------------------------------------------------------------
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # TODO: use rules engine
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'dry_rest_permissions.generics.DRYPermissions',
+    ),
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100

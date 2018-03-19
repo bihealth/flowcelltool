@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create New Token{% endblock %}
+
+{% block content %}
+  <h2>Create New Token</h2>
+
+  <p>
+    After creating the token you will be able to see it exactly once.
+  </p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% crispy form %}
+
+    <div class="text-right mb-3">
+      <div class="btn-group" role="group">
+        <a role="button" class="btn btn-secondary"
+            href="{% url 'user_token_list' %}">
+          <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+          Cancel
+        </a>
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            Create
+        </button>
+      </div>
+    </div>
+  </form>
+{% endblock %}

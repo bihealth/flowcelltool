@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% load rules %}
+
+{% block title %}Your Auth Tokens{% endblock %}
+
+{% block content %}
+  <h2>Your Auth Tokens</h2>
+
+  {% include "profile/_token_list_buttons.html" %}
+
+  {% if object_list %}
+    <table class="table table-hover table-striped">
+      <thead>
+        <tr>
+          <th class="col-4">Created</th>
+          <th class="col-4">Expires</th>
+          <th class="col-2">Key</th>
+          <th class="col-2 text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for token in object_list %}
+          <tr>
+            <td>{{ token.created }}</td>
+            <td>{{ token.expires|default:"Never" }}</td>
+            <td>{{ token.token_key }}</td>
+            <td class="text-right">
+              <a role="button" class="btn btn-secondary"
+                 href="{% url 'user_token_delete' pk=token.pk %}">
+                <i class="fa fa-eraser" aria-hidden="true"></i>
+                Delete
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+  <p>
+    You have no auth tokens.
+  </p>
+  {% endif %}
+
+{% endblock content %}
