@@ -1,6 +1,12 @@
 {% load flowcells_tags %}
 
-{% if info_adapters %}
+{% if info_adapters is None %}
+<div>
+  <p>
+    No adapter information has been registered yet for this flowcell.
+  </p>
+</div>
+{% elif info_adapters %}
 <div>
   <p>
     The following adapter information has been posted for this flowcell.
@@ -33,7 +39,7 @@
 {% else %}
 <div>
   <p>
-    No adapter information has been registered yet for this flowcell.
+    This flow cell seems to use no adapters ("indexed" reads).
   </p>
 </div>
 {% endif %}
