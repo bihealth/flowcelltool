@@ -27,7 +27,7 @@
             <td>{{ token.token_key }}</td>
             <td class="text-right">
               <a role="button" class="btn btn-secondary"
-                 href="{% url 'user_token_delete' pk=token.pk %}">
+                 href="{% url 'profile:token_delete' pk=token.pk %}">
                 <i class="fa fa-eraser" aria-hidden="true"></i>
                 Delete
               </a>

@@ -113,7 +113,7 @@
 
                 <li>
                     <a class="nav-link omics-navbar-alt-item"
-                       href="{% url 'users:token_list' %}"
+                       href="{% url 'profile:token_list' %}"
                        id="omics-alt-navbar-link-user-token-list"><i class="fa fa-fw fa-key"></i> API Tokens
                     </a>
                 </li>
@@ -137,9 +137,12 @@
                     <a class="dropdown-item" href="{{ request.user.get_absolute_url }}" id="omics-navbar-link-user-details">
                       <i class="fa fa-fw fa-user-circle-o"></i> User Profile
                     </a>
-                    <a class="dropdown-item" href="{% url 'users:token_list' %}" id="omics-navbar-link-user-token-list">
-                      <i class="fa fa-fw fa-key"></i> API Tokens
-                    </a>
+                    {# Token creation is only hidden but not forbidden for guests and instrument operators #}
+                    {% if request.user|has_group:"Demultiplexing Operator" or request.user|has_group:"Demultiplexing Admin" or request.user|has_group:"Import Bot" %}
+                      <a class="dropdown-item" href="{% url 'profile:token_list' %}" id="omics-navbar-link-user-token-list">
+                        <i class="fa fa-fw fa-key"></i> API Tokens
+                      </a>
+                    {% endif %}
                     <a class="dropdown-item text-danger" href="{% url 'logout' %}" id="omics-navbar-link-logout">
                       <i class="fa fa-fw fa-sign-out"></i> Sign Out
                     </a>
@@ -192,6 +195,16 @@
                     </a>
                   </li>
 
+                  {# Token creation is only hidden but not forbidden for guests and instrument operators #}
+                  {% if request.user|has_group:"Demultiplexing Operator" or request.user|has_group:"Demultiplexing Admin" or request.user|has_group:"Import Bot" %}
+                    <li id="omics-pr-nav-tokens" class="nav-item {% if request.resolver_match.url_name|startswith:'token' %}active{% endif %}">
+                      <a class="nav-link"
+                         href="{% url 'profile:token_list' %}"
+                         id="omics-pr-nav-token-link">
+                        <i class="fa fa-key"></i><br />API Tokens
+                      </a>
+                    </li>
+                  {% endif %}
                 </ul>
               </div>
             </nav>

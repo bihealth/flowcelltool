@@ -7,9 +7,9 @@ from flowcelltool.users import views
 urlpatterns = [
     # TODO: add /profile/
     url(
-        regex=r'^(?P<username>\S+)/$',
-        view=views.UserTokenListView.as_view(),
-        name='detail',
+        regex=r'^$',
+        view=views.ProfileView.as_view(),
+        name='view',
     ),
 
     url(

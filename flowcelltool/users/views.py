@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import DeleteView, FormView
 from django.views.generic.list import ListView
 
@@ -16,6 +17,16 @@ from knox import models as knox_models
 from . import forms
 
 UserModel = get_user_model()
+
+
+class ProfileView(LoginRequiredMixin, DetailView):
+    """CBV for viewing the user profile."""
+
+    model = DetailView
+    template_name = 'profile/user_detail.html'
+
+    def get_object(self):
+        return self.request.user
 
 
 class UserTokenListView(LoginRequiredMixin, ListView):
@@ -49,4 +60,4 @@ class UserTokenDeleteView(
 
     model = knox_models.AuthToken
     template_name = 'profile/token_confirm_delete.html'
-    success_url = reverse_lazy('user_token_list')
+    success_url = reverse_lazy('profile:token_list')

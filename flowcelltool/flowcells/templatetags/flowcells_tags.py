@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Custom template tags for the flowcells app"""
 from django import template
+from django.contrib.auth.models import Group
 
 import pagerange
 
@@ -51,3 +52,8 @@ def multiply(value, arg):
 def startswith(text, starts):
     return text.startswith(starts)
 
+
+@register.filter
+def has_group(user, group_name):
+    group = Group.objects.get(name=group_name)
+    return group in user.groups.all()
