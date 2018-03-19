@@ -78,17 +78,19 @@ class FlowCellViewSet(viewsets.ReadOnlyModelViewSet):
         # Otherwise, just add the message to flow cell.
         flowcell = get_object_or_404(self.get_queryset(), pk=pk)
         with transaction.atomic():
-            Message.objects.create(
+            msg = Message.objects.create(
                 author=request.user,
                 content_type=ContentType.objects.get_for_model(flowcell),
                 object_id=flowcell.pk,
                 title=request.data.get('title'),
                 body=request.data.get('body'))
+            for f in request.data.getlist('attachments'):
+                msg.attachments.create(payload=f)
         return HttpResponseRedirect(redirect_to=reverse(
             'flowcell-detail', kwargs={'pk': pk}, request=request))
 
 
-class FlowCellUpdateAdaptersView(APIView):
+class FlowCellUpdateView(APIView):
     """View for updating the ``status``, ``info_adapters``, and ``info_quality_scores`` fields."""
 
     #: Permissions will be checked manually beyond being logged in.

@@ -171,42 +171,44 @@
                     </a>
                   </li>
 
-                  <li id="omics-pr-nav-flowcells" class="nav-item {% if request.resolver_match.url_name|startswith:'flowcell' %}active{% endif %}">
-                    <a class="nav-link"
-                       href="{% url 'flowcell_list' %}"
-                       id="omics-pr-nav-flowcell-link">
-                      <i class="fa fa-clone"></i><br />Flowcells
-                    </a>
-                  </li>
-
-                  <li id="omics-pr-nav-barcodes" class="nav-item {% if request.resolver_match.url_name|startswith:'barcodeset' %}active{% endif %}">
-                    <a class="nav-link"
-                       href="{% url 'barcodeset_list' %}"
-                       id="omics-pr-nav-barcode-link">
-                      <i class="fa fa-barcode"></i><br />Barcodes
-                    </a>
-                  </li>
-
-                  <li id="omics-pr-nav-instruments" class="nav-item {% if request.resolver_match.url_name|startswith:'instrument' %}active{% endif %}">
-                    <a class="nav-link"
-                       href="{% url 'instrument_list' %}"
-                       id="omics-pr-nav-instrument-link">
-                      <i class="fa fa-cube"></i><br />Flowcells
-                    </a>
-                  </li>
-
-                  {# Token creation is only hidden but not forbidden for guests and instrument operators #}
-                  {% if request.user|has_group:"Demultiplexing Operator" or request.user|has_group:"Demultiplexing Admin" or request.user|has_group:"Import Bot" %}
-                    <li id="omics-pr-nav-tokens" class="nav-item {% if request.resolver_match.url_name|startswith:'token' %}active{% endif %}">
+                  {% if request.user.is_authenticated %}
+                    <li id="omics-pr-nav-flowcells" class="nav-item {% if request.resolver_match.url_name|startswith:'flowcell' %}active{% endif %}">
                       <a class="nav-link"
-                         href="{% url 'profile:token_list' %}"
-                         id="omics-pr-nav-token-link">
-                        <i class="fa fa-key"></i><br />API Tokens
+                         href="{% url 'flowcell_list' %}"
+                         id="omics-pr-nav-flowcell-link">
+                        <i class="fa fa-clone"></i><br />Flowcells
                       </a>
                     </li>
-                  {% endif %}
-                </ul>
-              </div>
+
+                    <li id="omics-pr-nav-barcodes" class="nav-item {% if request.resolver_match.url_name|startswith:'barcodeset' %}active{% endif %}">
+                      <a class="nav-link"
+                         href="{% url 'barcodeset_list' %}"
+                         id="omics-pr-nav-barcode-link">
+                        <i class="fa fa-barcode"></i><br />Barcodes
+                      </a>
+                    </li>
+
+                    <li id="omics-pr-nav-instruments" class="nav-item {% if request.resolver_match.url_name|startswith:'instrument' %}active{% endif %}">
+                      <a class="nav-link"
+                         href="{% url 'instrument_list' %}"
+                         id="omics-pr-nav-instrument-link">
+                        <i class="fa fa-cube"></i><br />Instruments
+                      </a>
+                    </li>
+
+                    {# Token creation is only hidden but not forbidden for guests and instrument operators #}
+                    {% if request.user|has_group:"Demultiplexing Operator" or request.user|has_group:"Demultiplexing Admin" or request.user|has_group:"Import Bot" %}
+                      <li id="omics-pr-nav-tokens" class="nav-item {% if request.resolver_match.url_name|startswith:'token' %}active{% endif %}">
+                        <a class="nav-link"
+                           href="{% url 'profile:token_list' %}"
+                           id="omics-pr-nav-token-link">
+                          <i class="fa fa-key"></i><br />API Tokens
+                        </a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </div>
+              {% endif %}
             </nav>
           </div>
         </div><!-- /omics-content-left -->

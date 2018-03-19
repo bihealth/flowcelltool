@@ -355,7 +355,6 @@ class FlowCellDetailView(
                         'num': num,
                         'ratio': 100.0 * num / info['num_indexed_reads'],
                     }
-            print(sorted_info)
             context['info_adapters'].append(sorted_info)
         return context
 

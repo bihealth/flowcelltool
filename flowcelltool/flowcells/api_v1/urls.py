@@ -26,12 +26,13 @@ urlpatterns += [
     ),
 ]
 
-# Add special views
+# Add special updating views
 
 urlpatterns += [
+    # Update adapter, quality scores, and status fields
     url(
         regex=r'^flowcell/(?P<pk>\d+)/update/$',
-        view=views.FlowCellUpdateAdaptersView.as_view(),
-        name='flowcell_update_info_adapters',
-    )
+        view=views.FlowCellUpdateView.as_view(),
+        name='flowcell_update',
+    ),
 ]

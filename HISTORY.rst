@@ -6,6 +6,8 @@ History
 HEAD
 ----
 
+- Adding support for message and multi-attachment upload via API.
+- Adding basic profile page.
 - Switching layout and vendoring JS/CSS dependencies.
 - Adding adapter and quality JSON fields to ``FlowCell`` and APIs to set them.
 - Some layout / UI refinements.

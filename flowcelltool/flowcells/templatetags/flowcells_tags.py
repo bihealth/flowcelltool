@@ -50,7 +50,7 @@ def multiply(value, arg):
 
 @register.filter
 def startswith(text, starts):
-    return text.startswith(starts)
+    return (text or '').startswith(starts)
 
 
 @register.filter
