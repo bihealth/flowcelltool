@@ -3,6 +3,8 @@ sudo: true
 language: python
 python:
   - "3.5"
+addons:
+  postgresql: "9.4"
 
 env:
   - DJANGO_SETTINGS_MODULE="config.settings.test"
