@@ -24,7 +24,7 @@ Flowcell Tool
 .. image:: https://www.herokucdn.com/deploy/button.svg
         :height: 20px
         :alt: Deploy to Heroku
-        :target: https://heroku.com/deploy?template=https://github.com/bihealth/flowcelltool/tree/v0.1.1
+        :target: https://heroku.com/deploy?template=https://github.com/bihealth/flowcelltool/tree/v0.2.0
 
 Simple management of HTS Flowcells for demultiplexing
 
@@ -38,6 +38,7 @@ Features
 - Web-based GUI for editing adapter barcode sets
 - Export to bcl2fastq v1 and v2 sample sheets
 - Easy to deploy on `Flynn.io <https://flynn.io/>`_ an open source Heroku clone for hosting on in-house hardware
+- API for querying information and updating flowcell status/adapter information.
 
 Prequisites
 -----------

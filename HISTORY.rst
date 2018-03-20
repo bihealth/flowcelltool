@@ -2,9 +2,9 @@
 History
 =======
 
-----
-HEAD
-----
+------
+v0.2.0
+------
 
 - Switching to UUID for all public-facing IDs.
 - Adding support for message and multi-attachment upload via API.
