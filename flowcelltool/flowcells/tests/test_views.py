@@ -133,7 +133,7 @@ class TestFlowCellCreateView(
         # Check resulting response
         with self.login(self.user):
             self.assertRedirects(
-                response, reverse('flowcell_view', kwargs={'pk': flow_cell.pk}))
+                response, reverse('flowcell_view', kwargs={'uuid': flow_cell.uuid}))
 
 
 class TestFlowCellDetailView(
@@ -153,7 +153,7 @@ class TestFlowCellDetailView(
         # Simulate the GET
         with self.login(self.user):
             response = self.client.get(
-                reverse('flowcell_view', kwargs={'pk': self.flow_cell.pk}))
+                reverse('flowcell_view', kwargs={'uuid': self.flow_cell.uuid}))
 
         # Check response
         self.assertEqual(response.status_code, 200)
@@ -193,7 +193,7 @@ class TestFlowCellUpdateView(
         # Simulate the POST
         with self.login(self.user):
             response = self.client.post(
-                reverse('flowcell_update', kwargs={'pk': self.flow_cell.pk}),
+                reverse('flowcell_update', kwargs={'uuid': self.flow_cell.uuid}),
                 values)
 
         # Check resulting database state
@@ -229,7 +229,7 @@ class TestFlowCellUpdateView(
         # Check resulting response
         with self.login(self.user):
             self.assertRedirects(
-                response, reverse('flowcell_view', kwargs={'pk': flow_cell.pk}))
+                response, reverse('flowcell_view', kwargs={'uuid': flow_cell.uuid}))
 
 
 class TestFlowCellDeleteView(
@@ -270,7 +270,7 @@ class TestFlowCellDeleteView(
         # Simulate the POST
         with self.login(self.user):
             response = self.client.post(
-                reverse('flowcell_delete', kwargs={'pk': self.flow_cell.pk}))
+                reverse('flowcell_delete', kwargs={'uuid': self.flow_cell.uuid}))
 
         # Check resulting database state
         self.assertEqual(FlowCell.objects.all().count(), 0)
@@ -330,8 +330,8 @@ class TestLibraryUpdateView(
             'form-0-id': self.library1.pk,
             'form-0-name': 'UPDATED',
             'form-0-reference': 'mm9',
-            'form-0-barcode_set': self.library1.barcode_set.pk,
-            'form-0-barcode': self.library1.barcode.pk,
+            'form-0-barcode_set': self.library1.barcode_set.uuid,
+            'form-0-barcode': self.library1.barcode.uuid,
             'form-0-barcode_set2': '',
             'form-0-barcode2': '',
             'form-0-lane_numbers': ','.join(
@@ -339,8 +339,8 @@ class TestLibraryUpdateView(
             'form-1-id': self.library2.pk,
             'form-1-name': 'UPDATED_2',
             'form-1-reference': self.library2.reference,
-            'form-1-barcode_set': self.library2.barcode_set.pk,
-            'form-1-barcode': self.library2.barcode.pk,
+            'form-1-barcode_set': self.library2.barcode_set.uuid,
+            'form-1-barcode': self.library2.barcode.uuid,
             'form-1-barcode_set2': '',
             'form-1-barcode2': '',
             'form-1-lane_numbers': ','.join(
@@ -352,7 +352,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('flowcell_updatelibraries',
-                        kwargs={'pk': self.flow_cell.pk}),
+                        kwargs={'uuid': self.flow_cell.uuid}),
                 values)
 
         # Check resulting database state
@@ -385,7 +385,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
-                                  kwargs={'pk': self.flow_cell.pk}))
+                                  kwargs={'uuid': self.flow_cell.uuid}))
 
     def test_update_more(self):
         """Test that updating library entries works correctly (submit more)"""
@@ -394,7 +394,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_updatelibraries',
-                                  kwargs={'pk': self.flow_cell.pk}))
+                                  kwargs={'uuid': self.flow_cell.uuid}))
 
     def test_add(self):
         """Test that adding libraries works correctly"""
@@ -410,8 +410,8 @@ class TestLibraryUpdateView(
             'form-0-id': self.library1.pk,
             'form-0-name': self.library1.name,
             'form-0-reference': self.library1.reference,
-            'form-0-barcode_set': self.library1.barcode_set.pk,
-            'form-0-barcode': self.library1.barcode.pk,
+            'form-0-barcode_set': self.library1.barcode_set.uuid,
+            'form-0-barcode': self.library1.barcode.uuid,
             'form-0-barcode_set2': '',
             'form-0-barcode2': '',
             'form-0-lane_numbers': ','.join(
@@ -419,16 +419,16 @@ class TestLibraryUpdateView(
             'form-1-id': self.library2.pk,
             'form-1-name': self.library2.name,
             'form-1-reference': self.library2.reference,
-            'form-1-barcode_set': self.library2.barcode_set.pk,
-            'form-1-barcode': self.library2.barcode.pk,
+            'form-1-barcode_set': self.library2.barcode_set.uuid,
+            'form-1-barcode': self.library2.barcode.uuid,
             'form-1-barcode_set2': '',
             'form-1-barcode2': '',
             'form-1-lane_numbers': ','.join(
                 map(str, self.library2.lane_numbers)),
             'form-2-name': 'LIB_003',
             'form-2-reference': 'hg19',
-            'form-2-barcode_set': self.library2.barcode_set.pk,
-            'form-2-barcode': self.library2.barcode.pk,
+            'form-2-barcode_set': self.library2.barcode_set.uuid,
+            'form-2-barcode': self.library2.barcode.uuid,
             'form-2-barcode_set2': '',
             'form-2-barcode2': '',
             'form-2-lane_numbers': '5,6',
@@ -442,7 +442,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('flowcell_updatelibraries',
-                        kwargs={'pk': self.flow_cell.pk}),
+                        kwargs={'uuid': self.flow_cell.uuid}),
                 values)
 
         # Check resulting database state
@@ -469,7 +469,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
-                                  kwargs={'pk': self.flow_cell.pk}))
+                                  kwargs={'uuid': self.flow_cell.uuid}))
 
     def test_delete(self):
         """Test that deleting libraries works correctly"""
@@ -485,8 +485,8 @@ class TestLibraryUpdateView(
             'form-0-id': self.library1.pk,
             'form-0-name': 'UPDATED',
             'form-0-reference': 'mm9',
-            'form-0-barcode_set': self.library1.barcode_set.pk,
-            'form-0-barcode': self.library1.barcode.pk,
+            'form-0-barcode_set': self.library1.barcode_set.uuid,
+            'form-0-barcode': self.library1.barcode.uuid,
             'form-0-barcode_set2': '',
             'form-0-barcode2': '',
             'form-0-lane_numbers': ','.join(
@@ -494,7 +494,7 @@ class TestLibraryUpdateView(
             'form-1-id': self.library2.pk,
             'form-1-name': 'UPDATED_2',
             'form-1-reference': self.library2.reference,
-            'form-1-barcode_set': self.library2.barcode_set.pk,
+            'form-1-barcode_set': self.library2.barcode_set.uuid,
             'form-1-barcode': '',
             'form-1-barcode_set2': '',
             'form-1-barcode2': '',
@@ -507,7 +507,7 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('flowcell_updatelibraries',
-                        kwargs={'pk': self.flow_cell.pk}),
+                        kwargs={'uuid': self.flow_cell.uuid}),
                 values)
 
         # Check resulting database state
@@ -523,18 +523,18 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
-                                  kwargs={'pk': self.flow_cell.pk}))
+                                  kwargs={'uuid': self.flow_cell.uuid}))
 
     def test_prefill_form_first(self):
         """Test that prefilling the form with barcode1 works correctly"""
         with self.login(self.user):
             response = self.client.get(
                 reverse('flowcell_updatelibraries',
-                        kwargs={'pk': self.flow_cell.pk}),
-                {'barcode1': self.barcode_set.pk})
+                        kwargs={'uuid': self.flow_cell.uuid}),
+                {'barcode1': self.barcode_set.uuid})
 
         for form in response.context['formset'].forms[2:]:
-            self.assertEquals(form.initial['barcode_set'], self.barcode_set)
+            self.assertEquals(form.initial['barcode_set'], self.barcode_set.uuid)
             self.assertEquals(form.initial['barcode_set2'], None)
 
     def test_prefill_form_second(self):
@@ -542,25 +542,25 @@ class TestLibraryUpdateView(
         with self.login(self.user):
             response = self.client.get(
                 reverse('flowcell_updatelibraries',
-                        kwargs={'pk': self.flow_cell.pk}),
-                {'barcode2': self.barcode_set.pk})
+                        kwargs={'uuid': self.flow_cell.uuid}),
+                {'barcode2': self.barcode_set.uuid})
 
         for form in response.context['formset'].forms[2:]:
             self.assertEquals(form.initial['barcode_set'], None)
-            self.assertEquals(form.initial['barcode_set2'], self.barcode_set)
+            self.assertEquals(form.initial['barcode_set2'], self.barcode_set.uuid)
 
     def test_prefill_form_both(self):
         """Test that prefilling the form with barcode1+2 works correctly"""
         with self.login(self.user):
             response = self.client.get(
                 reverse('flowcell_updatelibraries',
-                        kwargs={'pk': self.flow_cell.pk}),
-                {'barcode1': self.barcode_set.pk,
-                 'barcode2': self.barcode_set.pk})
+                        kwargs={'uuid': self.flow_cell.uuid}),
+                {'barcode1': self.barcode_set.uuid,
+                 'barcode2': self.barcode_set.uuid})
 
         for form in response.context['formset'].forms[2:]:
-            self.assertEquals(form.initial['barcode_set'], self.barcode_set)
-            self.assertEquals(form.initial['barcode_set2'], self.barcode_set)
+            self.assertEquals(form.initial['barcode_set'], self.barcode_set.uuid)
+            self.assertEquals(form.initial['barcode_set2'], self.barcode_set.uuid)
 
 
 # SequencingMachine related ----------------------------------------------
@@ -626,7 +626,7 @@ class TestSequencingMachineCreateView(SuperUserTestCase):
         # Check resulting response
         with self.login(self.user):
             self.assertRedirects(
-                response, reverse('instrument_view', kwargs={'pk': instrument.pk}))
+                response, reverse('instrument_view', kwargs={'uuid': instrument.uuid}))
 
 
 class TestSequencingMachineDetailView(
@@ -642,7 +642,7 @@ class TestSequencingMachineDetailView(
         # Simulate the GET
         with self.login(self.user):
             response = self.client.get(
-                reverse('instrument_view', kwargs={'pk': self.machine.pk}))
+                reverse('instrument_view', kwargs={'uuid': self.machine.uuid}))
 
         # Check response
         self.assertEqual(response.status_code, 200)
@@ -671,7 +671,7 @@ class TestSequencingMachineUpdateView(
         # Simulate the POST
         with self.login(self.user):
             response = self.client.post(
-                reverse('instrument_update', kwargs={'pk': self.machine.pk}),
+                reverse('instrument_update', kwargs={'uuid': self.machine.uuid}),
                 values)
 
         # Check resulting database state
@@ -692,7 +692,7 @@ class TestSequencingMachineUpdateView(
         # Check resulting response
         with self.login(self.user):
             self.assertRedirects(
-                response, reverse('instrument_view', kwargs={'pk': machine.pk}))
+                response, reverse('instrument_view', kwargs={'uuid': machine.uuid}))
 
 
 class TestSequencingMachineDeleteView(
@@ -711,7 +711,7 @@ class TestSequencingMachineDeleteView(
         # Simulate the POST
         with self.login(self.user):
             response = self.client.post(
-                reverse('instrument_delete', kwargs={'pk': self.machine.pk}))
+                reverse('instrument_delete', kwargs={'uuid': self.machine.uuid}))
 
         # Check resulting database state
         self.assertEqual(SequencingMachine.objects.all().count(), 0)
@@ -747,7 +747,7 @@ class TestFlowCellSetExportView(
         with self.login(self.user):
             response = self.client.get(
                 reverse('flowcell_export',
-                        kwargs={'pk': self.flow_cell.pk}))
+                        kwargs={'uuid': self.flow_cell.uuid}))
 
         # Check response
         self.assertEqual(response.status_code, 200)
@@ -853,7 +853,7 @@ class TestFlowCellImportView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('flowcell_view',
-                                  kwargs={'pk': flowcell.pk}))
+                                  kwargs={'uuid': flowcell.uuid}))
 
         # Check database state afterwards
         self.assertEqual(FlowCell.objects.all().count(), 1)
@@ -923,7 +923,7 @@ class TestBarcodeSetCreateView(SuperUserTestCase):
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                  kwargs={'pk': barcode_set.pk}))
+                                  kwargs={'uuid': barcode_set.uuid}))
 
 
 class TestBarcodeSetDetailView(
@@ -944,7 +944,7 @@ class TestBarcodeSetDetailView(
         with self.login(self.user):
             response = self.client.get(
                 reverse('barcodeset_view',
-                        kwargs={'pk': self.barcode_set.pk}))
+                        kwargs={'uuid': self.barcode_set.uuid}))
 
         # Check response
         self.assertEqual(response.status_code, 200)
@@ -978,7 +978,7 @@ class TestBarcodeSetUpdateView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('barcodeset_update',
-                        kwargs={'pk': self.barcode_set.pk}),
+                        kwargs={'uuid': self.barcode_set.uuid}),
                 values)
 
         # Check resulting database state
@@ -996,7 +996,7 @@ class TestBarcodeSetUpdateView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                  kwargs={'pk': barcode_set.pk}))
+                                  kwargs={'uuid': barcode_set.uuid}))
 
 
 class TestBarcodeSetDeleteView(
@@ -1021,7 +1021,7 @@ class TestBarcodeSetDeleteView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('barcodeset_delete',
-                        kwargs={'pk': self.barcode_set.pk}))
+                        kwargs={'uuid': self.barcode_set.uuid}))
 
         # Check resulting database state
         self.assertEqual(BarcodeSet.objects.all().count(), 0)
@@ -1069,7 +1069,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('barcodeset_updateentries',
-                        kwargs={'pk': self.barcode_set.pk}),
+                        kwargs={'uuid': self.barcode_set.uuid}),
                 values)
 
         # Check resulting database state
@@ -1092,7 +1092,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                  kwargs={'pk': self.barcode_set.pk}))
+                                  kwargs={'uuid': self.barcode_set.uuid}))
 
     def test_update_more(self):
         """Test that updating barcode set entries works correctly"""
@@ -1101,7 +1101,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_updateentries',
-                                  kwargs={'pk': self.barcode_set.pk}))
+                                  kwargs={'uuid': self.barcode_set.uuid}))
 
     def test_add(self):
         """Test that adding barcode set entries works correctly"""
@@ -1133,7 +1133,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('barcodeset_updateentries',
-                        kwargs={'pk': self.barcode_set.pk}),
+                        kwargs={'uuid': self.barcode_set.uuid}),
                 values)
 
         # Check resulting database state
@@ -1156,7 +1156,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                  kwargs={'pk': self.barcode_set.pk}))
+                                  kwargs={'uuid': self.barcode_set.uuid}))
 
     def test_delete(self):
         """Test that deleting barcode set entries works correctly"""
@@ -1182,7 +1182,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('barcodeset_updateentries',
-                        kwargs={'pk': self.barcode_set.pk}),
+                        kwargs={'uuid': self.barcode_set.uuid}),
                 values)
 
         # Check resulting database state
@@ -1199,7 +1199,7 @@ class TestBarcodeSetUpdateEntriesView(
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                  kwargs={'pk': self.barcode_set.pk}))
+                                  kwargs={'uuid': self.barcode_set.uuid}))
 
 
 class TestBarcodeSetExportView(
@@ -1220,7 +1220,7 @@ class TestBarcodeSetExportView(
         with self.login(self.user):
             response = self.client.get(
                 reverse('barcodeset_export',
-                        kwargs={'pk': self.barcode_set.pk}))
+                        kwargs={'uuid': self.barcode_set.uuid}))
 
         # Check response
         self.assertEqual(response.status_code, 200)
@@ -1286,7 +1286,7 @@ class TestBarcodeSetImportView(SuperUserTestCase):
         with self.login(self.user):
             self.assertRedirects(
                 response, reverse('barcodeset_view',
-                                  kwargs={'pk': barcodeset.pk}))
+                                  kwargs={'uuid': barcodeset.uuid}))
 
         # Check database state afterwards
         self.assertEqual(BarcodeSet.objects.all().count(), 1)
@@ -1371,7 +1371,7 @@ class TestMessageCreateView(
         with self.login(self.user):
             response = self.client.get(reverse(
                 'flowcell_add_message',
-                kwargs={'related_pk': self.flow_cell.pk}))
+                kwargs={'related_uuid': self.flow_cell.uuid}))
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
@@ -1397,11 +1397,11 @@ class TestMessageCreateView(
         with self.login(self.user):
             response = self.client.post(
                 reverse('flowcell_add_message',
-                        kwargs={'related_pk': self.flow_cell.pk}),
+                        kwargs={'related_uuid': self.flow_cell.uuid}),
                 values)
             self.assertRedirects(
                 response, reverse(
-                    'flowcell_view', kwargs={'pk': self.flow_cell.pk}))
+                    'flowcell_view', kwargs={'uuid': self.flow_cell.uuid}))
 
         self.assertEquals(
             threads_models.Message.objects.all().count(), 1)
@@ -1475,7 +1475,7 @@ class TestMessageDeleteView(
         with self.login(self.user):
             response = self.client.get(reverse(
                 'flowcell_delete_message',
-                kwargs={'pk': self.message.pk}))
+                kwargs={'uuid': self.message.uuid}))
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
@@ -1484,10 +1484,10 @@ class TestMessageDeleteView(
         with self.login(self.user):
             response = self.client.post(reverse(
                 'flowcell_delete_message',
-                kwargs={'pk': self.message.pk}))
+                kwargs={'uuid': self.message.uuid}))
             self.assertRedirects(
                 response,
-                reverse('flowcell_view', kwargs={'pk': self.flow_cell.pk}))
+                reverse('flowcell_view', kwargs={'uuid': self.flow_cell.uuid}))
 
         self.assertEquals(threads_models.Message.objects.all().count(), 0)
 
@@ -1526,7 +1526,7 @@ class TestMessageUpdateView(
         with self.login(self.user):
             response = self.client.get(reverse(
                 'flowcell_update_message',
-                kwargs={'pk': self.message.pk}))
+                kwargs={'uuid': self.message.uuid}))
 
         self.assertEqual(response.context['object'], self.message)
         self.assertEqual(response.status_code, 200)
@@ -1542,11 +1542,11 @@ class TestMessageUpdateView(
         with self.login(self.user):
             response = self.client.post(reverse(
                 'flowcell_update_message',
-                kwargs={'pk': self.message.pk}),
+                kwargs={'uuid': self.message.uuid}),
                 values)
             self.assertRedirects(
                 response,
-                reverse('flowcell_view', kwargs={'pk': self.flow_cell.pk}))
+                reverse('flowcell_view', kwargs={'uuid': self.flow_cell.uuid}))
 
         self.assertEquals(threads_models.Message.objects.all().count(), 1)
         message = threads_models.Message.objects.all()[0]

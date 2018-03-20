@@ -17,7 +17,7 @@
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton-{{ location }}">
           {% if can_change_sequencingmachine %}
             <a class="dropdown-item"
-                href="{% url 'instrument_update' pk=object.pk %}"
+                href="{% url 'instrument_update' uuid=object.uuid %}"
                 title="Update flow cell {{ object.vendor_id }}">
               <i class="fa fa-pencil" aria-hidden="true"></i>
               Update
@@ -25,7 +25,7 @@
             {% endif %}
             {% if can_delete_sequencingmachine %}
             <a class="dropdown-item"
-                href="{% url 'instrument_delete' pk=object.pk %}"
+                href="{% url 'instrument_delete' uuid=object.uuid %}"
                 title="Delete flow cell {{ object.vendor_id }}">
               <i class="fa fa-eraser" aria-hidden="true"></i>
               Delete

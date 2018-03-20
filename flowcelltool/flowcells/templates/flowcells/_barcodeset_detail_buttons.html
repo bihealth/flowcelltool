@@ -15,14 +15,14 @@
       </button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton-{{ location }}">
         <a class="dropdown-item"
-            href="{% url 'barcodeset_export' pk=object.pk %}"
+            href="{% url 'barcodeset_export' uuid=object.uuid %}"
             title="Export barcode set to JSON">
           <i class="fa fa-download" aria-hidden="true"></i>
           Export
         </a>
         {% if can_delete_barcodeset %}
         <a class="dropdown-item"
-            href="{% url 'barcodeset_delete' pk=object.pk %}"
+            href="{% url 'barcodeset_delete' uuid=object.uuid %}"
             title="Delete barcode set {{ object.vendor_id }}">
           <i class="fa fa-eraser" aria-hidden="true"></i>
           Delete
@@ -30,13 +30,13 @@
         {% endif %}
         {% if can_change_barcodeset %}
         <a class="dropdown-item"
-            href="{% url 'barcodeset_updateentries' pk=object.pk %}"
+            href="{% url 'barcodeset_updateentries' uuid=object.uuid %}"
             title="Update barcode set {{ object.vendor_id }}">
           <i class="fa fa-table" aria-hidden="true"></i>
           Update Barcodes
         </a>
         <a class="dropdown-item"
-            href="{% url 'barcodeset_update' pk=object.pk %}"
+            href="{% url 'barcodeset_update' uuid=object.uuid %}"
             title="Update barcode set entries {{ object.vendor_id }}">
           <i class="fa fa-pencil" aria-hidden="true"></i>
           Update

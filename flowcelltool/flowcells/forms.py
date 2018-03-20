@@ -10,9 +10,8 @@ from django.forms.models import BaseModelFormSet, modelformset_factory
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.forms.models import ModelChoiceIterator, ModelChoiceField
-from django.forms.fields import ChoiceField
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 
@@ -43,33 +42,32 @@ def get_object_or_none(klass, *args, **kwargs):
         return None
 
 
-# Advanced ModelChoice fields -------------------------------------------------
+# ListModelChoiceField --------------------------------------------------------
 
 
-class AdvancedModelChoiceIterator(ModelChoiceIterator):
-    def __iter__(self):
-        if self.field.empty_label is not None:
-            yield ("", self.field.empty_label, None)
-        queryset = self.queryset.all()
-        # Can't use iterator() when queryset uses prefetch_related()
-        if not queryset._prefetch_related_lookups:  # noqa
-            queryset = queryset.iterator()
-        for obj in queryset:
-            yield self.choice(obj)
+class ListModelChoiceField(forms.ChoiceField):
+    """
+    Special field using list instead of queryset as choices
+    """
+    def __init__(self, model, *args, **kwargs):
+        self.model = model
+        super().__init__(*args, **kwargs)
 
-    def choice(self, obj):
-        return (self.field.prepare_value(obj),
-                self.field.label_from_instance(obj), obj)
+    def to_python(self, value):
+        if value in self.empty_values:
+            return None
+        try:
+            value = self.model.objects.get(uuid=value)
+        except self.model.DoesNotExist:
+            raise ValidationError(self.error_messages['invalid_choice'], code='invalid_choice')
+        return value
 
-
-class AdvancedModelChoiceField(ModelChoiceField):
-    def _get_choices(self):
-        if hasattr(self, '_choices'):
-            return self._choices
-
-        return AdvancedModelChoiceIterator(self)
-
-    choices = property(_get_choices, ChoiceField._set_choices)
+    def valid_value(self, value):
+        """Check to see if the provided value is a valid choice."""
+        if any(value.uuid == choice[0] for choice in self.choices):
+            return True
+        else:
+            return False
 
 
 # Form for importing BarcodeSet from JSON -------------------------------------
@@ -226,11 +224,13 @@ class LibrariesPrefillForm(forms.Form):
 
     #: Choice field for selecting first barcode
     barcode1 = forms.ModelChoiceField(
+        to_field_name='uuid',
         required=False,
         queryset=models.BarcodeSet.objects.order_by('name').all())
 
     #: Choice field for selecting second barcode
     barcode2 = forms.ModelChoiceField(
+        to_field_name='uuid',
         required=False,
         queryset=models.BarcodeSet.objects.order_by('name').all())
 
@@ -286,7 +286,7 @@ class BarcodeSelect(forms.Select):
         else:
             selected_html = ''
         if option_model and hasattr(option_model, 'barcode_set_id'):
-            set_id = option_model.barcode_set_id
+            set_id = option_model.barcode_set.uuid
         else:
             set_id = ''
         return format_html('<option data-set-id="{}" value="{}"{}>{}</option>',
@@ -307,19 +307,23 @@ class LibraryForm(forms.ModelForm):
                 LIBRARY_NAME_REGEX,
                 message=('Invalid library name. Alphanumerics, underscores '
                          'and dashes are allowed.'))])
-    barcode_set = forms.ModelChoiceField(
+
+    # The choices for the fields above are construct in the form set to reduce the number of
+    # database queries.
+
+    barcode_set = ListModelChoiceField(
+        model=models.BarcodeSet,
+        required=False)
+    barcode = ListModelChoiceField(
+        model=models.BarcodeSetEntry,
         required=False,
-        queryset=models.BarcodeSet.objects.order_by('name'))
-    barcode = AdvancedModelChoiceField(
-        required=False,
-        queryset=models.BarcodeSetEntry.objects.order_by('name'),
         widget=BarcodeSelect)
-    barcode_set2 = forms.ModelChoiceField(
+    barcode_set2 = ListModelChoiceField(
+        model=models.BarcodeSet,
+        required=False)
+    barcode2 = ListModelChoiceField(
+        model=models.BarcodeSetEntry,
         required=False,
-        queryset=models.BarcodeSet.objects.order_by('name'))
-    barcode2 = AdvancedModelChoiceField(
-        required=False,
-        queryset=models.BarcodeSetEntry.objects.order_by('name'),
         widget=BarcodeSelect)
     lane_numbers = IntegerRangeField(required=True, min_length=1)
 
@@ -329,6 +333,14 @@ class LibraryForm(forms.ModelForm):
         kwargs.setdefault('initial', {})
         if 'instance' in kwargs:
             kwargs['initial']['lane_numbers'] = kwargs['instance'].lane_numbers
+            if kwargs['instance'].barcode_set:
+                kwargs['initial']['barcode_set'] = kwargs['instance'].barcode_set.uuid
+            if kwargs['instance'].barcode:
+                kwargs['initial']['barcode'] = kwargs['instance'].barcode.uuid
+            if kwargs['instance'].barcode_set2:
+                kwargs['initial']['barcode_set2'] = kwargs['instance'].barcode_set2.uuid
+            if kwargs['instance'].barcode2:
+                kwargs['initial']['barcode2'] = kwargs['instance'].barcode2.uuid
         else:
             kwargs['initial']['lane_numbers'] = []
         super().__init__(*args, **kwargs)
@@ -344,7 +356,21 @@ class BaseLibraryFormSet(BaseModelFormSet):
     def __init__(self, *args, **kwargs):
         self.flow_cell = kwargs.pop('flow_cell')
         super().__init__(*args, **kwargs)
-        self.queryset = self.flow_cell.libraries.order_by('name').all()
+        self.queryset = self.flow_cell.libraries.all()
+        self._fixup_forms()
+
+    def _fixup_forms(self):
+        """Prevent too many DB queries."""
+        barcode_set_choices = [('', '----')] + [
+            (m.uuid, m.name) for m in models.BarcodeSet.objects.all()]
+        barcode_choices = [('', '----', None)] + [
+            (m.uuid, m.name, m)
+            for m in models.BarcodeSetEntry.objects.select_related('barcode_set').all()]
+        for form in self:
+            form.fields['barcode_set'].choices = barcode_set_choices
+            form.fields['barcode'].choices = barcode_choices
+            form.fields['barcode_set2'].choices = barcode_set_choices
+            form.fields['barcode2'].choices = barcode_choices
 
     def save(self, *args, **kwargs):
         """Handle saving of form set, including support for deleting barcode
@@ -425,6 +451,7 @@ class PickColumnsForm(forms.Form):
 
     #: Barcode set for barcode 1
     barcode_set = forms.ModelChoiceField(
+        to_field_name='uuid',
         required=False,
         label='Barcode set 1',
         queryset=models.BarcodeSet.objects.order_by('name'))
@@ -438,6 +465,7 @@ class PickColumnsForm(forms.Form):
 
     #: Barcode set for barcode 2
     barcode_set2 = forms.ModelChoiceField(
+        to_field_name='uuid',
         required=False,
         label='Barcode set 2',
         queryset=models.BarcodeSet.objects.order_by('name'),

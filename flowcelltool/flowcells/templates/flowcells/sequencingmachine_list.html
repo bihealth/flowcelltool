@@ -26,7 +26,7 @@
       {% for machine in object_list %}
       <tr>
         <td>
-          <a href="{% url 'instrument_view' pk=machine.pk %}">
+          <a href="{% url 'instrument_view' uuid=machine.uuid %}">
             {{ machine.vendor_id }}
           </a>
         </td>
@@ -44,20 +44,20 @@
               <i class="fa fa-cog" aria-hidden="true"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="{% url 'instrument_view' pk=machine.pk %}">
+              <a class="dropdown-item" href="{% url 'instrument_view' uuid=machine.uuid %}">
                 <i class="fa fa-eye" aria-hidden="true"></i>
                 View
               </a>
               {% has_perm 'flowcells.change_sequencingmachine' request.user barcode_set as can_change_sequencingmachine %}
               {% if can_change_sequencingmachine %}
-                <a class="dropdown-item" href="{% url 'instrument_update' pk=machine.pk %}">
+                <a class="dropdown-item" href="{% url 'instrument_update' uuid=machine.uuid %}">
                   <i class="fa fa-pencil" aria-hidden="true"></i>
                   Update
                 </a>
               {% endif %}
               {% has_perm 'flowcells.delete_sequencingmachine' request.user barcode_set as can_delete_sequencingmachine %}
               {% if can_delete_sequencingmachine %}
-                <a class="dropdown-item" href="{% url 'instrument_delete' pk=machine.pk %}">
+                <a class="dropdown-item" href="{% url 'instrument_delete' uuid=machine.uuid %}">
                   <i class="fa fa-eraser" aria-hidden="true"></i>
                   Delete
                 </a>

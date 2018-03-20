@@ -22,3 +22,6 @@ sphinx_rtd_theme==0.2.4
 coreapi==2.3.3
 itypes==1.1.0
 uritemplate==3.0.0
+
+# Helpful for profiling
+django-cprofile-middleware ==1.0

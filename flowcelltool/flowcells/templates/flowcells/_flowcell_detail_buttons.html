@@ -12,17 +12,17 @@
         Actions
       </button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton-{{ location }}">
-        <a class="dropdown-item" href="{% url 'flowcell_export' pk=object.pk %}">
+        <a class="dropdown-item" href="{% url 'flowcell_export' uuid=object.uuid %}">
           <i class="fa fa-download" aria-hidden="true"></i>
           Export
         </a>
-        <a class="dropdown-item" href="{% url 'flowcell_sheet' pk=object.pk %}">
+        <a class="dropdown-item" href="{% url 'flowcell_sheet' uuid=object.uuid %}">
           <i class="fa fa-wpforms" aria-hidden="true"></i>
           Sheet Export
         </a>
         {% if can_add_message %}
         <a class="dropdown-item"
-            href="{% url 'flowcell_add_message' related_pk=object.pk %}"
+            href="{% url 'flowcell_add_message' related_uuid=object.uuid %}"
             title="Add message to {{ object.vendor_id }}">
           <i class="fa fa-reply" aria-hidden="true"></i>
           Add Message
@@ -30,13 +30,13 @@
         {% endif %}
         {% if can_change_flowcell %}
         <a class="dropdown-item"
-            href="{% url 'flowcell_updatelibraries' pk=object.pk %}"
+            href="{% url 'flowcell_updatelibraries' uuid=object.uuid %}"
             title="Update libraries {{ object.vendor_id }}">
           <i class="fa fa-table" aria-hidden="true"></i>
           Update Libraries
         </a>
         <a class="dropdown-item"
-            href="{% url 'flowcell_extract' pk=object.pk %}"
+            href="{% url 'flowcell_extract' uuid=object.uuid %}"
             title="Copy and paste libraries for {{ object.vendor_id }}">
           <i class="fa fa-clipboard" aria-hidden="true"></i>
           Copy &amp; Paste XLS
@@ -48,7 +48,7 @@
           Prefilled Update Libraries
         </a>
         <a class="dropdown-item"
-            href="{% url 'flowcell_update' pk=object.pk %}"
+            href="{% url 'flowcell_update' uuid=object.uuid %}"
             title="Update flow cell {{ object.vendor_id }}">
           <i class="fa fa-pencil" aria-hidden="true"></i>
           Update
@@ -56,7 +56,7 @@
         {% endif %}
         {% if can_delete_flowcell %}
         <a class="dropdown-item"
-            href="{% url 'flowcell_delete' pk=object.pk %}"
+            href="{% url 'flowcell_delete' uuid=object.uuid %}"
             title="Delete flow cell {{ object.vendor_id }}">
           <i class="fa fa-eraser" aria-hidden="true"></i>
           Delete
@@ -71,7 +71,7 @@
 <div class="my-3">
   <div class="collapse" id="collapse-{{ location }}">
     <div class="card card-body">
-      <form action="{% url 'flowcell_updatelibraries' pk=object.pk %}"
+      <form action="{% url 'flowcell_updatelibraries' uuid=object.uuid %}"
           method="get">
         {% crispy prefill_form helper %}
         <button type="submit" class="btn btn-sm btn-primary">

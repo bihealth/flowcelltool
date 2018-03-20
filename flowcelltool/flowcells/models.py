@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Models for the flowcells app"""
 
+import uuid
+
 from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -13,6 +15,24 @@ from model_utils.models import TimeStampedModel
 from ..threads.models import Message
 
 from markdown_deux.templatetags.markdown_deux_tags import markdown_allowed
+
+
+# Mixin for UUID ---------------------------------------------------------
+
+
+class UuidStampedMixin(models.Model):
+    """Mixin for "uuid" field."""
+
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        null=False,
+        blank=False,
+        editable=False,
+        unique=True
+    )
+
+    class Meta:
+        abstract = True
 
 
 # SequencingMachine and related ------------------------------------------
@@ -73,7 +93,7 @@ INDEX_WORKFLOWS = (
 )
 
 
-class SequencingMachine(TimeStampedModel):
+class SequencingMachine(UuidStampedMixin, TimeStampedModel):
     """Represent a sequencing machine instance
     """
 
@@ -114,7 +134,7 @@ class SequencingMachine(TimeStampedModel):
         help_text='Workflow to use for dual indexing')
 
     def get_absolute_url(self):
-        return reverse('instrument_view', kwargs={'pk': self.pk})
+        return reverse('instrument_view', kwargs={'uuid': self.uuid})
 
     # Permissions -------------------------------------------------------------
 
@@ -166,8 +186,11 @@ class SequencingMachine(TimeStampedModel):
 # BarcodeSet and related -----------------------------------------------------
 
 
-class BarcodeSet(TimeStampedModel):
+class BarcodeSet(UuidStampedMixin, TimeStampedModel):
     """A set of barcodes with id => sequence mapping"""
+
+    class Meta:
+        ordering = ['name']
 
     #: Full name of the index set
     name = models.CharField(
@@ -186,13 +209,8 @@ class BarcodeSet(TimeStampedModel):
         help_text=('Short description of the barcode set. ' +
                    markdown_allowed()))
 
-    @property
-    def sorted_entries(self):
-        """Return barcode set entries, sorted by name"""
-        return self.entries.order_by('name')
-
     def get_absolute_url(self):
-        return reverse('barcodeset_view', kwargs={'pk': self.pk})
+        return reverse('barcodeset_view', kwargs={'uuid': self.uuid})
 
     # Permissions -------------------------------------------------------------
 
@@ -240,8 +258,11 @@ class BarcodeSet(TimeStampedModel):
         return tpl.format(', '.join(repr(v) for v in values))
 
 
-class BarcodeSetEntry(TimeStampedModel):
+class BarcodeSetEntry(UuidStampedMixin, TimeStampedModel):
     """A barcode sequence with an id"""
+
+    class Meta:
+        ordering = ['name']
 
     #: The barcode set that this barcode belongs to
     barcode_set = models.ForeignKey(BarcodeSet, related_name='entries',
@@ -396,7 +417,7 @@ RTA_VERSION_CHOICES = (
 )
 
 
-class FlowCell(TimeStampedModel):
+class FlowCell(UuidStampedMixin, TimeStampedModel):
     """Information stored for each flow cell"""
 
     #: Owner of the flow cell.  Set to NULL when the user is deleted to
@@ -512,17 +533,12 @@ class FlowCell(TimeStampedModel):
         """Return a list of Library lists, for the layout on the flow cell"""
         try:
             lanes = [[] for i in range(self.num_lanes)]
-            for lib in self.libraries.order_by('name'):
+            for lib in self.libraries.all():
                 for lane in lib.lane_numbers:
                     lanes[lane - 1].append(lib)
             return lanes
         except IndexError:
             return '(invalid)'
-
-    @property
-    def sorted_libraries(self):
-        """Return libraries entries, sorted by name"""
-        return self.libraries.order_by('name')
 
     def save(self, *args, **kwargs):
         self._validate_num_lanes()
@@ -547,7 +563,7 @@ class FlowCell(TimeStampedModel):
         return result
 
     def get_absolute_url(self):
-        return reverse('flowcell_view', kwargs={'pk': self.pk})
+        return reverse('flowcell_view', kwargs={'uuid': self.uuid})
 
     # Permissions -------------------------------------------------------------
 
@@ -659,7 +675,7 @@ def try_helper(f, arg, exc=AttributeError, default=''):
         return default
 
 
-class Library(TimeStampedModel):
+class Library(UuidStampedMixin, TimeStampedModel):
     """The data stored for each library that is to be sequenced
     """
 
@@ -720,7 +736,7 @@ class Library(TimeStampedModel):
             flow_cell=self.flow_cell,
             lane_numbers__overlap=self.lane_numbers
         ).exclude(
-            pk=self.pk
+            uuid=self.uuid
         )
         # Check that no libraries exist with the same
         if libs_on_lanes.filter(name=self.name).exists():

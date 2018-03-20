@@ -31,7 +31,7 @@ urlpatterns += [
 urlpatterns += [
     # Update adapter, quality scores, and status fields
     url(
-        regex=r'^flowcell/(?P<pk>\d+)/update/$',
+        regex=r'^flowcell/(?P<uuid>[^/.]+)/update/$',
         view=views.FlowCellUpdateView.as_view(),
         name='flowcell_update',
     ),

@@ -26,12 +26,12 @@
       {% for barcode_set in object_list %}
         <tr>
           <td>
-            <a href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
+            <a href="{% url 'barcodeset_view' uuid=barcode_set.uuid %}">
             {{ barcode_set.name }}
             </a>
           </td>
           <td>
-            <a href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
+            <a href="{% url 'barcodeset_view' uuid=barcode_set.uuid %}">
               {{ barcode_set.short_name }}
             </a>
           </td>
@@ -45,28 +45,28 @@
                 <i class="fa fa-cog" aria-hidden="true"></i>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="{% url 'barcodeset_view' pk=barcode_set.pk %}">
+                <a class="dropdown-item" href="{% url 'barcodeset_view' uuid=barcode_set.uuid %}">
                   <i class="fa fa-eye" aria-hidden="true"></i>
                   View
                 </a>
-                <a class="dropdown-item" href="{% url 'barcodeset_export' pk=barcode_set.pk %}">
+                <a class="dropdown-item" href="{% url 'barcodeset_export' uuid=barcode_set.uuid %}">
                   <i class="fa fa-download" aria-hidden="true"></i>
                   Export
                 </a>
                 {% has_perm 'flowcells.change_barcodeset' request.user barcode_set as can_change_barcodeset %}
                 {% if can_change_barcodeset %}
-                  <a class="dropdown-item" href="{% url 'barcodeset_update' pk=barcode_set.pk %}">
+                  <a class="dropdown-item" href="{% url 'barcodeset_update' uuid=barcode_set.uuid %}">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Update
                   </a>
-                  <a class="dropdown-item" href="{% url 'barcodeset_updateentries' pk=barcode_set.pk %}">
+                  <a class="dropdown-item" href="{% url 'barcodeset_updateentries' uuid=barcode_set.uuid %}">
                     <i class="fa fa-table" aria-hidden="true"></i>
                     Update Entries
                   </a>
                 {% endif %}
                 {% has_perm 'flowcells.delete_barcodeset' request.user barcode_set as can_delete_barcodeset %}
                 {% if can_delete_barcodeset %}
-                  <a class="dropdown-item" href="{% url 'barcodeset_delete' pk=barcode_set.pk %}">
+                  <a class="dropdown-item" href="{% url 'barcodeset_delete' uuid=barcode_set.uuid %}">
                     <i class="fa fa-eraser" aria-hidden="true"></i>
                     Delete
                   </a>

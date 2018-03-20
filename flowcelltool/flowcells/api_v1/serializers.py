@@ -8,16 +8,16 @@ from ...threads.models import Message
 class SequencingMachineSerializer(serializers.ModelSerializer):
     class Meta:
         model = SequencingMachine
-        fields = ('pk', 'created', 'modified', 'vendor_id', 'label', 'description',
+        fields = ('uuid', 'created', 'modified', 'vendor_id', 'label', 'description',
                   'machine_model', 'slot_count', 'dual_index_workflow')
-        read_only_fields = ('pk', 'created', 'modified')
+        read_only_fields = ('uuid', 'created', 'modified')
 
 
 class BarcodeSetEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = BarcodeSetEntry
-        fields = ('pk', 'created', 'modified', 'name', 'sequence')
-        read_only_fields = ('pk', 'created', 'modified')
+        fields = ('uuid', 'created', 'modified', 'name', 'sequence')
+        read_only_fields = ('uuid', 'created', 'modified')
 
 
 class BarcodeSetSerializer(serializers.ModelSerializer):
@@ -25,9 +25,9 @@ class BarcodeSetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BarcodeSet
-        fields = ('pk', 'created', 'modified', 'name', 'short_name', 'description',
+        fields = ('uuid', 'created', 'modified', 'name', 'short_name', 'description',
                   'sorted_entries')
-        read_only_fields = ('pk', 'created', 'modified')
+        read_only_fields = ('uuid', 'created', 'modified')
 
 
 class FlowCellSerializer(serializers.ModelSerializer):
@@ -36,11 +36,11 @@ class FlowCellSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FlowCell
-        fields = ('pk', 'owner', 'created', 'modified', 'run_date', 'run_number', 'slot',
+        fields = ('uuid', 'owner', 'created', 'modified', 'run_date', 'run_number', 'slot',
                   'vendor_id', 'label', 'description', 'num_lanes', 'status', 'operator',
                   'is_paired', 'index_read_count', 'rta_version', 'read_length',
                   'info_adapters', 'info_quality_scores', '_permissions')
-        read_only_fields = ('pk', 'owner', 'created', 'modified', 'info_adapters',
+        read_only_fields = ('uuid', 'owner', 'created', 'modified', 'info_adapters',
                             'info_quality_scores')
 
 
@@ -55,8 +55,8 @@ class FlowCellPostSequencingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FlowCell
-        fields = ('pk', 'info_adapters', 'info_quality_scores', 'status', '_permissions')
-        read_only_fields = ('pk', '_permissions')
+        fields = ('uuid', 'info_adapters', 'info_quality_scores', 'status', '_permissions')
+        read_only_fields = ('uuid', '_permissions')
 
 
 class FlowCellMessageSerializer(serializers.ModelSerializer):
@@ -64,6 +64,6 @@ class FlowCellMessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ('pk', 'created', 'modified', 'title', 'body', 'mime_type',
+        fields = ('uuid', 'created', 'modified', 'title', 'body', 'mime_type',
                   'author')
-        read_only_fields = ('pk', 'author', 'created', 'modified')
+        read_only_fields = ('uuid', 'author', 'created', 'modified')

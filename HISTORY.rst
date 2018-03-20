@@ -6,6 +6,7 @@ History
 HEAD
 ----
 
+- Switching to UUID for all public-facing IDs.
 - Adding support for message and multi-attachment upload via API.
 - Adding basic profile page.
 - Switching layout and vendoring JS/CSS dependencies.

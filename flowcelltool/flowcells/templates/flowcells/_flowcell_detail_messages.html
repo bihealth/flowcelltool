@@ -2,9 +2,9 @@
 {% load markdown_deux_tags %}
 {% load flowcells_tags %}
 
-{% if object.messages.all %}
+{% if messages.all %}
 <div>
-  {% for message in object.messages.all %}
+  {% for message in messages.all %}
     <div class="card mb-3">
       <div class="card-header">
           {{ message.title }}
@@ -24,12 +24,12 @@
           {% if can_change_message or can_delete_message %}
           <div class="btn-group btn-group-sm pull-right">
             {% if can_change_message %}
-              <a class="btn btn-secondary" href="{% url 'flowcell_update_message' pk=message.pk %}">
+              <a class="btn btn-secondary" href="{% url 'flowcell_update_message' uuid=message.uuid %}">
                 Update
               </a>
             {% endif %}
             {% if can_delete_message %}
-              <a class="btn btn-secondary" href="{% url 'flowcell_delete_message' pk=message.pk %}">
+              <a class="btn btn-secondary" href="{% url 'flowcell_delete_message' uuid=message.uuid %}">
                 Delete
               </a>
             {% endif %}

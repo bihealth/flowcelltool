@@ -9,7 +9,14 @@ from .models import Message
 from . import forms
 
 
-class MessageCreateView(CreateView):
+class UuidViewMixin:
+    """Mixin that makes the CBVs use "uuid" as the field."""
+
+    slug_url_kwarg = 'uuid'
+    slug_field = 'uuid'
+
+
+class MessageCreateView(UuidViewMixin, CreateView):
     """CBV for creating Message
 
     Meant for subclassing, related_model must be set
@@ -28,7 +35,7 @@ class MessageCreateView(CreateView):
         if not self.related_model:
             raise ValueError('Missing setting "related_model"')
         self.related_object = get_object_or_404(  # noqa
-            self.related_model, pk=kwargs['related_pk'])
+            self.related_model, uuid=kwargs['related_uuid'])
         return super().dispatch(*args, **kwargs)
 
     def get_success_url(self):
@@ -53,7 +60,7 @@ class MessageCreateView(CreateView):
         return context
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(UuidViewMixin, UpdateView):
     """CBV for updating messages"""
 
     #: The Model type to handle
@@ -80,7 +87,7 @@ class MessageUpdateView(UpdateView):
         return context
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(UuidViewMixin, DeleteView):
     """CBV for deleting messages"""
 
     #: The Model type to handle

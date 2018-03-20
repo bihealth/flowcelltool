@@ -31,6 +31,13 @@ from . import emails
 LOGGER = logging.getLogger(__name__)
 
 
+class UuidViewMixin:
+    """Mixin that makes the CBVs use "uuid" as the field."""
+
+    slug_url_kwarg = 'uuid'
+    slug_field = 'uuid'
+
+
 # Home View -------------------------------------------------------------------
 
 
@@ -53,7 +60,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 class SequencingMachineListView(
-        LoginRequiredMixin, PermissionRequiredMixin, ListView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, ListView):
     """Shows a list of sequencing machines"""
 
     permission_required = 'flowcells.list_sequencingmachine'
@@ -62,7 +69,7 @@ class SequencingMachineListView(
 
 
 class SequencingMachineCreateView(
-        LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, CreateView):
     """View for creating sequencing machine"""
 
     permission_required = 'flowcells.add_sequencingmachine'
@@ -74,7 +81,7 @@ class SequencingMachineCreateView(
 
 
 class SequencingMachineDetailView(
-        LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DetailView):
     """View detail of sequencing machine"""
 
     permission_required = 'flowcells.view_sequencingmachine'
@@ -83,7 +90,7 @@ class SequencingMachineDetailView(
 
 
 class SequencingMachineUpdateView(
-        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, UpdateView):
     """View for updating sequencing machines"""
 
     permission_required = 'flowcells.change_sequencingmachine'
@@ -95,7 +102,7 @@ class SequencingMachineUpdateView(
 
 
 class SequencingMachineDeleteView(
-        LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DeleteView):
     """View for deleting sequencing machines"""
 
     permission_required = 'flowcells.delete_sequencingmachine'
@@ -109,7 +116,7 @@ class SequencingMachineDeleteView(
 
 
 class BarcodeSetListView(
-        LoginRequiredMixin, PermissionRequiredMixin, ListView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, ListView):
     """Shows a list of barcodes"""
 
     permission_required = 'flowcells.list_barcodeset'
@@ -118,7 +125,7 @@ class BarcodeSetListView(
 
 
 class BarcodeSetCreateView(
-        LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, CreateView):
     """View for creating barcode set"""
 
     permission_required = 'flowcells.add_barcodeset'
@@ -130,7 +137,7 @@ class BarcodeSetCreateView(
 
 
 class BarcodeSetDetailView(
-        LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DetailView):
     """View detail of barcode set"""
 
     permission_required = 'flowcells.view_barcodeset'
@@ -139,7 +146,7 @@ class BarcodeSetDetailView(
 
 
 class BarcodeSetUpdateView(
-        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, UpdateView):
     """View for updating barcode sets"""
 
     permission_required = 'flowcells.change_barcodeset'
@@ -151,7 +158,7 @@ class BarcodeSetUpdateView(
 
 
 class BarcodeSetDeleteView(
-        LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DeleteView):
     """View for deleting barcode sets"""
 
     permission_required = 'flowcells.delete_barcodeset'
@@ -170,7 +177,7 @@ class BarcodeSetExportView(
 
     def get(self, request, *args, **kwargs):
         barcode_set = get_object_or_404(
-            models.BarcodeSet, pk=kwargs['pk'])
+            models.BarcodeSet, uuid=kwargs['uuid'])
         dumper = import_export.BarcodeSetDumper()
         response = HttpResponse(dumper.run(barcode_set),
                                 content_type='text/plain')
@@ -209,14 +216,14 @@ class BarcodeSetImportView(
                 'Problem during import. Is the barcode set name unique?')
             return self.form_invalid(form)
         return redirect(reverse('barcodeset_view',
-                                kwargs={'pk': barcode_set.pk}))
+                                kwargs={'uuid': barcode_set.uuid}))
 
 
 # BarcodeSetEntry Views -------------------------------------------------------
 
 
 class BarcodeSetEntryUpdateView(
-        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, UpdateView):
     """Form for updating all adapter barcode set entries of a barcode set
     """
 
@@ -234,7 +241,7 @@ class BarcodeSetEntryUpdateView(
         self.object = self.get_object()  # noqa
         barcode_set_entry_form = self._construct_formset()
         return self.render_to_response(
-            self.get_context_data(self.object.id,
+            self.get_context_data(self.object.uuid,
                                   formset=barcode_set_entry_form))
 
     def post(self, request, *args, **kwargs):
@@ -261,12 +268,12 @@ class BarcodeSetEntryUpdateView(
 
     def form_invalid(self, barcode_set_entry_form):
         return self.render_to_response(
-            self.get_context_data(self.object.id,
+            self.get_context_data(self.object.uuid,
                                   formset=barcode_set_entry_form))
 
-    def get_context_data(self, pk, **kwargs):
+    def get_context_data(self, uuid, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.object = models.BarcodeSet.objects.get(pk=pk)  # noqa
+        self.object = models.BarcodeSet.objects.get(uuid=uuid)  # noqa
         context['object'] = self.object
         context['formset'] = kwargs['formset']
         context['helper'] = FormHelper()
@@ -288,7 +295,7 @@ FLOW_CELL_FIELDS = (
 
 
 class FlowCellListView(
-        LoginRequiredMixin, PermissionRequiredMixin, ListView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, ListView):
     """Shows a list of flow cells, this is the index page"""
 
     permission_required = 'flowcells.list_flowcell'
@@ -302,7 +309,7 @@ class FlowCellListView(
 
 
 class FlowCellCreateView(
-        LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, CreateView):
     """Show the view for creating a flow cell"""
 
     permission_required = 'flowcells.add_flowcell'
@@ -320,11 +327,11 @@ class FlowCellCreateView(
         emails.email_flowcell_created(
             self.request.user, self.object, self.request)
         return redirect(reverse(
-            'flowcell_view', kwargs={'pk': self.object.pk}))
+            'flowcell_view', kwargs={'uuid': self.object.uuid}))
 
 
 class FlowCellDetailView(
-        LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DetailView):
     """Show the view for creating a flow cell"""
 
     permission_required = 'flowcells.view_flowcell'
@@ -332,8 +339,15 @@ class FlowCellDetailView(
     #: The model type to create
     model = models.FlowCell
 
+    def get_queryset(self):
+        """Queryset with all data that is to be displayed."""
+        return super().get_queryset().prefetch_related(
+            'libraries', 'libraries__barcode_set', 'libraries__barcode_set2',
+            'libraries__barcode', 'libraries__barcode2'
+        )
+
     def get_context_data(self, *args, **kwargs):
-        """Overwritten version for retrievin template values
+        """Overwritten version for retrieving template values
 
         Injecting the prefill barcode set form into the template with the
         django-crispy-forms helper object.
@@ -343,6 +357,7 @@ class FlowCellDetailView(
         context['helper'] = FormHelper()
         context['helper'].form_tag = False
         context['helper'].form_method = 'GET'
+        context['messages'] = self.object.messages.prefetch_related('attachments')
         # Properly sort the adapters information
         if self.object.info_adapters is None:
             context['info_adapters'] = None
@@ -363,7 +378,7 @@ class FlowCellDetailView(
 
 
 class FlowCellUpdateView(
-        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, UpdateView):
     """Show the view for updating a flow cell"""
 
     permission_required = 'flowcells.change_flowcell'
@@ -382,7 +397,7 @@ class FlowCellUpdateView(
 
 
 class FlowCellDeleteView(
-        LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DeleteView):
     """View for deleting flow cell"""
 
     permission_required = 'flowcells.delete_flowcell'
@@ -407,7 +422,7 @@ class FlowCellExportView(
 
     def get(self, request, *args, **kwargs):
         flow_cell = get_object_or_404(
-            models.FlowCell, pk=kwargs['pk'])
+            models.FlowCell, uuid=kwargs['uuid'])
         dumper = import_export.FlowCellDumper()
         response = HttpResponse(dumper.run(flow_cell),
                                 content_type='text/plain')
@@ -444,7 +459,7 @@ class FlowCellImportView(
 
 
 class FlowCellSampleSheetView(
-        LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DetailView):
     """Display of flow cell as sample sheet"""
 
     permission_required = 'flowcells.view_flowcell'
@@ -492,7 +507,7 @@ class FlowCellDeleteMessageView(
 
 
 class LibraryUpdateView(
-        LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, UpdateView):
     """Form for updating all libraries on a flowcell
     """
 
@@ -510,7 +525,7 @@ class LibraryUpdateView(
         self.object = self.get_object()  # noqa
         library_form = self._construct_formset()
         return self.render_to_response(
-            self.get_context_data(self.object.id,
+            self.get_context_data(self.object.uuid,
                                   formset=library_form))
 
     def post(self, request, *args, **kwargs):
@@ -523,17 +538,17 @@ class LibraryUpdateView(
 
     def _construct_formset(self, data=None):
         if self.request.GET.get('barcode1'):
-            barcode_set1 = get_object_or_404(
-                models.BarcodeSet, pk=self.request.GET['barcode1'])
+            barcode_set1_uuid = get_object_or_404(
+                models.BarcodeSet, uuid=self.request.GET['barcode1']).uuid
         else:
-            barcode_set1 = None
+            barcode_set1_uuid = None
         if self.request.GET.get('barcode2'):
-            barcode_set2 = get_object_or_404(
-                models.BarcodeSet, pk=self.request.GET['barcode2'])
+            barcode_set2_uuid = get_object_or_404(
+                models.BarcodeSet, uuid=self.request.GET['barcode2']).uuid
         else:
-            barcode_set2 = None
-        initial = {'barcode_set': barcode_set1,
-                   'barcode_set2': barcode_set2}
+            barcode_set2_uuid = None
+        initial = {'barcode_set': barcode_set1_uuid,
+                   'barcode_set2': barcode_set2_uuid}
         library_form = forms.LibraryFormSet(
             data=data, flow_cell=self.object,
             initial=[initial] * forms.EXTRA_LIBRARY_FORMS)
@@ -548,12 +563,12 @@ class LibraryUpdateView(
 
     def form_invalid(self, library_form):
         return self.render_to_response(
-            self.get_context_data(self.object.id,
+            self.get_context_data(self.object.uuid,
                                   formset=library_form))
 
-    def get_context_data(self, pk, **kwargs):
+    def get_context_data(self, uuid, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.object = models.FlowCell.objects.get(pk=pk)  # noqa
+        self.object = models.FlowCell.objects.get(uuid=uuid)  # noqa
         context['object'] = self.object
         context['formset'] = kwargs['formset']
         context['helper'] = FormHelper()
@@ -621,7 +636,7 @@ class FlowCellExtractLibrariesView(
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['object'] = get_object_or_404(
-            models.FlowCell, pk=self.kwargs['pk'])
+            models.FlowCell, uuid=self.kwargs['uuid'])
         context['helper'] = FormHelper()
         context['helper'].form_tag = False
         context['helper'].template_pack = 'bootstrap4'
@@ -635,18 +650,18 @@ class FlowCellExtractLibrariesView(
         return context
 
     def done(self, *args, **kwargs):
-        flow_cell = get_object_or_404(models.FlowCell, pk=self.kwargs['pk'])
+        flow_cell = get_object_or_404(models.FlowCell, uuid=self.kwargs['uuid'])
         with transaction.atomic():
             for library in self._build_libraries():
                 library.save()
             return redirect(reverse(
-                'flowcell_view', kwargs={'pk': flow_cell.pk}))
+                'flowcell_view', kwargs={'uuid': flow_cell.uuid}))
 
     def _build_libraries(self):
         """Build library objects from result of paste_tsv and pick_columns
         steps
         """
-        flow_cell = get_object_or_404(models.FlowCell, pk=self.kwargs['pk'])
+        flow_cell = get_object_or_404(models.FlowCell, uuid=self.kwargs['uuid'])
         table_rows, _ = self._extract_payload(
             self.get_cleaned_data_for_step('paste_tsv')['payload'])
         pick_results = self.get_cleaned_data_for_step('pick_columns')

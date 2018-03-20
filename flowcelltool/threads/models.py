@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -6,6 +8,23 @@ from db_file_storage.model_utils import delete_file, delete_file_if_needed
 from model_utils.models import TimeStampedModel
 
 from django.conf import settings
+
+# Mixin for UUID ---------------------------------------------------------
+
+
+class UuidStampedMixin(models.Model):
+    """Mixin for "uuid" field."""
+
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        null=False,
+        blank=False,
+        editable=False,
+        unique=True
+    )
+
+    class Meta:
+        abstract = True
 
 
 # Message and related ---------------------------------------------------------
@@ -21,7 +40,7 @@ FORMAT_CHOICES = (
 )
 
 
-class Message(TimeStampedModel):
+class Message(UuidStampedMixin, TimeStampedModel):
     """A message that is written by a user"""
 
     # Messages related to a "thread" items on
@@ -84,14 +103,14 @@ class Message(TimeStampedModel):
 # Attachment ------------------------------------------------------------------
 
 
-class AttachmentFile(TimeStampedModel):
+class AttachmentFile(UuidStampedMixin, TimeStampedModel):
 
     bytes = models.TextField()
     filename = models.CharField(max_length=255)
     mimetype = models.CharField(max_length=255)
 
 
-class Attachment(TimeStampedModel):
+class Attachment(UuidStampedMixin, TimeStampedModel):
     message = models.ForeignKey(Message, related_name='attachments', on_delete=models.CASCADE)
     payload = models.FileField(
         upload_to='threads.AttachmentFile/bytes/filename/mimetype')
