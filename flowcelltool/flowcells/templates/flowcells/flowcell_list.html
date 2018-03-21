@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load rules %}
+{% load flowcells_tags %}
 
 {% block title %}Flow Cells{% endblock %}
 
@@ -12,23 +13,32 @@
     {% include "flowcells/_flowcell_list_buttons.html" %}
   {% endif %}
 
-    <table class="table table-hover table-striped">
+    <table class="table table-hover table-striped table-sm">
       <thead>
         <tr>
+          <th class="width: 20px;"><!-- flags --></th>
           <th class="col-1">Date</th>
           <th class="col-1">Status</th>
           <th class="col-1">Instrument</th>
           <th class="col-2">Flow Cell</th>
           <th class="col-1">Mode</th>
-          <th class="col-4">Seq./Demux. Operator</th>
-          <th class="col-2 text-right" colspan="3">Libraries</th>
+          <th class="col-3">Seq./Demux. Operator</th>
+          <th class="col-3 text-right" colspan="3">Libraries</th>
         </tr>
       </thead>
       <tbody>
         {% for flowcell in object_list %}
           <tr>
+            <td>
+              {% if not flowcell|flowcell_mode_ok %}
+                <i class="fa fa-flag text-danger" aria-hidden="true" title="Actual read configuration ({{ flowcell.info_final_reads|flow_cell_mode }}) different from planned ({{  flowcell.info_planned_reads|flow_cell_mode }})"></i>
+              {% endif %}
+            </td>
             <td>{{ flowcell.run_date|date:"ymd" }}</td>
-            <td>{{ flowcell.status }}</td>
+            <td style="white-space: nowrap">
+              <i class="{{ flowcell.status|status_to_icon }}"></i>
+              {{ flowcell.status }}
+            </td>
             <td>
               <a href="{% url 'instrument_view' uuid=flowcell.sequencing_machine.uuid %}"
                  title="Show sequencing machine {{ flowcell.sequencing_machine.vendor_id }}">
@@ -42,12 +52,7 @@
               </a>
             </td>
             <td>
-              {% if flowcell.is_paired %}
-                2 x
-              {% else %}
-                1 x
-              {% endif %}
-              {{ flowcell.read_length }}
+              {{ flowcell.info_planned_reads|flow_cell_mode }}
             </td>
             <td>
               {{ flowcell.operator }} /

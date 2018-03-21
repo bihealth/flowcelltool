@@ -38,6 +38,13 @@ class SequencingMachineViewSet(
     queryset = SequencingMachine.objects.all()
     serializer_class = SequencingMachineSerializer
 
+    def by_vendor_id(self, request, vendor_id=None):
+        sequencing_machine = get_object_or_404(self.queryset, vendor_id=vendor_id)
+        # Because this does not fit list_route or detail_route, we have to check permissions
+        # manually.
+        self.check_object_permissions(request, sequencing_machine)
+        return Response(self.get_serializer(sequencing_machine).data)
+
 
 # BarcodeSet API Views --------------------------------------------------------
 
@@ -96,24 +103,6 @@ class FlowCellViewSet(
                 body=request.data.get('body'))
             for f in request.data.getlist('attachments'):
                 msg.attachments.create(payload=f)
-        return HttpResponseRedirect(redirect_to=reverse(
-            'flowcell-detail', kwargs={'uuid': uuid}, request=request))
-
-
-class FlowCellUpdateView(APIView):
-    """View for updating the ``status``, ``info_adapters``, and ``info_quality_scores`` fields."""
-
-    #: Permissions will be checked manually beyond being logged in.
-    permission_classes = (IsAuthenticated,)
-
-    def post(self, request, uuid):
-        flowcell = get_object_or_404(FlowCell, uuid=uuid)
-        if not request.user.has_perm('flowcells.change_flowcell', flowcell):
-            raise PermissionDenied('Access not allowed')
-        print(request.data)
-        serializer = FlowCellPostSequencingSerializer(flowcell, data=request.data)
-        serializer.is_valid(True)
-        serializer.save()
         return HttpResponseRedirect(redirect_to=reverse(
             'flowcell-detail', kwargs={'uuid': uuid}, request=request))
 

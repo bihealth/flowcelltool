@@ -74,6 +74,9 @@ rules.add_perm('flowcells.SequencingMachine:list',
 rules.add_perm('flowcells.SequencingMachine:retrieve',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot)
+rules.add_perm('flowcells.SequencingMachine:by_vendor_id',
+               is_guest | is_instrument_operator | is_demux_operator |
+               is_demux_admin | is_import_bot | rules.is_superuser)
 
 # Adding and updating sequencing machines requires to be a demultiplexing
 # administrator as this can be very destructive

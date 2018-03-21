@@ -42,17 +42,25 @@ class FlowCellMessageSerializer(serializers.ModelSerializer):
 
 
 class FlowCellSerializer(serializers.ModelSerializer):
+    sequencing_machine = serializers.UUIDField(source='sequencing_machine.uuid')
     owner = serializers.StringRelatedField()
     _permissions = DRYPermissionsField()
 
     class Meta:
         model = FlowCell
         fields = ('uuid', 'owner', 'created', 'modified', 'run_date', 'run_number', 'slot',
-                  'vendor_id', 'label', 'description', 'num_lanes', 'status', 'operator',
-                  'is_paired', 'index_read_count', 'rta_version', 'read_length',
+                  'sequencing_machine', 'vendor_id', 'label', 'description', 'num_lanes', 'status',
+                  'operator', 'rta_version', 'info_planned_reads', 'info_final_reads',
                   'info_adapters', 'info_quality_scores', '_permissions')
-        read_only_fields = ('uuid', 'owner', 'created', 'modified', 'info_adapters',
-                            'info_quality_scores')
+        read_only_fields = ('uuid', 'owner', 'created', 'modified')
+
+    def create(self, validated_data):
+        sequencing_machine = SequencingMachine.objects.get(
+            uuid=str(validated_data.pop('sequencing_machine').get('uuid')))
+        instance = FlowCell.objects.create(
+            sequencing_machine=sequencing_machine,
+            **validated_data)
+        return instance
 
 
 class FlowCellPostSequencingSerializer(serializers.ModelSerializer):

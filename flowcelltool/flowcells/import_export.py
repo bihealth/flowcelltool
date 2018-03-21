@@ -135,6 +135,7 @@ class FlowCellLoader:  # pylint:disable=too-few-public-methods
             sequencing_machine = get_object_or_404(
                 SequencingMachine,
                 vendor_id=deserialized.get('sequencing_machine'))
+            # TODO: load JSON fields
             flow_cell = FlowCell(
                 run_date=datetime.datetime.strptime(
                     deserialized['run_date'], '%Y-%m-%d'),
@@ -147,10 +148,7 @@ class FlowCellLoader:  # pylint:disable=too-few-public-methods
                 num_lanes=deserialized['num_lanes'],
                 status=deserialized['status'],
                 operator=deserialized['operator'],
-                is_paired=deserialized['is_paired'],
-                index_read_count=deserialized['index_read_count'],
-                rta_version=deserialized['rta_version'],
-                read_length=deserialized['read_length'])
+                rta_version=deserialized['rta_version'])
             flow_cell.save()
             for library in deserialized['libraries']:
                 barcode_set, barcode = None, None

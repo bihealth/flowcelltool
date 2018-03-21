@@ -170,6 +170,12 @@ class FlowCellMixin:
             index_read_count, rta_version, read_length, description,
             demux_operator=None, uuid=None):
         uuid = uuid or uuid4()
+        info_planned_reads = [{'number': 1, 'num_cycles': read_length, 'is_indexed_read': False}]
+        if is_paired:
+            info_planned_reads += [{'number': 2, 'num_cycles': read_length, 'is_indexed_read': False}]
+        for i in range(index_read_count):
+            info_planned_reads += [
+                {'number': len(info_planned_reads) + 1, 'num_cycles': 8, 'is_indexed_read': True}]
         values = {
             'uuid': uuid,
             'owner': owner,
@@ -183,11 +189,9 @@ class FlowCellMixin:
             'num_lanes': num_lanes,
             'status': status,
             'operator': operator,
-            'is_paired': is_paired,
-            'index_read_count': index_read_count,
             'rta_version': rta_version,
-            'read_length': read_length,
-            'description': description
+            'description': description,
+            'info_planned_reads': info_planned_reads,
         }
         result = models.FlowCell(**values)
         result.save()
@@ -217,12 +221,15 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
             'num_lanes': 8,
             'status': models.FLOWCELL_STATUS_SEQ_COMPLETE,
             'operator': 'John Doe',
-            'is_paired': True,
-            'index_read_count': 1,
             'info_adapters': None,
+            'info_final_reads': None,
+            'info_planned_reads': [
+                {'is_indexed_read': False, 'num_cycles': 151, 'number': 1},
+                {'is_indexed_read': False, 'num_cycles': 151, 'number': 2},
+                {'is_indexed_read': True,'num_cycles': 8, 'number': 3},
+            ],
             'info_quality_scores': None,
             'rta_version': models.RTA_VERSION_V2,
-            'read_length': 151,
             'label': 'LABEL',
             'run_date': datetime.date(2016, 3, 3),
             'run_number': 815,
@@ -241,8 +248,7 @@ class TestFlowCell(TestCase, SequencingMachineMixin, FlowCellMixin,
             r"""FlowCell(datetime.date(2016, 3, 3), """
             r"""SequencingMachine('NS5001234', 'NextSeq#1', """
             r"""'In corner of lab 101', 'NextSeq500', 1, 'A'), 815, 'A', """
-            r"""'BCDEFGHIXX', 'LABEL', 8, 'seq_complete', 'John Doe', """
-            r"""True, 1, 2, 151)""")
+            r"""'BCDEFGHIXX', 'LABEL', 8, 'seq_complete', 'John Doe', 2)""")
         self.assertEqual(repr(self.flow_cell), EXPECTED)
 
 

@@ -165,6 +165,10 @@ class SequencingMachine(UuidStampedMixin, TimeStampedModel):
     def has_object_retrieve_permission(self, request):
         return request.user.has_perm('flowcells.SequencingMachine:retrieve', self)
 
+    def has_object_by_vendor_id_permission(self, request):
+        """Special action for querying by vendor id, same as retrieve."""
+        return request.user.has_perm('flowcells.SequencingMachine:by_vendor_id', self)
+
     def has_object_update_permission(self, request):
         return request.user.has_perm('flowcells.SequencingMachine:update', self)
 
@@ -347,8 +351,14 @@ class BarcodeSetEntry(UuidStampedMixin, TimeStampedModel):
 #: Flow cell status key for initial state
 FLOWCELL_STATUS_INITIAL = 'initial'
 
+#: Flow cell status key for sequencing running
+FLOWCELL_STATUS_SEQ_RUNNING = 'seq_running'
+
 #: Flow cell status key for sequencing complete
 FLOWCELL_STATUS_SEQ_COMPLETE = 'seq_complete'
+
+#: Flow cell status key for "sequencing complete and quality-controlled"
+FLOWCELL_STATUS_SEQ_RELEASED = 'seq_released'
 
 #: Flow cell status key for sequencing failed
 FLOWCELL_STATUS_SEQ_FAILED = 'seq_failed'
@@ -373,9 +383,14 @@ FLOWCELL_STATUS_CHOICES = (
     #: initial, known to the system but no sequencing or demultiplexing
     #: happened yet
     (FLOWCELL_STATUS_INITIAL, 'initial'),
+    #: sequencing has started
+    (FLOWCELL_STATUS_SEQ_RUNNING, 'sequencing running'),
     #: sequencing complete, the files are completely written to the storage
     #: volume
     (FLOWCELL_STATUS_SEQ_COMPLETE, 'sequecing complete'),
+    #: sequencing complete as well as quality-controlled and approved by
+    #: the sequencing facility
+    (FLOWCELL_STATUS_SEQ_RELEASED, 'sequecing released'),
     #: sequencing failed, possibly there are files but the sequencing has
     #: not succeeded
     (FLOWCELL_STATUS_SEQ_FAILED, 'sequencing failed'),
@@ -474,31 +489,48 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
         related_name='demuxed_flowcells', on_delete=models.SET_NULL,
         null=True, blank=True, help_text='User responsible for demultiplexing')
 
-    #: Whether or not the run was executed in a paired-end fashion
-    is_paired = models.BooleanField(
-        default=False, help_text='Check for paired reads')
-
-    #: Number of index reads used.
-    index_read_count = models.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(2)],
-        default=1, help_text='Number of index reads that were used (0..2)')
-
     #: RTA version used, required for picking BCL to FASTQ and demultiplexing
     #: software
     rta_version = models.IntegerField(
         default=RTA_VERSION_V2, choices=RTA_VERSION_CHOICES,
         help_text='Major RTA version, implies bcl2fastq version')
 
-    #: Read length that was configured
-    read_length = models.IntegerField(default=151)
-
     #: Messages attached to this flowcell
     messages = GenericRelation(
         Message, content_type_field='content_type',
         object_id_field='object_id')
 
+    #: Information about the planned reads.  The structure is a list of the following structure::
+    #:
+    #:     [
+    #:         {
+    #:             "number": 1,
+    #:             "num_cycles": 1,
+    #:             "is_indexed": true,
+    #:         }[, ...]
+    #:     ]
+    #:
+    #: Note that the order here is inferred from the ``RunParameters.xml`` file, so it will
+    #: be a list of (potentially empty) non-indexed reads and then a (potentially empty) sequence
+    #: of indexed reads.
+    info_planned_reads = JSONField(null=True, blank=True)
+
+    #: Information about the "final" reads.  The structure is a list of the following structure::
+    #:
+    #:     [
+    #:         {
+    #:             "number": 1,
+    #:             "num_cycles": 1,
+    #:             "is_indexed": true,
+    #:         }[, ...]
+    #:     ]
+    #:
+    #: This information is taken from the ``RunInfo.xml`` file and reflects the state of the
+    #: sequencing (mostly this will be the state at the end).
+    info_final_reads = JSONField(null=True, blank=True)
+
     #: Description of the adapters seen in the actual BCL data.  The structure is a list of the
-    #: following structure:
+    #: following structure::
     #:
     #:     {
     #:         "num_indexed_reads": <number of reads that were read>,
@@ -565,6 +597,29 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
     def get_absolute_url(self):
         return reverse('flowcell_view', kwargs={'uuid': self.uuid})
 
+    # Read and Adapter Shortcuts ----------------------------------------------
+
+    @property
+    def is_paired(self):
+        if not self.info_planned_reads:
+            return None
+        else:
+            return len([a for a in self.info_planned_reads if not a['is_indexed_read']]) == 2
+
+    @property
+    def read_length(self):
+        if not self.info_planned_reads:
+            return None
+        else:
+            return max(a['num_cycles'] for a in self.info_planned_reads if not a['is_indexed_read'])
+
+    @property
+    def index_read_count(self):
+        if not self.info_planned_reads:
+            return 0
+        else:
+            return len([a for a in self.info_planned_reads if a['is_indexed_read']])
+
     # Permissions -------------------------------------------------------------
 
     # The boilerplate below ("DRY permissions") hooks up the DRY REST permission system into our
@@ -617,8 +672,7 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
         tpl = 'FlowCell({})'
         values = (self.run_date, self.sequencing_machine, self.run_number,
                   self.slot, self.vendor_id, self.label, self.num_lanes,
-                  self.status, self.operator, self.is_paired,
-                  self.index_read_count, self.rta_version, self.read_length)
+                  self.status, self.operator, self.rta_version)
         return tpl.format(', '.join(repr(v) for v in values))
 
 

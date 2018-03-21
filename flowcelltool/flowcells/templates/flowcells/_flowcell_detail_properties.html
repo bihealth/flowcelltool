@@ -1,3 +1,16 @@
+{% load flowcells_tags %}
+
+{% if not object|flowcell_mode_ok %}
+<div class="alert alert-error" role="alert">
+  <h4 class="alert-heading">
+    <i class="fa fa-warning"></i>
+    Problem With Read Lengths!
+  </h4>
+  The actual ({{ flowcell.info_final_reads|flow_cell_mode }}) read lengths are different from the planned ({{  flowcell.info_planned_reads|flow_cell_mode }}) ones.
+  This usually is an indicator of aborted sequencing.
+</div>
+{% endif %}
+
 <dl class="row">
   <dt class="col-sm-2">Created</dt>
   <dd class="col-sm-10">{{ object.created }}</dd>
@@ -35,17 +48,14 @@
   <dt class="col-sm-2">Operator</dt>
   <dd class="col-sm-10">{{ object.operator }}</dd>
 
-  <dt class="col-sm-2">Is paired</dt>
-  <dd class="col-sm-10">{{ object.is_paired }}</dd>
+  <dt class="col-sm-2">Planned Reads</dt>
+  <dd class="col-sm-10 {% if not object|flowcell_mode_ok %}text-warning{% endif %}">{{ object.info_planned_reads|flow_cell_mode }}</dd>
 
-  <dt class="col-sm-2">Index read count</dt>
-  <dd class="col-sm-10">{{ object.index_read_count }}</dd>
+  <dt class="col-sm-2">Actual Reads</dt>
+  <dd class="col-sm-10 {% if not object|flowcell_mode_ok %}text-warning{% endif %}">{{ object.info_final_reads|flow_cell_mode }}</dd>
 
   <dt class="col-sm-2">RTA version</dt>
   <dd class="col-sm-10">{{ object.rta_version }}</dd>
-
-  <dt class="col-sm-2">Read length</dt>
-  <dd class="col-sm-10">{{ object.read_length }}</dd>
 
   <dt class="col-sm-2">Description</dt>
   <dd class="col-sm-10">{{ object.description|default:"-" }}</dd>

@@ -185,10 +185,8 @@ class FlowCellForm(forms.ModelForm):
     class Meta:
         model = models.FlowCell
 
-        fields = ('name', 'description', 'num_lanes', 'status', 'operator',
-                  'demux_operator',
-                  'is_paired', 'index_read_count', 'rta_version',
-                  'read_length')
+        fields = ('name', 'description', 'status', 'num_lanes', 'operator', 'demux_operator',
+                  'rta_version')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

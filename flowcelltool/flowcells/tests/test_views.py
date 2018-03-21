@@ -111,13 +111,12 @@ class TestFlowCellCreateView(
             'status': models.FLOWCELL_STATUS_INITIAL,
             'operator': 'John Doe',
             'demux_operator': None,
-            'is_paired': True,
-            'index_read_count': 1,
             'info_adapters': None,
             'info_quality_scores': None,
+            'info_final_reads': None,
+            'info_planned_reads': None,
             'rta_version': models.RTA_VERSION_V2,
             'sequencing_machine': self.machine.pk,
-            'read_length': 151,
             'vendor_id': '',
             'run_date': datetime.date(2016, 3, 3),
             'run_number': 815,
@@ -209,18 +208,22 @@ class TestFlowCellUpdateView(
             'status': models.FLOWCELL_STATUS_DEMUX_COMPLETE,
             'operator': 'John Doe',
             'demux_operator': None,
-            'is_paired': True,
-            'index_read_count': 1,
             'info_adapters': None,
             'info_quality_scores': None,
+            'info_final_reads': None,
+            'info_planned_reads': [
+                {'is_indexed_read': False, 'num_cycles': 151, 'number': 1},
+                {'is_indexed_read': False, 'num_cycles': 151, 'number': 2},
+                {'is_indexed_read': True, 'num_cycles': 8, 'number': 3},
+            ],
             'rta_version': models.RTA_VERSION_V2,
             'sequencing_machine': self.machine.pk,
             'slot': 'A',
-            'read_length': 151,
             'run_number': 815,
             'vendor_id': 'BCDEFGHIXX',
             'run_date': datetime.date(2016, 3, 3),
         }
+        self.maxDiff = None
         self.assertEqual(model_to_dict(flow_cell), EXPECTED)
 
         # Check call to sending emails
@@ -785,6 +788,7 @@ class TestFlowCellSetExportView(
               ]
             }
             """).lstrip()
+        self.maxDiff = None
         self.assertEqual(response.content.decode('utf-8'), EXPECTED)
 
 

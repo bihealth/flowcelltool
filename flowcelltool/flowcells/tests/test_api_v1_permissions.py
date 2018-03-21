@@ -15,6 +15,9 @@ from .test_models import (
 from .test_permissions import TestPermissionBase
 
 
+# TODO: creation is not tested at the moment
+
+
 class TestApiPermissionBase(TestPermissionBase):
 
     def assert_render_200_ok(self, url, users, method='get', setup_again=(), *args, **kwargs):
