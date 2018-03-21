@@ -2,6 +2,13 @@
 History
 =======
 
+----
+HEAD
+----
+
+- Refactoring API and adding tests for it.
+  Note that the API is still unstable (shown by having version ``v0``), it will become properly versioned from ``v1`` on.
+
 ------
 v0.2.0
 ------

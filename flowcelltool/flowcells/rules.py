@@ -62,149 +62,151 @@ is_demux_admin = rules.is_group_member(DEMUX_ADMIN)
 is_import_bot = rules.is_group_member(IMPORT_BOT)
 
 
-# Rules ------------------------------------------------------------------
-
-# TODO: I don't see what I need rules for if I have permissions...
-
 # Permissions ------------------------------------------------------------
 
 # Allow everyone access to flowcells app
 rules.add_perm('flowcells', rules.always_allow)
 
 # Viewing and listing sequencing machines requires at least the guest group
-rules.add_perm('flowcells.list_sequencingmachine',
+rules.add_perm('flowcells.SequencingMachine:list',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot)
-rules.add_perm('flowcells.view_sequencingmachine',
+rules.add_perm('flowcells.SequencingMachine:retrieve',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot)
 
 # Adding and updating sequencing machines requires to be a demultiplexing
 # administrator as this can be very destructive
-rules.add_perm('flowcells.add_sequencingmachine',
+rules.add_perm('flowcells.SequencingMachine:create',
                is_demux_admin | rules.is_superuser)
-rules.add_perm('flowcells.change_sequencingmachine',
+rules.add_perm('flowcells.SequencingMachine:update',
                is_demux_admin | rules.is_superuser)
-rules.add_perm('flowcells.delete_sequencingmachine',
+rules.add_perm('flowcells.SequencingMachine:destroy',
                is_demux_admin | rules.is_superuser)
 
 # Viewing and listing barcode sets requires at least the guest group
-rules.add_perm('flowcells.list_barcodeset',
+rules.add_perm('flowcells.BarcodeSet:list',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot)
-rules.add_perm('flowcells.view_barcodeset',
+rules.add_perm('flowcells.BarcodeSet:retrieve',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot)
 
 # Adding and updating barcode sets requires to be a demultiplexing
 # administrator as this can be very destructive
-rules.add_perm('flowcells.add_barcodeset',
+rules.add_perm('flowcells.BarcodeSet:create',
                is_demux_admin | rules.is_superuser)
-rules.add_perm('flowcells.change_barcodeset',
+rules.add_perm('flowcells.BarcodeSet:update',
                is_demux_admin | rules.is_superuser)
-rules.add_perm('flowcells.delete_barcodeset',
+rules.add_perm('flowcells.BarcodeSet:destroy',
                is_demux_admin | rules.is_superuser)
 
 # Adding and updating barcode set entries requires to be a demultiplexing
 # administrator as this can be very destructive
-rules.add_perm('flowcells.add_barcodesetentry',
+rules.add_perm('flowcells.BarcodeSetEntry:create',
                is_demux_admin | rules.is_superuser)
-rules.add_perm('flowcells.change_barcodesetentry',
+rules.add_perm('flowcells.BarcodeSetEntry:update',
                is_demux_admin | rules.is_superuser)
-rules.add_perm('flowcells.delete_barcodesetentry',
+rules.add_perm('flowcells.BarcodeSetEntry:destroy',
                is_demux_admin | rules.is_superuser)
 
 # Viewing and listing flow cells requires at least the guest group
-rules.add_perm('flowcells.list_flowcell',
+rules.add_perm('flowcells.FlowCell:list',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)
-rules.add_perm('flowcells.view_flowcell',
+rules.add_perm('flowcells.FlowCell:retrieve',
+               is_guest | is_instrument_operator | is_demux_operator |
+               is_demux_admin | is_import_bot | rules.is_superuser)
+rules.add_perm('flowcells.FlowCell:by_vendor_id',
+               is_guest | is_instrument_operator | is_demux_operator |
+               is_demux_admin | is_import_bot | rules.is_superuser)
+rules.add_perm('flowcells.FlowCell:sample_sheet',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)
 
 # Adding flow cells can be done by everyone, updating is only possible to
 # owners, demux operators and upwards.
 rules.add_perm(
-    'flowcells.add_flowcell',
+    'flowcells.FlowCell:create',
     is_instrument_operator | is_demux_operator | is_demux_admin |
     is_import_bot | rules.is_superuser
 )
 rules.add_perm(
-    'flowcells.change_flowcell',
+    'flowcells.FlowCell:update',
     is_flow_cell_owner | is_demux_operator | is_demux_admin |
     rules.is_superuser
 )
 rules.add_perm(
-    'flowcells.delete_flowcell',
+    'flowcells.FlowCell:destroy',
     is_flow_cell_owner | is_demux_operator | is_demux_admin |
     rules.is_superuser
 )
 
 
 # Similar, for library on flowcell
-rules.add_perm('flowcells.list_library',
+rules.add_perm('flowcells.Library:list',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)
-rules.add_perm('flowcells.view_library',
+rules.add_perm('flowcells.Library:retrieve',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)
 
 rules.add_perm(
-    'flowcells.add_library',
+    'flowcells.Library:create',
     is_librarys_flow_cell_owner | is_demux_operator | is_demux_admin |
     is_import_bot | rules.is_superuser
 )
 rules.add_perm(
-    'flowcells.change_library',
+    'flowcells.Library:update',
     is_librarys_flow_cell_owner | is_demux_operator | is_demux_admin |
     is_import_bot | rules.is_superuser
 )
 rules.add_perm(
-    'flowcells.delete_library',
+    'flowcells.Library:destroy',
     is_librarys_flow_cell_owner | is_demux_admin |
     is_import_bot | rules.is_superuser
 )
 
 # Viewing and listing messages requires at least the guest group
-rules.add_perm('flowcells.list_message',
+rules.add_perm('flowcells.Message:list',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)
-rules.add_perm('flowcells.view_message',
+rules.add_perm('flowcells.Message:retrieve',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)
 
 # Attaching messages to flow cells and modifying messages
 rules.add_perm(
-    'threads.add_message',
+    'threads.Message:create',
     is_instrument_operator | is_demux_operator | is_demux_admin |
     is_import_bot | rules.is_superuser
 )
 rules.add_perm(
-    'threads.change_message',
+    'threads.Message:update',
     is_message_author | is_demux_admin | rules.is_superuser
 )
 rules.add_perm(
-    'threads.delete_message',
+    'threads.Message:destroy',
     is_message_author | is_demux_admin | rules.is_superuser
 )
 
 # Attaching files to messages to flow cells and modifying messages
 rules.add_perm(
-    'threads.add_attachment',
+    'threads.Attachment:create',
     is_instrument_operator | is_demux_operator | is_demux_admin |
     is_import_bot | rules.is_superuser
 )
 rules.add_perm(
-    'threads.change_attachment',
+    'threads.Attachment:update',
     is_attachment_message_author | is_demux_admin | rules.is_superuser
 )
 rules.add_perm(
-    'threads.delete_attachment',
+    'threads.Attachment:destroy',
     is_attachment_message_author | is_demux_admin | rules.is_superuser
 )
 
 # Searching requires at least the guest role
 
-rules.add_perm('flowcells.search',
+rules.add_perm('flowcells:search',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)

@@ -1,5 +1,5 @@
 from django.conf.urls import include, url
-from rest_framework.routers import SimpleRouter
+from rest_framework.routers import DefaultRouter
 
 from . import views
 
@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'auth/', include('knox.urls')),
 ]
 
-router = SimpleRouter()
+router = DefaultRouter()
 router.register(r'flowcell', views.FlowCellViewSet, base_name='flowcell')
 router.register(r'barcodeset', views.BarcodeSetViewSet, base_name='barcodeset')
 router.register(r'sequencingmachine', views.SequencingMachineViewSet, base_name='sequencingmachine')

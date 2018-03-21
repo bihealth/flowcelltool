@@ -156,20 +156,20 @@ class SequencingMachine(UuidStampedMixin, TimeStampedModel):
 
     @staticmethod
     def has_list_permission(request):
-        return request.user.has_perm('flowcells.list_sequencingmachine')
+        return request.user.has_perm('flowcells.SequencingMachine:list')
 
     @staticmethod
     def has_create_permission(request):
-        return request.user.has_perm('flowcells.add_sequencingmachine')
+        return request.user.has_perm('flowcells.SequencingMachine:create')
 
     def has_object_retrieve_permission(self, request):
-        return request.user.has_perm('flowcells.view_sequencingmachine', self)
+        return request.user.has_perm('flowcells.SequencingMachine:retrieve', self)
 
     def has_object_update_permission(self, request):
-        return request.user.has_perm('flowcells.change_sequencingmachine', self)
+        return request.user.has_perm('flowcells.SequencingMachine:update', self)
 
     def has_object_destroy_permission(self, request):
-        return request.user.has_perm('flowcells.delete_sequencingmachine', self)
+        return request.user.has_perm('flowcells.SequencingMachine:create', self)
 
     # Boilerplate str/repr ----------------------------------------------------
 
@@ -232,20 +232,20 @@ class BarcodeSet(UuidStampedMixin, TimeStampedModel):
 
     @staticmethod
     def has_list_permission(request):
-        return request.user.has_perm('flowcells.list_barcodeset')
+        return request.user.has_perm('flowcells.BarcodeSet:list')
 
     @staticmethod
     def has_create_permission(request):
-        return request.user.has_perm('flowcells.add_barcodeset')
+        return request.user.has_perm('flowcells.BarcodeSet:create')
 
     def has_object_retrieve_permission(self, request):
-        return request.user.has_perm('flowcells.view_barcodeset', self)
+        return request.user.has_perm('flowcells.BarcodeSet:retrieve', self)
 
     def has_object_update_permission(self, request):
-        return request.user.has_perm('flowcells.change_barcodeset', self)
+        return request.user.has_perm('flowcells.BarcodeSet:update', self)
 
     def has_object_destroy_permission(self, request):
-        return request.user.has_perm('flowcells.delete_barcodeset', self)
+        return request.user.has_perm('flowcells.BarcodeSet:destroy', self)
 
     # Boilerplate str/repr ----------------------------------------------------
 
@@ -316,20 +316,20 @@ class BarcodeSetEntry(UuidStampedMixin, TimeStampedModel):
 
     @staticmethod
     def has_list_permission(request):
-        return request.user.has_perm('flowcells.list_barcodesetentry')
+        return request.user.has_perm('flowcells.BarcodeSetEntry:list')
 
     @staticmethod
     def has_create_permission(request):
-        return request.user.has_perm('flowcells.add_barcodesetentry')
+        return request.user.has_perm('flowcells.BarcodeSetEntry:create')
 
     def has_object_retrieve_permission(self, request):
-        return request.user.has_perm('flowcells.view_barcodesetentry', self)
+        return request.user.has_perm('flowcells.BarcodeSetEntry:retrieve', self)
 
     def has_object_update_permission(self, request):
-        return request.user.has_perm('flowcells.change_barcodesetentry', self)
+        return request.user.has_perm('flowcells.BarcodeSetEntry:update', self)
 
     def has_object_destroy_permission(self, request):
-        return request.user.has_perm('flowcells.delete_barcodesetentry', self)
+        return request.user.has_perm('flowcells.BarcodeSetEntry:destroy', self)
 
     # Boilerplate str/repr ----------------------------------------------------
 
@@ -585,28 +585,28 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
 
     @staticmethod
     def has_list_permission(request):
-        return request.user.has_perm('flowcells.list_flowcell')
+        return request.user.has_perm('flowcells.FlowCell:list')
 
     @staticmethod
     def has_create_permission(request):
-        return request.user.has_perm('flowcells.add_flowcell')
+        return request.user.has_perm('flowcells.FlowCell:create')
 
     def has_object_retrieve_permission(self, request):
-        return request.user.has_perm('flowcells.view_flowcell', self)
+        return request.user.has_perm('flowcells.FlowCell:retrieve', self)
 
     def has_object_sample_sheet_permission(self, request):
         """Special action for building sample sheet, same as retrieve."""
-        return self.has_object_retrieve_permission(request)
+        return request.user.has_perm('flowcells.FlowCell:sample_sheet', self)
 
     def has_object_by_vendor_id_permission(self, request):
         """Special action for querying by vendor id, same as retrieve."""
-        return self.has_object_retrieve_permission(request)
+        return request.user.has_perm('flowcells.FlowCell:by_vendor_id', self)
 
     def has_object_update_permission(self, request):
-        return request.user.has_perm('flowcells.change_flowcell', self)
+        return request.user.has_perm('flowcells.FlowCell:update', self)
 
     def has_object_destroy_permission(self, request):
-        return request.user.has_perm('flowcells.delete_flowcell', self)
+        return request.user.has_perm('flowcells.FlowCell:destroy', self)
 
     # Boilerplate str/repr ----------------------------------------------------
 
@@ -791,20 +791,20 @@ class Library(UuidStampedMixin, TimeStampedModel):
 
     @staticmethod
     def has_list_permission(request):
-        return request.user.has_perm('flowcells.list_library')
+        return request.user.has_perm('flowcells.Library:list')
 
     @staticmethod
     def has_create_permission(request):
-        return request.user.has_perm('flowcells.add_library')
+        return request.user.has_perm('flowcells.Library:create')
 
     def has_object_retrieve_permission(self, request):
-        return request.user.has_perm('flowcells.view_library', self)
+        return request.user.has_perm('flowcells.Library:retrieve', self)
 
     def has_object_update_permission(self, request):
-        return request.user.has_perm('flowcells.change_library', self)
+        return request.user.has_perm('flowcells.Library:update', self)
 
     def has_object_destroy_permission(self, request):
-        return request.user.has_perm('flowcells.delete_library', self)
+        return request.user.has_perm('flowcells.Library:destroy', self)
 
     # Boilerplate str/repr ----------------------------------------------------
 

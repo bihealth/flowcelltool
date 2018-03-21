@@ -3,6 +3,7 @@
 """
 
 import datetime
+from uuid import uuid4
 
 from django.forms.models import model_to_dict
 from django.core.exceptions import ValidationError
@@ -16,9 +17,11 @@ class SequencingMachineMixin:
     """Helper mixin class to provide _make_machine"""
 
     @classmethod
-    def _make_machine(cls):
+    def _make_machine(cls, uuid=None):
         """Return SequencingMachine instance for testing"""
+        uuid = uuid or uuid4()
         values = {
+            'uuid': uuid,
             'vendor_id': 'NS5001234',
             'label': 'NextSeq#1',
             'description': 'In corner of lab 101',
@@ -66,8 +69,10 @@ class BarcodeSetMixin:
     """Mixin for for _make_barcode_set()"""
 
     @classmethod
-    def _make_barcode_set(cls):
+    def _make_barcode_set(cls, uuid=None):
+        uuid = uuid or uuid4()
         values = {
+            'uuid': uuid,
             'name': 'Agilent SureSelect XT Test',
             'short_name': 'SureSelectTest',
         }
@@ -107,11 +112,13 @@ class BarcodeSetEntryMixin:
 
     @classmethod
     def _make_barcode_set_entry(
-            cls, barcode_set, name='AR01', sequence='ACGTGTTA'):
+            cls, barcode_set, name='AR01', sequence='ACGTGTTA', uuid=None):
+        uuid = uuid or uuid4()
         values = {
             'name': name,
             'sequence': sequence,
             'barcode_set': barcode_set,
+            'uuid': uuid,
         }
         result = models.BarcodeSetEntry(**values)
         result.save()
@@ -161,8 +168,10 @@ class FlowCellMixin:
             cls, owner, run_date, sequencing_machine, run_number, slot,
             vendor_id, label, num_lanes, status, operator, is_paired,
             index_read_count, rta_version, read_length, description,
-            demux_operator=None):
+            demux_operator=None, uuid=None):
+        uuid = uuid or uuid4()
         values = {
+            'uuid': uuid,
             'owner': owner,
             'demux_operator': demux_operator or None,
             'run_date': run_date,
@@ -243,8 +252,10 @@ class LibraryMixin:
     @classmethod
     def _make_library(
             cls, flow_cell, name, reference, barcode_set, barcode,
-            lane_numbers, barcode_set2=None, barcode2=None):
+            lane_numbers, barcode_set2=None, barcode2=None, uuid=None):
+        uuid = uuid or uuid4()
         values = {
+            'uuid': uuid,
             'flow_cell': flow_cell,
             'name': name,
             'reference': reference,

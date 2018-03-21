@@ -32,8 +32,8 @@ class RetrieveByUuidMixin:
 
 
 class SequencingMachineViewSet(
-        RetrieveByUuidMixin, viewsets.ReadOnlyModelViewSet):
-    """(Read only) view set for sequencing machines."""
+        RetrieveByUuidMixin, viewsets.ModelViewSet):
+    """View set for sequencing machines."""
 
     queryset = SequencingMachine.objects.all()
     serializer_class = SequencingMachineSerializer
@@ -43,8 +43,8 @@ class SequencingMachineViewSet(
 
 
 class BarcodeSetViewSet(
-        RetrieveByUuidMixin, viewsets.ReadOnlyModelViewSet):
-    """(Read only) view set for barcodes."""
+        RetrieveByUuidMixin, viewsets.ModelViewSet):
+    """View set for barcode sets."""
 
     queryset = BarcodeSet.objects.all()
     serializer_class = BarcodeSetSerializer
@@ -54,8 +54,8 @@ class BarcodeSetViewSet(
 
 
 class FlowCellViewSet(
-        RetrieveByUuidMixin, viewsets.ReadOnlyModelViewSet):
-    """(Read only) view set for flow cells."""
+        RetrieveByUuidMixin, viewsets.ModelViewSet):
+    """View set for flow cells."""
 
     queryset = FlowCell.objects.all()
     serializer_class = FlowCellSerializer
@@ -123,7 +123,7 @@ class FlowCellUpdateView(APIView):
 
 class FlowCellMessageViewSet(
         RetrieveByUuidMixin, viewsets.ReadOnlyModelViewSet):
-    """(Read only) view set for messages."""
+    """View set for messages."""
 
     queryset = Message.objects.all()
     serializer_class = FlowCellMessageSerializer

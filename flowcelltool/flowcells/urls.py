@@ -7,7 +7,8 @@ urlpatterns = [
     # API ---------------------------------------------------------------------
 
     # Mount API as "/v0" to stress that it's experimental and unstable
-    url(r'api/v0/', include('flowcelltool.flowcells.api_v1.urls')),
+    url(r'api/v0/', include(
+        'flowcelltool.flowcells.api_v1.urls', namespace='api_v1')),
 
     # SequencingMachine related -----------------------------------------------
     url(

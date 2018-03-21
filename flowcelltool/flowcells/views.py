@@ -63,7 +63,7 @@ class SequencingMachineListView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, ListView):
     """Shows a list of sequencing machines"""
 
-    permission_required = 'flowcells.list_sequencingmachine'
+    permission_required = 'flowcells.SequencingMachine:list'
 
     queryset = models.SequencingMachine.objects.order_by('vendor_id')
 
@@ -72,7 +72,7 @@ class SequencingMachineCreateView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, CreateView):
     """View for creating sequencing machine"""
 
-    permission_required = 'flowcells.add_sequencingmachine'
+    permission_required = 'flowcells.SequencingMachine:create'
 
     model = models.SequencingMachine
 
@@ -84,7 +84,7 @@ class SequencingMachineDetailView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DetailView):
     """View detail of sequencing machine"""
 
-    permission_required = 'flowcells.view_sequencingmachine'
+    permission_required = 'flowcells.SequencingMachine:retrieve'
 
     model = models.SequencingMachine
 
@@ -93,7 +93,7 @@ class SequencingMachineUpdateView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, UpdateView):
     """View for updating sequencing machines"""
 
-    permission_required = 'flowcells.change_sequencingmachine'
+    permission_required = 'flowcells.SequencingMachine:update'
 
     model = models.SequencingMachine
 
@@ -105,7 +105,7 @@ class SequencingMachineDeleteView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DeleteView):
     """View for deleting sequencing machines"""
 
-    permission_required = 'flowcells.delete_sequencingmachine'
+    permission_required = 'flowcells.SequencingMachine:destroy'
 
     model = models.SequencingMachine
 
@@ -119,7 +119,7 @@ class BarcodeSetListView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, ListView):
     """Shows a list of barcodes"""
 
-    permission_required = 'flowcells.list_barcodeset'
+    permission_required = 'flowcells.BarcodeSet:list'
 
     queryset = models.BarcodeSet.objects.order_by('name')
 
@@ -128,7 +128,7 @@ class BarcodeSetCreateView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, CreateView):
     """View for creating barcode set"""
 
-    permission_required = 'flowcells.add_barcodeset'
+    permission_required = 'flowcells.BarcodeSet:create'
 
     model = models.BarcodeSet
 
@@ -140,7 +140,7 @@ class BarcodeSetDetailView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DetailView):
     """View detail of barcode set"""
 
-    permission_required = 'flowcells.view_barcodeset'
+    permission_required = 'flowcells.BarcodeSet:retrieve'
 
     model = models.BarcodeSet
 
@@ -149,7 +149,7 @@ class BarcodeSetUpdateView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, UpdateView):
     """View for updating barcode sets"""
 
-    permission_required = 'flowcells.change_barcodeset'
+    permission_required = 'flowcells.BarcodeSet:update'
 
     model = models.BarcodeSet
 
@@ -161,7 +161,7 @@ class BarcodeSetDeleteView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DeleteView):
     """View for deleting barcode sets"""
 
-    permission_required = 'flowcells.delete_barcodeset'
+    permission_required = 'flowcells.BarcodeSet:destroy'
 
     model = models.BarcodeSet
 
@@ -173,7 +173,7 @@ class BarcodeSetExportView(
         LoginRequiredMixin, PermissionRequiredMixin, View):
     """Exporting of BarcodeSet objects to JSON"""
 
-    permission_required = 'flowcells.view_barcodeset'
+    permission_required = 'flowcells.BarcodeSet:retrieve'
 
     def get(self, request, *args, **kwargs):
         barcode_set = get_object_or_404(
@@ -191,7 +191,7 @@ class BarcodeSetImportView(
         LoginRequiredMixin, PermissionRequiredMixin, FormView):
     """Importing of BarcodeSet objects from JSON"""
 
-    permission_required = 'flowcells.add_barcodeset'
+    permission_required = 'flowcells.BarcodeSet:create'
 
     #: The template with the form to render
     template_name = 'flowcells/barcodeset_import.html'
@@ -227,7 +227,7 @@ class BarcodeSetEntryUpdateView(
     """Form for updating all adapter barcode set entries of a barcode set
     """
 
-    permission_required = 'flowcells.change_barcodeset'
+    permission_required = 'flowcells.BarcodeSet:update'
 
     model = models.BarcodeSet
 
@@ -298,7 +298,7 @@ class FlowCellListView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, ListView):
     """Shows a list of flow cells, this is the index page"""
 
-    permission_required = 'flowcells.list_flowcell'
+    permission_required = 'flowcells.FlowCell:list'
 
     #: Flow cells are sorted by run date (inferred from the name when being
     #: created, latest come first)
@@ -312,7 +312,7 @@ class FlowCellCreateView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, CreateView):
     """Show the view for creating a flow cell"""
 
-    permission_required = 'flowcells.add_flowcell'
+    permission_required = 'flowcells.FlowCell:create'
 
     #: The model type to create
     model = models.FlowCell
@@ -334,7 +334,7 @@ class FlowCellDetailView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DetailView):
     """Show the view for creating a flow cell"""
 
-    permission_required = 'flowcells.view_flowcell'
+    permission_required = 'flowcells.FlowCell:retrieve'
 
     #: The model type to create
     model = models.FlowCell
@@ -381,7 +381,7 @@ class FlowCellUpdateView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, UpdateView):
     """Show the view for updating a flow cell"""
 
-    permission_required = 'flowcells.change_flowcell'
+    permission_required = 'flowcells.FlowCell:update'
 
     #: The model type to create
     model = models.FlowCell
@@ -400,7 +400,7 @@ class FlowCellDeleteView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DeleteView):
     """View for deleting flow cell"""
 
-    permission_required = 'flowcells.delete_flowcell'
+    permission_required = 'flowcells.FlowCell:destroy'
 
     #: The model type to delete
     model = models.FlowCell
@@ -418,7 +418,7 @@ class FlowCellExportView(
         LoginRequiredMixin, PermissionRequiredMixin, View):
     """Exporting of FlowCell objects to JSON"""
 
-    permission_required = 'flowcells.view_flowcell'
+    permission_required = 'flowcells.FlowCell:retrieve'
 
     def get(self, request, *args, **kwargs):
         flow_cell = get_object_or_404(
@@ -436,7 +436,7 @@ class FlowCellImportView(
         LoginRequiredMixin, PermissionRequiredMixin, FormView):
     """Importing of FlowCell objects from JSON"""
 
-    permission_required = 'flowcells.add_flowcell'
+    permission_required = 'flowcells.FlowCell:create'
 
     #: The template with the form to render
     template_name = 'flowcells/flowcell_import.html'
@@ -462,7 +462,7 @@ class FlowCellSampleSheetView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DetailView):
     """Display of flow cell as sample sheet"""
 
-    permission_required = 'flowcells.view_flowcell'
+    permission_required = 'flowcells.FlowCell:retrieve'
 
     #: The model type to create
     model = models.FlowCell
@@ -485,7 +485,7 @@ class FlowCellSampleSheetView(
 class FlowCellAddMessageView(
         LoginRequiredMixin, PermissionRequiredMixin, MessageCreateView):
 
-    permission_required = 'threads.add_message'
+    permission_required = 'threads.Message:create'
 
     #: The type of the related object on which to "thread" the messages
     related_model = models.FlowCell
@@ -494,13 +494,13 @@ class FlowCellAddMessageView(
 class FlowCellUpdateMessageView(
         LoginRequiredMixin, PermissionRequiredMixin, MessageUpdateView):
 
-    permission_required = 'threads.change_message'
+    permission_required = 'threads.Message:update'
 
 
 class FlowCellDeleteMessageView(
         LoginRequiredMixin, PermissionRequiredMixin, MessageDeleteView):
 
-    permission_required = 'threads.delete_message'
+    permission_required = 'threads.Message:destroy'
 
 
 # Library Views ---------------------------------------------------------------
@@ -511,7 +511,7 @@ class LibraryUpdateView(
     """Form for updating all libraries on a flowcell
     """
 
-    permission_required = 'flowcells.change_flowcell'
+    permission_required = 'flowcells.FlowCell:update'
 
     model = models.FlowCell
 
@@ -593,7 +593,7 @@ class FlowCellExtractLibrariesView(
         LoginRequiredMixin, PermissionRequiredMixin, SessionWizardView):
     """Display of flow cell as sample sheet"""
 
-    permission_required = 'flowcells.change_flowcell'
+    permission_required = 'flowcells.FlowCell:create'
 
     FORMS = (
         ('paste_tsv', forms.PasteTSVForm),
@@ -748,7 +748,7 @@ class FlowCellExtractLibrariesView(
 class SearchView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     """Shows search results"""
 
-    permission_required = 'flowcells.search'
+    permission_required = 'flowcells:search'
 
     template_name = 'flowcells/search.html'
 

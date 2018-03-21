@@ -387,6 +387,7 @@ REST_FRAMEWORK = {
         'knox.auth.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
+        # TODO: add rules here
         'dry_rest_permissions.generics.DRYPermissions',
     ),
     'DEFAULT_PAGINATION_CLASS':

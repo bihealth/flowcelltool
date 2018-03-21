@@ -21,13 +21,24 @@ class BarcodeSetEntrySerializer(serializers.ModelSerializer):
 
 
 class BarcodeSetSerializer(serializers.ModelSerializer):
-    sorted_entries = BarcodeSetEntrySerializer(many=True, read_only=True)
+    entries = BarcodeSetEntrySerializer(many=True, read_only=True)
+    _permissions = DRYPermissionsField()
 
     class Meta:
         model = BarcodeSet
         fields = ('uuid', 'created', 'modified', 'name', 'short_name', 'description',
-                  'sorted_entries')
+                  'entries', '_permissions')
         read_only_fields = ('uuid', 'created', 'modified')
+
+
+class FlowCellMessageSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField()
+
+    class Meta:
+        model = Message
+        fields = ('uuid', 'created', 'modified', 'title', 'body', 'mime_type',
+                  'author')
+        read_only_fields = ('uuid', 'author', 'created', 'modified')
 
 
 class FlowCellSerializer(serializers.ModelSerializer):
@@ -57,13 +68,3 @@ class FlowCellPostSequencingSerializer(serializers.ModelSerializer):
         model = FlowCell
         fields = ('uuid', 'info_adapters', 'info_quality_scores', 'status', '_permissions')
         read_only_fields = ('uuid', '_permissions')
-
-
-class FlowCellMessageSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField()
-
-    class Meta:
-        model = Message
-        fields = ('uuid', 'created', 'modified', 'title', 'body', 'mime_type',
-                  'author')
-        read_only_fields = ('uuid', 'author', 'created', 'modified')
