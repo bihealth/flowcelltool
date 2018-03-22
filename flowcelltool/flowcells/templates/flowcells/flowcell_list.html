@@ -16,39 +16,63 @@
     <table class="table table-hover table-striped table-sm">
       <thead>
         <tr>
-          <th class="width: 20px;"><!-- flags --></th>
+          <th class="col-1 text-center">Flags/Status</th>
           <th class="col-1">Date</th>
-          <th class="col-1">Status</th>
           <th class="col-1">Instrument</th>
-          <th class="col-2">Flow Cell</th>
+          <th class="col-5">Flow Cell</th>
           <th class="col-1">Mode</th>
           <th class="col-3">Seq./Demux. Operator</th>
-          <th class="col-3 text-right" colspan="3">Libraries</th>
+          <th class="col-1" colspan="2">Libraries</th>
         </tr>
       </thead>
       <tbody>
         {% for flowcell in object_list %}
           <tr>
-            <td>
+            <td style="white-space:nowrap;">
               {% if not flowcell|flowcell_mode_ok %}
                 <i class="fa fa-flag text-danger" aria-hidden="true" title="Actual read configuration ({{ flowcell.info_final_reads|flow_cell_mode }}) different from planned ({{  flowcell.info_planned_reads|flow_cell_mode }})"></i>
+              {% else %}
+                <i class="fa fa-flag-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+              {% endif %}
+              <i
+                class="{{ flowcell.status_sequencing|status_to_icon }}"
+                title="Sequencing {{ flowcell.status_sequencing|status_to_title }}"
+              ></i>
+              <i
+                class="{{ flowcell.status_conversion|status_to_icon }}"
+                title="Base-call to sequence conversion {{ flowcell.status_conversion|status_to_title }}"
+              ></i>
+              <i
+                class="{{ flowcell.status_delivery|status_to_icon }}"
+                title="Delivery {{ flowcell.status_delivery|status_to_title }}"
+              ></i>
+              {% if flowcell.description %}
+                <i class="fa fa-comment-o" aria-hidden="true" title="{{ flowcell.description }}"></i>
+              {% else %}
+                <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+              {% endif %}
+              {% if flowcell.messages.all %}
+                <i class="fa fa-envelope-o" aria-hidden="true" title="{{ flowcell.messages.all|length }} message(s)"></i>
+              {% else %}
+                <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+              {% endif %}
+              {% if flowcell.count_files %}
+                <i class="fa fa-files-o" aria-hidden="true" title="{{ flowcell.count_files }} file(s)"></i>
+              {% else %}
+                <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
             </td>
-            <td>{{ flowcell.run_date|date:"ymd" }}</td>
-            <td style="white-space: nowrap">
-              <i class="{{ flowcell.status|status_to_icon }}"></i>
-              {{ flowcell.status }}
-            </td>
+            <td>{{ flowcell.run_date|date:"y/m/d" }}</td>
             <td>
               <a href="{% url 'instrument_view' uuid=flowcell.sequencing_machine.uuid %}"
-                 title="Show sequencing machine {{ flowcell.sequencing_machine.vendor_id }}">
+                 title="Show sequencing machine {{ flowcell.sequencing_machine.vendor_id }} ({{ flowcell.sequencing_machine.machine_model }})">
                 {{ flowcell.sequencing_machine.vendor_id }}
               </a>
               </td>
             <td>
               <a href="{% url 'flowcell_view' uuid=flowcell.uuid %}"
                  title="Show flow cell {{ flowcell.vendor_id }} details">
-                {{ flowcell.vendor_id }}
+                {{ flowcell.vendor_id }} {% if flowcell.label %}({{ flowcell.label }}){% endif %}
               </a>
             </td>
             <td>
@@ -58,19 +82,8 @@
               {{ flowcell.operator }} /
               {{ flowcell.demux_operator|default:"-" }}
             </td>
-            <td>{{ flowcell.libraries.count }}</td>
-            <td class="text-right">
-              {% if flowcell.description %}
-                <i class="fa fa-comment-o" aria-hidden="true" title="{{ flowcell.description }}"></i>
-              {% endif %}
-              {% if flowcell.messages.all %}
-                <i class="fa fa-envelope-o" aria-hidden="true" title="{{ flowcell.messages.all|length }} message(s)"></i>
-              {% endif %}
-              {% if flowcell.count_files %}
-                <i class="fa fa-files-o" aria-hidden="true" title="{{ flowcell.count_files }} file(s)"></i>
-              {% endif %}
-            </td>
-            <td class="text-right">
+            <td class="text-right">{{ flowcell.libraries.count }}</td>
+            <td class="text-right" style="width:60px;">
               <div class="btn-group" role="group">
                 <button class="btn btn-secondary btn-sm dropdown-toggle"
                     type="button" data-toggle="dropdown"

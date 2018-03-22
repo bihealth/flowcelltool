@@ -6,6 +6,7 @@ History
 HEAD
 ----
 
+- Refactoring concept of flowcell state, splitting into sequencing/conversion/delivery.
 - Major refactoring of the UI and data models for automatization.
 - Refactoring API and adding tests for it.
   Note that the API is still unstable (shown by having version ``v0``), it will become properly versioned from ``v1`` on.

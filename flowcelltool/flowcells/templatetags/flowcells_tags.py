@@ -95,14 +95,22 @@ def flowcell_mode_ok(flowcell):
 @register.filter
 def status_to_icon(status):
     return {
-        'initial': 'fa fa-question text-muted',
-        'seq_running': 'fa fa-hourglass text-success',
-        'seq_complete': 'fa fa-hourglass-end text-success',
-        'seq_failed': 'fa fa-close text-danger',
-        'seq_release': 'fa fa-check text-success',
-        'demux_started': 'fa fa-hourglass text-muted',
-        'demux_failed': 'fa fa-close text-danger',
-        'demux_complete': 'fa fa-hourglass-end text-success',
-        'demux_delivered': 'fa fa-check text-success',
-        'bcl_delivered': 'fa fa-check text-success',
+        'initial': 'fa fa-hourglass-1 text-muted',
+        'in_progress': 'fa fa-hourglass-half',
+        'complete': 'fa fa-hourglass-end text-success',
+        'failed': 'fa fa-hourglass-end text-danger',
+        'closed': 'fa fa-check text-success',
+        'canceled': 'fa fa-close text-danger',
+    }.get(status)
+
+
+@register.filter
+def status_to_title(status):
+    return {
+        'initial': 'not started',
+        'in_progress': 'in progress',
+        'complete': 'complete (but unconfirmed)',
+        'failed': 'failed / canceled',
+        'closed': 'released confirmed',
+        'canceled': 'canceled confirmed',
     }.get(status)

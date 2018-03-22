@@ -179,7 +179,7 @@ class SequencingMachine(UuidStampedMixin, TimeStampedModel):
 
     def __str__(self):
         tpl = 'SequencingMachine({})'
-        vals = (self.vendor_id, self.label, self.description,
+        vals = (self.uuid, self.vendor_id, self.label, self.description,
                 self.machine_model, self.slot_count, self.dual_index_workflow)
         return tpl.format(', '.join(repr(v) for v in vals))
 
@@ -348,67 +348,68 @@ class BarcodeSetEntry(UuidStampedMixin, TimeStampedModel):
 
 # FlowCell and related -------------------------------------------------------
 
-#: Flow cell status key for initial state
-FLOWCELL_STATUS_INITIAL = 'initial'
+#: Status for "initial"/"not started"
+STATUS_INITIAL = 'initial'
 
-#: Flow cell status key for sequencing running
-FLOWCELL_STATUS_SEQ_RUNNING = 'seq_running'
+#: Status for "in progress"
+STATUS_IN_PROGRESS = 'in_progress'
 
-#: Flow cell status key for sequencing complete
-FLOWCELL_STATUS_SEQ_COMPLETE = 'seq_complete'
+#: Status for "complete" (automatic)
+STATUS_COMPLETE = 'complete'
 
-#: Flow cell status key for "sequencing complete and quality-controlled"
-FLOWCELL_STATUS_SEQ_RELEASED = 'seq_released'
+#: Status for "failed" (automatic)
+STATUS_FAILED = 'failed'
 
-#: Flow cell status key for sequencing failed
-FLOWCELL_STATUS_SEQ_FAILED = 'seq_failed'
+#: Status for closed/released/receival confirmed (by user)
+STATUS_CLOSED = 'closed'
 
-#: Flow cell status key for demultiplexing started
-FLOWCELL_STATUS_DEMUX_STARTED = 'demux_started'
+#: Status for confirmed failed/confirmed canceled (by user)
+STATUS_CANCELED = 'canceled'
 
-#: Flow cell status key for demultiplexing failed
-FLOWCELL_STATUS_DEMUX_FAILED = 'demux_failed'
+#: Statuses for sequencing
+SEQUENCING_STATUS_CHOICES = (
+    (STATUS_INITIAL, 'not started'),
+    (STATUS_IN_PROGRESS, 'in progress'),
+    (STATUS_COMPLETE, 'complete'),
+    (STATUS_CLOSED, 'released'),
+    (STATUS_FAILED, 'failed'),
+    (STATUS_CANCELED, 'failured confirmed'),
+)
 
-#: Flow cell status key for demultiplexing complete
-FLOWCELL_STATUS_DEMUX_COMPLETE = 'demux_complete'
+#: Statuses for base call to sequence conversion
+CONVERSION_STATUS_CHOICES = (
+    (STATUS_INITIAL, 'not started'),
+    (STATUS_IN_PROGRESS, 'in progress'),
+    (STATUS_COMPLETE, 'complete'),
+    (STATUS_FAILED, 'failed'),
+    (STATUS_CLOSED, 'released'),
+    (STATUS_CANCELED, 'failured confirmed'),
+)
 
-#: Flow cell status key for demultiplexing delivered
-FLOWCELL_STATUS_DEMUX_DELIVERED = 'demux_delivered'
+#: Statuses for delivery
+DELIVERY_STATUS_CHOICES = (
+    (STATUS_INITIAL, 'not started'),
+    (STATUS_IN_PROGRESS, 'in progress'),
+    (STATUS_COMPLETE, 'complete'),
+    (STATUS_CLOSED, 'received'),
+    (STATUS_FAILED, 'canceled'),
+    (STATUS_CANCELED, 'canceled confirmed'),
+)
 
-#: Flow cell status key for bcls delivered
-FLOWCELL_STATUS_BCL_DELIVERED = 'bcl_delivered'
+#: Delivery of sequences (FASTQ)
+DELIVERY_TYPE_SEQ = 'seq'
 
-#: Flow cell status choices
-FLOWCELL_STATUS_CHOICES = (
-    #: initial, known to the system but no sequencing or demultiplexing
-    #: happened yet
-    (FLOWCELL_STATUS_INITIAL, 'initial'),
-    #: sequencing has started
-    (FLOWCELL_STATUS_SEQ_RUNNING, 'sequencing running'),
-    #: sequencing complete, the files are completely written to the storage
-    #: volume
-    (FLOWCELL_STATUS_SEQ_COMPLETE, 'sequecing complete'),
-    #: sequencing complete as well as quality-controlled and approved by
-    #: the sequencing facility
-    (FLOWCELL_STATUS_SEQ_RELEASED, 'sequecing released'),
-    #: sequencing failed, possibly there are files but the sequencing has
-    #: not succeeded
-    (FLOWCELL_STATUS_SEQ_FAILED, 'sequencing failed'),
-    #: demultiplexing has been completed
-    (FLOWCELL_STATUS_DEMUX_COMPLETE, 'demultiplexing complete'),
-    #: demultiplexing has failed
-    (FLOWCELL_STATUS_DEMUX_FAILED, 'demultiplexing failed'),
-    #: demultiplexing running, the demultiplexing operator started filling
-    #: out the sample sheet in the flow cell tool and goes on running the
-    #: demultiplexing
-    (FLOWCELL_STATUS_DEMUX_STARTED, 'demultiplexing started'),
-    #: demultiplexed files have been moved to their final destination, either
-    #: in-house or to a customer/project partner, the raw base calls
-    #: might also be delivered
-    (FLOWCELL_STATUS_DEMUX_DELIVERED, 'demultiplexing results delivered'),
-    #: raw BCL files have been delivered without demultiplexing as requested
-    #: by the customer/project partner
-    (FLOWCELL_STATUS_BCL_DELIVERED, 'base calls delivered'),
+#: Delivery of base calls (BCL)
+DELIVERY_TYPE_BCL = 'bcl'
+
+#: Delivery of both sequences and base calls
+DELIVERY_TYPE_BOTH = 'seq_bcl'
+
+#: Delivery options
+DELIVERY_CHOICES = (
+    (DELIVERY_TYPE_SEQ, 'sequences'),
+    (DELIVERY_TYPE_BCL, 'base calls'),
+    (DELIVERY_TYPE_BOTH, 'sequences + base calls'),
 )
 
 
@@ -472,12 +473,6 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
     num_lanes = models.IntegerField(
         default=8,
         help_text='Number of lanes on flowcell 8 for HiSeq, 4 for NextSeq')
-
-    #: Status of the flow cell, as tracked with this app
-    status = models.CharField(
-        max_length=50, default=FLOWCELL_STATUS_INITIAL,
-        choices=FLOWCELL_STATUS_CHOICES,
-        help_text='Processing status of flow cell')
 
     #: Name of the sequencing machine operator
     operator = models.CharField(
@@ -543,6 +538,26 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
 
     #: Summary information on the raw quality scores as extracted from BCL data.
     info_quality_scores = JSONField(null=True, blank=True)
+
+    #: Status of sequencing
+    status_sequencing = models.CharField(
+        max_length=50, default=STATUS_INITIAL, choices=SEQUENCING_STATUS_CHOICES,
+        help_text='Choices for sequencing')
+
+    #: Status of base call to sequence conversion
+    status_conversion = models.CharField(
+        max_length=50, default=STATUS_INITIAL, choices=CONVERSION_STATUS_CHOICES,
+        help_text='Choices for sequencing')
+
+    #: Status of data delivery
+    status_delivery = models.CharField(
+        max_length=50, default=STATUS_INITIAL, choices=DELIVERY_STATUS_CHOICES,
+        help_text='Choices for sequencing')
+
+    #: What to deliver: sequences, base calls, or both.
+    delivery_type = models.CharField(
+        max_length=50, default=DELIVERY_TYPE_SEQ, choices=DELIVERY_CHOICES,
+        help_text='Choices for data delivery type')
 
     def get_full_name(self):
         """Return full flow cell name"""
@@ -670,9 +685,11 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
 
     def __repr__(self):
         tpl = 'FlowCell({})'
-        values = (self.run_date, self.sequencing_machine, self.run_number,
-                  self.slot, self.vendor_id, self.label, self.num_lanes,
-                  self.status, self.operator, self.rta_version)
+        values = (
+            self.uuid, self.run_date, self.sequencing_machine, self.run_number,
+            self.slot, self.vendor_id, self.label, self.num_lanes,
+            self.status_sequencing, self.status_conversion, self.status_delivery,
+            self.delivery_type, self.operator, self.rta_version)
         return tpl.format(', '.join(repr(v) for v in values))
 
 

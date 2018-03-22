@@ -1,5 +1,5 @@
+import json
 import logging
-
 import re
 
 from django.db import transaction
@@ -26,6 +26,7 @@ from . import models, forms, import_export
 from ..threads.views import MessageCreateView, MessageUpdateView, \
     MessageDeleteView
 from . import emails
+from .api_v1 import serializers
 
 
 LOGGER = logging.getLogger(__name__)
@@ -112,6 +113,24 @@ class SequencingMachineDeleteView(
     success_url = reverse_lazy('instrument_list')
 
 
+class SequencingMachineExportView(
+        LoginRequiredMixin, PermissionRequiredMixin, View):
+    """Exporting of sequencing machine objects to JSON"""
+
+    permission_required = 'flowcells.SequencingMachine:retrieve'
+
+    def get(self, request, *args, **kwargs):
+        sequencing_machine = get_object_or_404(
+            models.SequencingMachine, uuid=kwargs['uuid'])
+        serializer = serializers.SequencingMachineSerializer(sequencing_machine)
+        response = HttpResponse(
+            json.dumps(serializer.data, indent=4), content_type='text/json')
+        fname = re.sub('[^a-zA-Z0-9_-]', '_', sequencing_machine.vendor_id)
+        response['Content-Disposition'] = (
+            'attachment; filename="instrument_{}_{}.json"'.format(fname, sequencing_machine.uuid))
+        return response
+
+
 # SeqeuencingMachine Views ----------------------------------------------------
 
 
@@ -178,12 +197,12 @@ class BarcodeSetExportView(
     def get(self, request, *args, **kwargs):
         barcode_set = get_object_or_404(
             models.BarcodeSet, uuid=kwargs['uuid'])
-        dumper = import_export.BarcodeSetDumper()
-        response = HttpResponse(dumper.run(barcode_set),
-                                content_type='text/plain')
+        serializer = serializers.BarcodeSetSerializer(barcode_set)
+        response = HttpResponse(
+            json.dumps(serializer.data, indent=4), content_type='text/json')
         fname = re.sub('[^a-zA-Z0-9_-]', '_', barcode_set.name)
         response['Content-Disposition'] = (
-            'attachment; filename="barcode_set_{}.json"'.format(fname))
+            'attachment; filename="barcode_set_{}_{}.json"'.format(fname, barcode_set.uuid))
         return response
 
 
@@ -421,14 +440,14 @@ class FlowCellExportView(
     permission_required = 'flowcells.FlowCell:retrieve'
 
     def get(self, request, *args, **kwargs):
-        flow_cell = get_object_or_404(
+        flowcell = get_object_or_404(
             models.FlowCell, uuid=kwargs['uuid'])
-        dumper = import_export.FlowCellDumper()
-        response = HttpResponse(dumper.run(flow_cell),
-                                content_type='text/plain')
-        response['Content-Disposition'] = (
-            'attachment; filename="flowcell_{}.json"'.format(
-                flow_cell.vendor_id))
+        serializer = serializers.FlowCellSerializer(flowcell)
+        response = HttpResponse(
+            json.dumps(serializer.data, indent=4), content_type='text/json')
+        fname = re.sub('[^a-zA-Z0-9_-]', '_', flowcell.get_full_name())
+        # response['Content-Disposition'] = (
+        #     'attachment; filename="instrument_{}_{}.json"'.format(fname, flowcell.uuid))
         return response
 
 

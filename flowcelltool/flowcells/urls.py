@@ -36,6 +36,11 @@ urlpatterns = [
         view=views.SequencingMachineDeleteView.as_view(),
         name='instrument_delete',
     ),
+    url(
+        regex=r'^instrument/export/(?P<uuid>\S+)/$',
+        view=views.SequencingMachineExportView.as_view(),
+        name='instrument_export',
+    ),
 
     # BarcodeSet related ------------------------------------------------------
     url(
