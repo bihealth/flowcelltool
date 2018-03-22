@@ -98,13 +98,13 @@ def flowcell_mode_ok(flowcell):
 @register.filter
 def status_to_icon(status):
     return {
-        'initial': 'fa fa-hourglass-1 text-muted',
-        'in_progress': 'fa fa-hourglass-half',
-        'complete': 'fa fa-hourglass-end text-success',
-        'failed': 'fa fa-hourglass-end text-danger',
-        'closed': 'fa fa-check text-success',
-        'canceled': 'fa fa-close text-danger',
-        'skipped': 'fa fa-minus text-muted',
+        'initial': 'fa fc-fw fa-hourglass-1 text-muted',
+        'in_progress': 'fc-fw fa fa-hourglass-half',
+        'complete': 'fa fc-fw fa-hourglass-end text-success',
+        'failed': 'fa fc-fw fa-hourglass-end text-danger',
+        'closed': 'fa fc-fw fa-check text-success',
+        'canceled': 'fa fc-fw fa-close text-danger',
+        'skipped': 'fa fc-fw fa-minus text-muted',
     }.get(status)
 
 

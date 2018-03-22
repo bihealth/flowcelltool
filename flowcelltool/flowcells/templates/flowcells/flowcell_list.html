@@ -30,11 +30,11 @@
           <tr>
             <td style="white-space:nowrap;">
               {% if not flowcell|flowcell_mode_ok %}
-                <i class="fa fa-flag text-danger" aria-hidden="true"
+                <i class="fa fc-fw fa-flag text-danger" aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="Actual read configuration ({{ flowcell.info_final_reads|flow_cell_mode }}) different from planned ({{  flowcell.info_planned_reads|flow_cell_mode }})"></i>
               {% else %}
-                <i class="fa fa-flag-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+                <i class="fa fc-fw fa-flag-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
               <i class="{{ flowcell.status_sequencing|status_to_icon }}"
                  data-toggle="popover" data-placement="top"
@@ -53,51 +53,51 @@
                  data-content="{% get_status_form flowcell "delivery" csrf_token|escape %}"
               ></i>
               {% if flowcell.delivery_type == "seq" %}
-                <i class="fa fa-file-text-o" aria-hidden="true"
+                <i class="fa fc-fw fa-file-text-o" aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="Convert base calls to sequences"
                 ></i>
-                <i class="fa fa-file-archive-o" aria-hidden="true"
+                <i class="fa fc-fw fa-file-archive-o" aria-hidden="true"
                    style="opacity: 0;"
                 ></i>
               {% elif flowcell.delivery_type == "bcl" %}
-                <i class="fa fa-file-text-o"
+                <i class="fa fc-fw fa-file-text-o"
                    style="opacity: 0;"
                 ></i>
-                <i class="fa fa-file-archive-o"
+                <i class="fa fc-fw fa-file-archive-o"
                    aria-hidden="true" data-toggle="tooltip" data-placement="top"
                    title="Create raw base call archives"
                 ></i>
               {% else %}
-                <i class="fa fa-file-text-o"
+                <i class="fa fc-fw fa-file-text-o"
                    aria-hidden="true" data-toggle="tooltip" data-placement="top"
                    title="Convert base calls to sequences"
                 ></i>
-                <i class="fa fa-file-archive-o"
+                <i class="fa fc-fw fa-file-archive-o"
                    aria-hidden="true" data-toggle="tooltip" data-placement="top"
                    title="Create raw base call archives"
                 ></i>
               {% endif %}
               {% if flowcell.description %}
-                <i class="fa fa-comment-o"  aria-hidden="true"
+                <i class="fa fc-fw fa-comment-o"  aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="{{ flowcell.description }}"></i>
               {% else %}
-                <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+                <i class="fa fc-fw fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
               {% if flowcell.messages.all %}
-                <i class="fa fa-envelope-o" aria-hidden="true"
+                <i class="fa fc-fw fa-envelope-o" aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="{{ flowcell.messages.all|length }} message(s)"></i>
               {% else %}
-                <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+                <i class="fa fc-fw fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
               {% if flowcell.count_files %}
-                <i class="fa fa-files-o" aria-hidden="true"
+                <i class="fa fc-fw fa-files-o" aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="{{ flowcell.count_files }} file(s)"></i>
               {% else %}
-                <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+                <i class="fa fc-fw fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
             </td>
             <td>{{ flowcell.run_date|date:"y/m/d" }}</td>
