@@ -13,7 +13,7 @@
     {% include "flowcells/_flowcell_list_buttons.html" %}
   {% endif %}
 
-    <table class="table table-hover table-striped table-sm">
+      <table class="table table-hover table-striped table-sm">
       <thead>
         <tr>
           <th class="col-1 text-center">Flags/Status</th>
@@ -30,34 +30,46 @@
           <tr>
             <td style="white-space:nowrap;">
               {% if not flowcell|flowcell_mode_ok %}
-                <i class="fa fa-flag text-danger" aria-hidden="true" title="Actual read configuration ({{ flowcell.info_final_reads|flow_cell_mode }}) different from planned ({{  flowcell.info_planned_reads|flow_cell_mode }})"></i>
+                <i class="fa fa-flag text-danger" aria-hidden="true"
+                   data-toggle="tooltip" data-placement="top"
+                   title="Actual read configuration ({{ flowcell.info_final_reads|flow_cell_mode }}) different from planned ({{  flowcell.info_planned_reads|flow_cell_mode }})"></i>
               {% else %}
                 <i class="fa fa-flag-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
-              <i
-                class="{{ flowcell.status_sequencing|status_to_icon }}"
-                title="Sequencing {{ flowcell.status_sequencing|status_to_title }}"
+              <i class="{{ flowcell.status_sequencing|status_to_icon }}"
+                 data-toggle="popover" data-placement="top"
+                 data-title="Sequencing Status" data-html="true"
+                 data-content="{% get_status_form flowcell "sequencing" csrf_token|escape %}"
               ></i>
-              <i
-                class="{{ flowcell.status_conversion|status_to_icon }}"
-                title="Base-call to sequence conversion {{ flowcell.status_conversion|status_to_title }}"
+              <i class="{{ flowcell.status_conversion|status_to_icon }}"
+                 data-toggle="popover" data-placement="top"
+                 data-title="Conversion Status" data-html="true"
+                 data-content="{% get_status_form flowcell "conversion" csrf_token|escape %}"
               ></i>
               <i
                 class="{{ flowcell.status_delivery|status_to_icon }}"
-                title="Delivery {{ flowcell.status_delivery|status_to_title }}"
+                 data-toggle="popover" data-placement="top"
+                 data-title="Delivery Status" data-html="true"
+                 data-content="{% get_status_form flowcell "delivery" csrf_token|escape %}"
               ></i>
               {% if flowcell.description %}
-                <i class="fa fa-comment-o" aria-hidden="true" title="{{ flowcell.description }}"></i>
+                <i class="fa fa-comment-o"  aria-hidden="true"
+                   data-toggle="tooltip" data-placement="top"
+                   title="{{ flowcell.description }}"></i>
               {% else %}
                 <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
               {% if flowcell.messages.all %}
-                <i class="fa fa-envelope-o" aria-hidden="true" title="{{ flowcell.messages.all|length }} message(s)"></i>
+                <i class="fa fa-envelope-o" aria-hidden="true"
+                   data-toggle="tooltip" data-placement="top"
+                   title="{{ flowcell.messages.all|length }} message(s)"></i>
               {% else %}
                 <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
               {% if flowcell.count_files %}
-                <i class="fa fa-files-o" aria-hidden="true" title="{{ flowcell.count_files }} file(s)"></i>
+                <i class="fa fa-files-o" aria-hidden="true"
+                   data-toggle="tooltip" data-placement="top"
+                   title="{{ flowcell.count_files }} file(s)"></i>
               {% else %}
                 <i class="fa fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
               {% endif %}
@@ -183,3 +195,11 @@
   {% endif %}
 
 {% endblock content %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $('[data-toggle="popover"]').popover({
+      container: 'body'
+    });
+  </script>
+{% endblock javascript %}

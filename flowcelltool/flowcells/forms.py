@@ -234,6 +234,21 @@ class LibrariesPrefillForm(forms.Form):
         queryset=models.BarcodeSet.objects.order_by('name').all())
 
 
+class FlowCellUpdateStatusForm(forms.Form):
+    """Helper form for updating the status."""
+
+    attribute = forms.ChoiceField(
+        required=True,
+        choices=tuple(zip(
+            ('sequencing', 'conversion', 'delivery'),
+            ('sequencing', 'conversion', 'delivery'))))
+    status = forms.ChoiceField(
+        required=True,
+        choices=tuple(zip(
+            ('initial', 'complete', 'failed', 'closed', 'canceled'),
+            ('initial', 'complete', 'failed', 'closed', 'canceled'))))
+
+
 # Library multi-edit related -------------------------------------------------
 
 #: Number of additional barcode set entry forms (= table rows) to create

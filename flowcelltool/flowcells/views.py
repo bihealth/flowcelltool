@@ -4,14 +4,15 @@ import re
 
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect
 from django.views import View
 from django.views.generic import TemplateView
+from django.views.generic.base import View
 from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.views.generic.edit import (
     CreateView, UpdateView, DeleteView, FormView)
 from django.db import IntegrityError
@@ -415,6 +416,35 @@ class FlowCellUpdateView(
         return result
 
 
+class FlowCellUpdateStatusView(
+        LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, SingleObjectMixin, View):
+    """Show the view for updating a flow cell"""
+
+    permission_required = 'flowcells.FlowCell:update'
+
+    #: The model type to create
+    model = models.FlowCell
+
+    def post(self, request, uuid, *args, **kwargs):
+        f = forms.FlowCellUpdateStatusForm(request.POST)
+        if f.is_valid():
+            import sys; print('IS VALID!', file=sys.stderr)
+            with transaction.atomic():
+                flowcell = get_object_or_404(models.FlowCell, uuid=uuid)
+                if not request.user.has_perm('flowcells.FlowCell:update', self):
+                    pass
+                if f.cleaned_data['attribute'] == 'sequencing':
+                    flowcell.status_sequencing = f.cleaned_data['status']
+                elif f.cleaned_data['attribute'] == 'conversion':
+                    flowcell.status_sequencing = f.cleaned_data['status']
+                elif f.cleaned_data['attribute'] == 'delivery':
+                    flowcell.status_sequencing = f.cleaned_data['status']
+                flowcell.save()
+        else:
+            import sys; print('errors', f.errors, file=sys.stderr)
+        return redirect(request.META['HTTP_REFERER'] or reverse('flowcell_list'))
+
+
 class FlowCellDeleteView(
         LoginRequiredMixin, PermissionRequiredMixin, UuidViewMixin, DeleteView):
     """View for deleting flow cell"""
@@ -442,7 +472,7 @@ class FlowCellExportView(
     def get(self, request, *args, **kwargs):
         flowcell = get_object_or_404(
             models.FlowCell, uuid=kwargs['uuid'])
-        serializer = serializers.FlowCellSerializer(flowcell)
+        serializer = serializers.FlowCellSerializer(flowcell, context={'request': request})
         response = HttpResponse(
             json.dumps(serializer.data, indent=4), content_type='text/json')
         fname = re.sub('[^a-zA-Z0-9_-]', '_', flowcell.get_full_name())

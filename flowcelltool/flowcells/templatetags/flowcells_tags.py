@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """Custom template tags for the flowcells app"""
+import textwrap
+
+from django.shortcuts import reverse
 from django import template
 from django.contrib.auth.models import Group
 
@@ -114,3 +117,22 @@ def status_to_title(status):
         'closed': 'released confirmed',
         'canceled': 'canceled confirmed',
     }.get(status)
+
+
+@register.simple_tag
+def get_status_form(flowcell, attribute, csrf_tag):
+    tpl = textwrap.dedent(r"""
+        <form action="{action}" method="post">
+          <p class="text-center">
+            Set status to
+          </p>
+          <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_tag}" />
+          <input type="hidden" name="attribute" value="{attribute}" />
+          <button type="submit" name="status" value="closed" class="btn btn-sm btn-success">Succeeded</button>
+          <button type="submit" name="status" value="canceled" class="btn btn-sm btn-danger">Failed</button>
+        </form>
+    """)
+    return tpl.format(
+        action=reverse('flowcell_update_status', kwargs={'uuid': flowcell.uuid}),
+        attribute=attribute,
+        csrf_tag=csrf_tag)

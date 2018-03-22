@@ -106,6 +106,11 @@ urlpatterns = [
         name='flowcell_update',
     ),
     url(
+        regex=r'^flowcell/update_status/(?P<uuid>\S+)/$',
+        view=views.FlowCellUpdateStatusView.as_view(),
+        name='flowcell_update_status',
+    ),
+    url(
         regex=r'^flowcell/updatelibraries/(?P<uuid>\S+)/$',
         view=views.LibraryUpdateView.as_view(),
         name='flowcell_updatelibraries',

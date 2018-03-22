@@ -6,6 +6,7 @@ History
 HEAD
 ----
 
+- Adding UI for fast status updates.
 - Refactoring concept of flowcell state, splitting into sequencing/conversion/delivery.
 - Major refactoring of the UI and data models for automatization.
 - Refactoring API and adding tests for it.
