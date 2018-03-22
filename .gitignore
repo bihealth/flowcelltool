@@ -1,5 +1,8 @@
 ansible/inventory
 
+# Static files on deployment.
+staticfiles
+
 ### OSX ###
 .DS_Store
 .AppleDouble
