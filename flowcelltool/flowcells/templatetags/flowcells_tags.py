@@ -123,8 +123,8 @@ def status_to_title(status):
 def get_status_form(flowcell, attribute, csrf_tag):
     tpl = textwrap.dedent(r"""
         <form action="{action}" method="post">
-          <p class="text-center">
-            Set status to
+          <p>
+            Use the buttons below to set the human-confirmed flow cell status.
           </p>
           <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_tag}" />
           <input type="hidden" name="attribute" value="{attribute}" />

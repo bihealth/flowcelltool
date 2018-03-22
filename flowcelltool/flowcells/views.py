@@ -5,7 +5,7 @@ import re
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect
 from django.views import View
@@ -428,7 +428,6 @@ class FlowCellUpdateStatusView(
     def post(self, request, uuid, *args, **kwargs):
         f = forms.FlowCellUpdateStatusForm(request.POST)
         if f.is_valid():
-            import sys; print('IS VALID!', file=sys.stderr)
             with transaction.atomic():
                 flowcell = get_object_or_404(models.FlowCell, uuid=uuid)
                 if not request.user.has_perm('flowcells.FlowCell:update', self):
@@ -436,12 +435,14 @@ class FlowCellUpdateStatusView(
                 if f.cleaned_data['attribute'] == 'sequencing':
                     flowcell.status_sequencing = f.cleaned_data['status']
                 elif f.cleaned_data['attribute'] == 'conversion':
-                    flowcell.status_sequencing = f.cleaned_data['status']
+                    flowcell.status_conversion = f.cleaned_data['status']
                 elif f.cleaned_data['attribute'] == 'delivery':
-                    flowcell.status_sequencing = f.cleaned_data['status']
+                    flowcell.status_delivery = f.cleaned_data['status']
+                else:
+                    return HttpResponseServerError('Invalid form data')
                 flowcell.save()
         else:
-            import sys; print('errors', f.errors, file=sys.stderr)
+            return HttpResponseServerError('Invalid form data')
         return redirect(request.META['HTTP_REFERER'] or reverse('flowcell_list'))
 
 

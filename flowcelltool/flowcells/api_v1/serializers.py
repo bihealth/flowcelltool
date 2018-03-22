@@ -42,10 +42,10 @@ class FlowCellMessageSerializer(serializers.ModelSerializer):
 
 
 class LibrarySerializer(serializers.ModelSerializer):
-    barcode_set = serializers.UUIDField(source='barcode_set.uuid')
-    barcode = serializers.UUIDField(source='barcode.uuid')
-    barcode_set2 = serializers.UUIDField(source='barcode_set2.uuid')
-    barcode2 = serializers.UUIDField(source='barcode2.uuid')
+    barcode_set = serializers.UUIDField(source='barcode_set.uuid', default=None)
+    barcode = serializers.UUIDField(source='barcode.uuid', default=None)
+    barcode_set2 = serializers.UUIDField(source='barcode_set2.uuid', default=None)
+    barcode2 = serializers.UUIDField(source='barcode2.uuid', default=None)
 
     class Meta:
         model = Library
