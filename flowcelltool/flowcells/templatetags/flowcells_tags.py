@@ -104,6 +104,7 @@ def status_to_icon(status):
         'failed': 'fa fa-hourglass-end text-danger',
         'closed': 'fa fa-check text-success',
         'canceled': 'fa fa-close text-danger',
+        'skipped': 'fa fa-minus text-muted',
     }.get(status)
 
 
@@ -116,6 +117,7 @@ def status_to_title(status):
         'failed': 'failed / canceled',
         'closed': 'released confirmed',
         'canceled': 'canceled confirmed',
+        'skipped': 'skipped or N/A',
     }.get(status)
 
 

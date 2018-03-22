@@ -366,6 +366,9 @@ STATUS_CLOSED = 'closed'
 #: Status for confirmed failed/confirmed canceled (by user)
 STATUS_CANCELED = 'canceled'
 
+#: Status for "skipped" (only used for conversion)
+STATUS_SKIPPED = 'skipped'
+
 #: Statuses for sequencing
 SEQUENCING_STATUS_CHOICES = (
     (STATUS_INITIAL, 'not started'),
@@ -384,6 +387,7 @@ CONVERSION_STATUS_CHOICES = (
     (STATUS_FAILED, 'failed'),
     (STATUS_CLOSED, 'released'),
     (STATUS_CANCELED, 'failured confirmed'),
+    (STATUS_SKIPPED, 'skipped'),
 )
 
 #: Statuses for delivery

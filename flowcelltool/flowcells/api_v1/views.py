@@ -98,13 +98,14 @@ class FlowCellViewSet(
             msg = Message.objects.create(
                 author=request.user,
                 content_type=ContentType.objects.get_for_model(flowcell),
-                object_id=flowcell.uuid,
+                object_id=flowcell.pk,
                 title=request.data.get('title'),
                 body=request.data.get('body'))
-            for f in request.data.getlist('attachments'):
-                msg.attachments.create(payload=f)
+            if 'attachments' in request.data:
+                for f in request.data.getlist('attachments'):
+                    msg.attachments.create(payload=f)
         return HttpResponseRedirect(redirect_to=reverse(
-            'flowcell-detail', kwargs={'uuid': uuid}, request=request))
+            'api_v1:flowcell-detail', kwargs={'uuid': uuid}, request=request))
 
 
 # Message API Views -----------------------------------------------------------

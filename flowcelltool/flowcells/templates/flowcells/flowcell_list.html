@@ -52,6 +52,32 @@
                  data-title="Delivery Status" data-html="true"
                  data-content="{% get_status_form flowcell "delivery" csrf_token|escape %}"
               ></i>
+              {% if flowcell.delivery_type == "seq" %}
+                <i class="fa fa-file-text-o" aria-hidden="true"
+                   data-toggle="tooltip" data-placement="top"
+                   title="Convert base calls to sequences"
+                ></i>
+                <i class="fa fa-file-archive-o" aria-hidden="true"
+                   style="opacity: 0;"
+                ></i>
+              {% elif flowcell.delivery_type == "bcl" %}
+                <i class="fa fa-file-text-o"
+                   style="opacity: 0;"
+                ></i>
+                <i class="fa fa-file-archive-o"
+                   aria-hidden="true" data-toggle="tooltip" data-placement="top"
+                   title="Create raw base call archives"
+                ></i>
+              {% else %}
+                <i class="fa fa-file-text-o"
+                   aria-hidden="true" data-toggle="tooltip" data-placement="top"
+                   title="Convert base calls to sequences"
+                ></i>
+                <i class="fa fa-file-archive-o"
+                   aria-hidden="true" data-toggle="tooltip" data-placement="top"
+                   title="Create raw base call archives"
+                ></i>
+              {% endif %}
               {% if flowcell.description %}
                 <i class="fa fa-comment-o"  aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
@@ -84,7 +110,7 @@
             <td>
               <a href="{% url 'flowcell_view' uuid=flowcell.uuid %}"
                  title="Show flow cell {{ flowcell.vendor_id }} details">
-                {{ flowcell.vendor_id }} {% if flowcell.label %}({{ flowcell.label }}){% endif %}
+                {{ flowcell.vendor_id }} {% if flowcell.label %} <span class="text-mutexd">{{ flowcell.label }}</span>{% endif %}
               </a>
             </td>
             <td>
