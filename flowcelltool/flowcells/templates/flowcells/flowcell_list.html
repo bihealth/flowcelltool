@@ -34,9 +34,9 @@
                    data-toggle="tooltip" data-placement="top"
                    title="Actual read configuration ({{ flowcell.info_final_reads|flow_cell_mode }}) different from planned ({{  flowcell.info_planned_reads|flow_cell_mode }})"></i>
               {% else %}
-                <i class="fa fc-fw fa-flag-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+                <i class="fa fc-fw fa-flag-o text-muted" aria-hidden="true" style="opacity: 0.3;"></i>
               {% endif %}
-              <i class="{{ flowcell.status_sequencing|status_to_icon }}"
+              <i class="ml-3 {{ flowcell.status_sequencing|status_to_icon }}"
                  data-toggle="popover" data-placement="top"
                  data-title="Sequencing Status" data-html="true"
                  data-content="{% get_status_form flowcell "sequencing" csrf_token|escape %}"
@@ -53,23 +53,27 @@
                  data-content="{% get_status_form flowcell "delivery" csrf_token|escape %}"
               ></i>
               {% if flowcell.delivery_type == "seq" %}
-                <i class="fa fc-fw fa-file-text-o" aria-hidden="true"
+                <i class="ml-3 fa fc-fw fa-file-text-o" aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="Convert base calls to sequences"
                 ></i>
-                <i class="fa fc-fw fa-file-archive-o" aria-hidden="true"
-                   style="opacity: 0;"
+                <i class="fa fc-fw fa-file-archive-o text-muted" aria-hidden="true"
+                   data-toggle="tooltip" data-placement="top"
+                   title="DO NOT create raw base call archives"
+                   style="opacity: 0.3"
                 ></i>
               {% elif flowcell.delivery_type == "bcl" %}
-                <i class="fa fc-fw fa-file-text-o"
-                   style="opacity: 0;"
+                <i class="ml-3 fa fc-fw fa-file-text-o text-muted"
+                   data-toggle="tooltip" data-placement="top"
+                   title="DO NOT convert base calls to sequences"
+                   style="opacity: 0.3"
                 ></i>
                 <i class="fa fc-fw fa-file-archive-o"
                    aria-hidden="true" data-toggle="tooltip" data-placement="top"
                    title="Create raw base call archives"
                 ></i>
               {% else %}
-                <i class="fa fc-fw fa-file-text-o"
+                <i class="ml-3 fa fc-fw fa-file-text-o"
                    aria-hidden="true" data-toggle="tooltip" data-placement="top"
                    title="Convert base calls to sequences"
                 ></i>
@@ -79,25 +83,25 @@
                 ></i>
               {% endif %}
               {% if flowcell.description %}
-                <i class="fa fc-fw fa-comment-o"  aria-hidden="true"
+                <i class="ml-3 fa fc-fw fa-comment-o"  aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="{{ flowcell.description }}"></i>
               {% else %}
-                <i class="fa fc-fw fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+                <i class="ml-3 fa fc-fw fa-comment-o text-muted" aria-hidden="true" style="opacity: 0.3;"></i>
               {% endif %}
               {% if flowcell.messages.all %}
                 <i class="fa fc-fw fa-envelope-o" aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="{{ flowcell.messages.all|length }} message(s)"></i>
               {% else %}
-                <i class="fa fc-fw fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+                <i class="fa fc-fw fa-envelope-o text-muted" aria-hidden="true" style="opacity: 0.3;"></i>
               {% endif %}
               {% if flowcell.count_files %}
-                <i class="fa fc-fw fa-files-o" aria-hidden="true"
+                <i class="fa fc-fw fa-files-o mr-3" aria-hidden="true"
                    data-toggle="tooltip" data-placement="top"
                    title="{{ flowcell.count_files }} file(s)"></i>
               {% else %}
-                <i class="fa fc-fw fa-square-o text-muted" aria-hidden="true" style="opacity: 0;"></i>
+                <i class="fa fc-fw fa-files-o text-muted mr-3" aria-hidden="true" style="opacity: 0.3;"></i>
               {% endif %}
             </td>
             <td>{{ flowcell.run_date|date:"y/m/d" }}</td>
@@ -110,7 +114,7 @@
             <td>
               <a href="{% url 'flowcell_view' uuid=flowcell.uuid %}"
                  title="Show flow cell {{ flowcell.vendor_id }} details">
-                {{ flowcell.vendor_id }} {% if flowcell.label %} <span class="text-mutexd">{{ flowcell.label }}</span>{% endif %}
+                {{ flowcell.vendor_id }} {% if flowcell.label %} <small class="text-muted text-small">{{ flowcell.label }}</small>{% endif %}
               </a>
             </td>
             <td>
