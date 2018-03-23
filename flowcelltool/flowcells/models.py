@@ -398,6 +398,7 @@ DELIVERY_STATUS_CHOICES = (
     (STATUS_CLOSED, 'received'),
     (STATUS_FAILED, 'canceled'),
     (STATUS_CANCELED, 'canceled confirmed'),
+    (STATUS_SKIPPED, 'skipped'),
 )
 
 #: Delivery of sequences (FASTQ)
