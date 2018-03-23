@@ -2,9 +2,9 @@
 History
 =======
 
-----
-HEAD
-----
+------
+v0.3.0
+------
 
 - Adding UI for fast status updates.
 - Refactoring concept of flowcell state, splitting into sequencing/conversion/delivery.
