@@ -125,16 +125,29 @@ def status_to_title(status):
 def get_status_form(flowcell, attribute, csrf_tag):
     tpl = textwrap.dedent(r"""
         <form action="{action}" method="post">
-          <p>
-            Use the buttons below to set the human-confirmed flow cell status.
-          </p>
           <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_tag}" />
           <input type="hidden" name="attribute" value="{attribute}" />
-          <button type="submit" name="status" value="closed" class="btn btn-sm btn-success">Succeeded</button>
-          <button type="submit" name="status" value="canceled" class="btn btn-sm btn-danger">Failed</button>
+            <button type="submit" name="status" value="initial" class="list-group-item list-group-item-action list-group-item-light p-2">
+                <i class="fa fa-fw fa-hourglass-1"></i>
+                clear state
+            </button>
+            <button type="submit" name="status" value="canceled" class="list-group-item list-group-item-action list-group-item-danger p-2">
+                <i class="fa fa-fw fa-close"></i>
+                confirm failure
+            </button>
+            <button type="submit" name="status" value="closed" class="list-group-item list-group-item-action list-group-item-success p-2">
+                <i class="fa fa-fw fa-check"></i>
+                confirm success
+            </button>
+            <button type="submit" name="status" value="skipped" class="list-group-item list-group-item-action list-group-item-secondary p-2">
+                <i class="fa fa-fw fa-minus"></i>
+                mark skipped
+            </button>
+          </div>
         </form>
     """)
     return tpl.format(
+        flowcell=flowcell,
         action=reverse('flowcell_update_status', kwargs={'uuid': flowcell.uuid}),
         attribute=attribute,
         csrf_tag=csrf_tag)

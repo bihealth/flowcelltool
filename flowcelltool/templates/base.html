@@ -236,7 +236,19 @@
       {% block javascript %}{% endblock javascript %}
       <script type="text/javascript">
         $(function () {
-          $('[data-toggle="tooltip"]').tooltip()
+          $('[data-toggle*="tooltip"]').each(function() {
+            $(this).tooltip({
+              content: $(this).attr('title'),
+              placement: $(this).attr('data-tooltip-placement') || 'top'
+            })
+          })
+          $('[data-toggle*="popover"]').each(function() {
+            $(this).popover({
+              title: $(this).attr('data-popover-title'),
+              content: $(this).attr('data-popover-content'),
+              placement: $(this).attr('data-popover-placement') || 'bottom'
+            })
+          })
         })
       </script>
     </div> <!-- /omics-base-container -->
