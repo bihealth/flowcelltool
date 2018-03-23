@@ -98,7 +98,7 @@ def flowcell_mode_ok(flowcell):
 @register.filter
 def status_to_icon(status):
     return {
-        'initial': 'fa fc-fw fa-hourglass-1 text-muted',
+        'initial': 'fa fc-fw fa-hourglass-1 text-muted fc-super-muted',
         'in_progress': 'fc-fw fa fa-hourglass-half',
         'complete': 'fa fc-fw fa-hourglass-end text-success',
         'failed': 'fa fc-fw fa-hourglass-end text-danger',

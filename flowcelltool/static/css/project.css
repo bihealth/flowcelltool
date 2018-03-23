@@ -8,6 +8,10 @@
      background-color:rgba(0,0,0,0) !important;
 }
 
+.fc-super-muted {
+  opacity: 0.3;
+}
+
 /* These styles are generated from project.scss. */
 
 .alert-debug {
