@@ -6,6 +6,7 @@ History
 HEAD
 ----
 
+- Adding run number to flowcell list.
 - Fixing flow cell order.
 - Fixing bug in flow cell list.
 - Changing API ``flowcell/by_vendor_id`` to ``flowcell_resolve``.

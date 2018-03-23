@@ -19,7 +19,8 @@
           <th class="col-1 text-center">Flags/Status</th>
           <th class="col-1">Date</th>
           <th class="col-1">Instrument</th>
-          <th class="col-5">Flow Cell</th>
+          <th class="col-1">Run</th>
+          <th class="col-4">Flow Cell</th>
           <th class="col-1">Mode</th>
           <th class="col-3">Seq./Demux. Operator</th>
           <th class="col-1" colspan="2">Libraries</th>
@@ -129,7 +130,10 @@
                  title="{{ flowcell.sequencing_machine.vendor_id }}: {{ flowcell.sequencing_machine.machine_model }}">
                 {{ flowcell.sequencing_machine.vendor_id }}
               </a>
-              </td>
+            </td>
+            <td class="text-right">
+              {{  flowcell.run_number }}
+            </td>
             <td>
               <a href="{% url 'flowcell_view' uuid=flowcell.uuid %}"
                  title="Show flow cell {{ flowcell.vendor_id }} details">
