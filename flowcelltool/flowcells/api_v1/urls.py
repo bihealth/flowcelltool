@@ -12,9 +12,9 @@ urlpatterns = [
 
 urlpatterns += [
     url(
-        regex=r'^flowcell/by_vendor_id/(?P<vendor_id>.+)/$',
-        view=views.FlowCellViewSet.as_view({'get': 'by_vendor_id'}),
-        name='flowcell-by-vendor-id',
+        regex=r'^flowcell/resolve/(?P<instrument_id>.+)/(?P<run_no>.+)/(?P<flowcell_id>.+)/$',
+        view=views.FlowCellViewSet.as_view({'get': 'resolve'}),
+        name='flowcell-resolve',
     ),
     url(
         regex=r'^sequencingmachine/by_vendor_id/(?P<vendor_id>.+)/$',

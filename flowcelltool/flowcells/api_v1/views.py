@@ -67,8 +67,10 @@ class FlowCellViewSet(
     queryset = FlowCell.objects.all()
     serializer_class = FlowCellSerializer
 
-    def by_vendor_id(self, request, vendor_id=None):
-        flowcell = get_object_or_404(self.queryset, vendor_id=vendor_id)
+    def resolve(self, request, instrument_id, run_no, flowcell_id):
+        flowcell = get_object_or_404(
+            self.queryset, sequencing_machine__vendor_id=instrument_id, run_number=run_no,
+            vendor_id=flowcell_id)
         # Because this does not fit list_route or detail_route, we have to check permissions
         # manually.
         self.check_object_permissions(request, flowcell)

@@ -120,7 +120,7 @@ rules.add_perm('flowcells.FlowCell:list',
 rules.add_perm('flowcells.FlowCell:retrieve',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)
-rules.add_perm('flowcells.FlowCell:by_vendor_id',
+rules.add_perm('flowcells.FlowCell:resolve',
                is_guest | is_instrument_operator | is_demux_operator |
                is_demux_admin | is_import_bot | rules.is_superuser)
 rules.add_perm('flowcells.FlowCell:sample_sheet',

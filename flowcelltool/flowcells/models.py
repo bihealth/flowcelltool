@@ -672,9 +672,9 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
         """Special action for building sample sheet, same as retrieve."""
         return request.user.has_perm('flowcells.FlowCell:sample_sheet', self)
 
-    def has_object_by_vendor_id_permission(self, request):
+    def has_object_resolve_permission(self, request):
         """Special action for querying by vendor id, same as retrieve."""
-        return request.user.has_perm('flowcells.FlowCell:by_vendor_id', self)
+        return request.user.has_perm('flowcells.FlowCell:resolve', self)
 
     def has_object_update_permission(self, request):
         return request.user.has_perm('flowcells.FlowCell:update', self)

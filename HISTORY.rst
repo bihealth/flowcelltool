@@ -2,6 +2,12 @@
 History
 =======
 
+----
+HEAD
+----
+
+- Changing API ``flowcell/by_vendor_id`` to ``flowcell_resolve``.
+
 ------
 v0.3.0
 ------
