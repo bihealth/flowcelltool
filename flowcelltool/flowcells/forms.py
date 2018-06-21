@@ -185,7 +185,7 @@ class FlowCellForm(forms.ModelForm):
     class Meta:
         model = models.FlowCell
 
-        fields = ('name', 'description', 'num_lanes', 'operator', 'demux_operator',
+        fields = ('name', 'manual_label', 'description', 'num_lanes', 'operator', 'demux_operator',
                   'rta_version', 'status_sequencing', 'status_conversion', 'status_delivery',
                   'delivery_type')
 

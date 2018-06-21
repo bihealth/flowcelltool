@@ -6,6 +6,7 @@ History
 HEAD
 ----
 
+- Adding ``manual_label`` to ``FlowCell`` (#147).
 - Adding run number to flowcell list.
 - Fixing flow cell order.
 - Fixing bug in flow cell list.

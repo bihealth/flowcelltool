@@ -466,6 +466,13 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
     #: The label of the flow cell
     label = models.CharField(blank=True, null=True, max_length=100)
 
+    #: Manual override for the flow cell label.
+    manual_label = models.CharField(
+        blank=True,
+        null=True,
+        max_length=100,
+        help_text='Manual label for overriding the one from the folder name')
+
     #: Short description length
     description = models.TextField(
         blank=True,

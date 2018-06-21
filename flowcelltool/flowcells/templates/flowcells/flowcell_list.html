@@ -136,8 +136,13 @@
             </td>
             <td>
               <a href="{% url 'flowcell_view' uuid=flowcell.uuid %}"
-                 title="Show flow cell {{ flowcell.vendor_id }} details">
-                {{ flowcell.vendor_id }} {% if flowcell.label %} <small class="text-muted text-small">{{ flowcell.label }}</small>{% endif %}
+                 title="Show flow cell {{ flowcell.vendor_id }} details {% if flowcell.manual_label and flowcell.label %}[Original label: {{ flowcell.label }}.]{% endif %}">
+                {{ flowcell.vendor_id }}
+                {% if flowcell.manual_label %}
+                  <small class="text-muted text-small">{{ flowcell.manual_label }}</small>
+                {% elif flowcell.label %}
+                  <small class="text-muted text-small">{{ flowcell.label }}</small>
+                {% endif %}
               </a>
             </td>
             <td>
