@@ -6,6 +6,8 @@ History
 HEAD
 ----
 
+- Differentiating between "initial state" and "ready" for demultiplexing.
+- Allow flagging individual steps as ``complete_warnings``.
 - Fixing issue with validation errors late in the XLSX import (#141, #142).
 - Adding ``manual_label`` to ``FlowCell`` (#147).
 - Adding run number to flowcell list.

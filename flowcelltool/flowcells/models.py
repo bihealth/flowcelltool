@@ -348,14 +348,21 @@ class BarcodeSetEntry(UuidStampedMixin, TimeStampedModel):
 
 # FlowCell and related -------------------------------------------------------
 
-#: Status for "initial"/"not started"
+#: Status for "initial"/"not started", not automatically started yet for
+#: conersion.
 STATUS_INITIAL = 'initial'
+
+#: Status for "ready to start"
+STATUS_READY = 'ready'
 
 #: Status for "in progress"
 STATUS_IN_PROGRESS = 'in_progress'
 
 #: Status for "complete" (automatic)
 STATUS_COMPLETE = 'complete'
+
+#: Status for "complete_warnings" (manual)
+STATUS_COMPLETE_WARNINGS = 'complete_warnings'
 
 #: Status for "failed" (automatic)
 STATUS_FAILED = 'failed'
@@ -374,6 +381,7 @@ SEQUENCING_STATUS_CHOICES = (
     (STATUS_INITIAL, 'not started'),
     (STATUS_IN_PROGRESS, 'in progress'),
     (STATUS_COMPLETE, 'complete'),
+    (STATUS_COMPLETE_WARNINGS, 'complete with warnings'),
     (STATUS_CLOSED, 'released'),
     (STATUS_FAILED, 'failed'),
     (STATUS_CANCELED, 'failured confirmed'),
@@ -381,9 +389,11 @@ SEQUENCING_STATUS_CHOICES = (
 
 #: Statuses for base call to sequence conversion
 CONVERSION_STATUS_CHOICES = (
-    (STATUS_INITIAL, 'not started'),
+    (STATUS_INITIAL, 'keep unstarted'),
+    (STATUS_READY, 'ready to start'),
     (STATUS_IN_PROGRESS, 'in progress'),
     (STATUS_COMPLETE, 'complete'),
+    (STATUS_COMPLETE_WARNINGS, 'complete with warnings'),
     (STATUS_FAILED, 'failed'),
     (STATUS_CLOSED, 'released'),
     (STATUS_CANCELED, 'failured confirmed'),
@@ -395,6 +405,7 @@ DELIVERY_STATUS_CHOICES = (
     (STATUS_INITIAL, 'not started'),
     (STATUS_IN_PROGRESS, 'in progress'),
     (STATUS_COMPLETE, 'complete'),
+    (STATUS_COMPLETE_WARNINGS, 'complete with warnings'),
     (STATUS_CLOSED, 'received'),
     (STATUS_FAILED, 'canceled'),
     (STATUS_CANCELED, 'canceled confirmed'),

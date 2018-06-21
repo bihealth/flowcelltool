@@ -98,11 +98,13 @@ def flowcell_mode_ok(flowcell):
 @register.filter
 def status_to_icon(status):
     return {
-        'initial': 'fa fc-fw fa-hourglass-1 text-muted fc-super-muted',
+        'initial': 'fa fc-fw fa-asterisk text-muted fc-super-muted',
+        'ready': 'fa fc-fw fa-hourglass-1 text-info',
         'in_progress': 'fc-fw fa fa-hourglass-half',
         'complete': 'fa fc-fw fa-hourglass-end text-success',
         'failed': 'fa fc-fw fa-hourglass-end text-danger',
         'closed': 'fa fc-fw fa-check text-success',
+        'closed_warnings': 'fa fc-fw fa-warning text-warning',
         'canceled': 'fa fc-fw fa-close text-danger',
         'skipped': 'fa fc-fw fa-minus text-muted',
     }.get(status)
@@ -112,10 +114,12 @@ def status_to_icon(status):
 def status_to_title(status):
     return {
         'initial': 'not started',
+        'ready': 'ready to start',
         'in_progress': 'in progress',
         'complete': 'complete (but unconfirmed)',
         'failed': 'failed / canceled',
         'closed': 'released confirmed',
+        'closed_warnings': 'complete with warnings',
         'canceled': 'canceled confirmed',
         'skipped': 'skipped or N/A',
     }.get(status)
@@ -128,8 +132,12 @@ def get_status_form(flowcell, attribute, csrf_tag):
           <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_tag}" />
           <input type="hidden" name="attribute" value="{attribute}" />
             <button type="submit" name="status" value="initial" class="list-group-item list-group-item-action list-group-item-light p-2">
+                <i class="fa fa-fw fa-asterisk"></i>
+                reset to &quot;initial&quot;
+            </button>
+            <button type="submit" name="status" value="ready" class="list-group-item list-group-item-action list-group-item-info p-2">
                 <i class="fa fa-fw fa-hourglass-1"></i>
-                clear state
+                mark &quot;ready&quot;
             </button>
             <button type="submit" name="status" value="canceled" class="list-group-item list-group-item-action list-group-item-danger p-2">
                 <i class="fa fa-fw fa-close"></i>
@@ -138,6 +146,10 @@ def get_status_form(flowcell, attribute, csrf_tag):
             <button type="submit" name="status" value="closed" class="list-group-item list-group-item-action list-group-item-success p-2">
                 <i class="fa fa-fw fa-check"></i>
                 confirm success
+            </button>
+            <button type="submit" name="status" value="closed_warnings" class="list-group-item list-group-item-action list-group-item-warning p-2">
+                <i class="fa fa-fw fa-warning"></i>
+                mark &quot;complete with warnings&quot;
             </button>
             <button type="submit" name="status" value="skipped" class="list-group-item list-group-item-action list-group-item-secondary p-2">
                 <i class="fa fa-fw fa-minus"></i>

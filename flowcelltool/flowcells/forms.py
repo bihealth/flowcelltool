@@ -245,8 +245,10 @@ class FlowCellUpdateStatusForm(forms.Form):
     status = forms.ChoiceField(
         required=True,
         choices=tuple(zip(
-            ('initial', 'complete', 'failed', 'closed', 'canceled', 'skipped'),
-            ('initial', 'complete', 'failed', 'closed', 'canceled', 'skipped'))))
+            ('initial', 'ready', 'complete', 'failed', 'closed',
+             'closed_warnings', 'canceled', 'skipped'),
+            ('initial', 'ready', 'complete', 'failed', 'closed',
+             'closed_warnings', 'canceled', 'skipped'))))
 
 
 # Library multi-edit related -------------------------------------------------
