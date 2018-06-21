@@ -50,7 +50,6 @@ CACHES = {
 # ------------------------------------------------------------------------------
 MIDDLEWARE += (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'django_cprofile_middleware.middleware.ProfilerMiddleware',
 )
 
 INSTALLED_APPS += ('debug_toolbar', )
