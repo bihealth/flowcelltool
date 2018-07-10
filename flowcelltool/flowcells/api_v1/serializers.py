@@ -27,7 +27,7 @@ class BarcodeSetSerializer(serializers.ModelSerializer):
     class Meta:
         model = BarcodeSet
         fields = ('uuid', 'created', 'modified', 'name', 'short_name', 'description',
-                  'entries')
+                  'set_type', 'entries')
         read_only_fields = ('uuid', 'created', 'modified')
 
 

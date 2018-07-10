@@ -189,6 +189,13 @@ class SequencingMachine(UuidStampedMixin, TimeStampedModel):
 
 # BarcodeSet and related -----------------------------------------------------
 
+BARCODE_SET_GENERIC = 'generic'
+BARCODE_SET_10X_GENOMICS = '10x_genomics'
+BARCODE_SET_TYPES = (
+    (BARCODE_SET_GENERIC, 'generic'),
+    (BARCODE_SET_10X_GENOMICS, '10x genomics convention'),
+)
+
 
 class BarcodeSet(UuidStampedMixin, TimeStampedModel):
     """A set of barcodes with id => sequence mapping"""
@@ -212,6 +219,14 @@ class BarcodeSet(UuidStampedMixin, TimeStampedModel):
         blank=True, null=True,
         help_text=('Short description of the barcode set. ' +
                    markdown_allowed()))
+
+    #: The barcode set type (e.g., for 10x convention).
+    set_type = models.CharField(
+        max_length=100,
+        choices=BARCODE_SET_TYPES,
+        default=BARCODE_SET_GENERIC,
+        help_text='Type of barcode set.',
+    )
 
     def get_absolute_url(self):
         return reverse('barcodeset_view', kwargs={'uuid': self.uuid})

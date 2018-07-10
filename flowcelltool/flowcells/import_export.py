@@ -71,30 +71,38 @@ class FlowCellSampleSheetGenerator:
             return '\n'.join(rows)
         rows.append('  libraries:')
         for lib in self.flow_cell.libraries.order_by('name'):
-            rows += [
-                '    - name: {}'.format(repr(lib.name)),
-                '      reference: {}'.format(repr(lib.reference)),
-            ]
-            if lib.barcode_set and lib.barcode:
-                rows += [
-                    '      barcode_set: {}'.format(repr(
-                        lib.barcode_set.short_name)),
-                    '      barcode:',
-                    '        name: {}'.format(repr(lib.barcode.name)),
-                    '        seq: {}'.format(repr(lib.barcode.sequence)),
+            if lib.barcode_set.set_type == '10x_genomics':
+                seqs = [
+                    ('_S{}'.format(i + 1), seq) for
+                    (i, seq) in enumerate(lib.barcode.sequence.split(','))
                 ]
-            if lib.barcode_set2 and lib.barcode2:
+            else:
+                seqs = [('', lib.barcode.sequence)]
+            for suffix, seq in seqs:
                 rows += [
-                    '      barcode_set2: {}'.format(repr(
-                        lib.barcode_set2.short_name)),
-                    '      barcode2:',
-                    '        name: {}'.format(repr(lib.barcode2.name)),
-                    '        seq: {}'.format(repr(idx2mod(
-                        lib.barcode2.sequence))),
+                    '    - name: {}'.format(repr(lib.name + suffix)),
+                    '      reference: {}'.format(repr(lib.reference)),
                 ]
-            rows += [
-                '      lanes: {}'.format(list(sorted(lib.lane_numbers))),
-            ]
+                if lib.barcode_set and lib.barcode:
+                    rows += [
+                        '      barcode_set: {}'.format(repr(
+                            lib.barcode_set.short_name)),
+                        '      barcode:',
+                        '        name: {}'.format(repr(lib.barcode.name + suffix)),
+                        '        seq: {}'.format(repr(seq)),
+                    ]
+                if lib.barcode_set2 and lib.barcode2:
+                    rows += [
+                        '      barcode_set2: {}'.format(repr(
+                            lib.barcode_set2.short_name)),
+                        '      barcode2:',
+                        '        name: {}'.format(repr(lib.barcode2.name)),
+                        '        seq: {}'.format(repr(idx2mod(
+                            lib.barcode2.sequence))),
+                    ]
+                rows += [
+                    '      lanes: {}'.format(list(sorted(lib.lane_numbers))),
+                ]
         return '\n'.join(rows) + '\n'
 
     def build_v1(self):
@@ -107,19 +115,27 @@ class FlowCellSampleSheetGenerator:
         else:
             recipe = 'SE_indexing'
         for lib in self.flow_cell.libraries.order_by('name'):
-            for lane_no in sorted(lib.lane_numbers):
-                rows.append([
-                    self.flow_cell.vendor_id,
-                    lane_no,
-                    lib.name,
-                    lib.reference,
-                    lib.barcode.sequence,
-                    '',
-                    'N',  # not PhiX
-                    recipe,
-                    self.flow_cell.operator,
-                    'Project',
-                ])
+            if lib.barcode_set.set_type == '10x_genomics':
+                seqs = [
+                    ('_S{}'.format(i + 1), seq) for
+                    (i, seq) in enumerate(lib.barcode.sequence.split(','))
+                ]
+            else:
+                seqs = [('', lib.barcode.sequence)]
+            for suffix, seq in seqs:
+                for lane_no in sorted(lib.lane_numbers):
+                    rows.append([
+                        self.flow_cell.vendor_id,
+                        lane_no,
+                        lib.name + suffix,
+                        lib.reference,
+                        seq,
+                        '',
+                        'N',  # not PhiX
+                        recipe,
+                        self.flow_cell.operator,
+                        'Project',
+                    ])
         return '\n'.join(','.join(map(str, row)) for row in rows) + '\n'  # noqa
 
     def build_v2(self):
@@ -148,16 +164,24 @@ class FlowCellSampleSheetGenerator:
              'i7_Index_ID', 'index', 'Sample_Project', 'Description'],
         ]
         for lib in self.flow_cell.libraries.order_by('name'):
-            for lane_no in sorted(lib.lane_numbers):
-                rows.append([
-                    lane_no,
-                    lib.name,
-                    '',
-                    '',
-                    '',
-                    lib.barcode.name,
-                    lib.barcode.sequence,
-                    'Project',
-                    '',
-                ])
+            if lib.barcode_set.set_type == '10x_genomics':
+                seqs = [
+                    ('_S{}'.format(i + 1), seq) for
+                    (i, seq) in enumerate(lib.barcode.sequence.split(','))
+                ]
+            else:
+                seqs = [('', lib.barcode.sequence)]
+            for suffix, seq in seqs:
+                for lane_no in sorted(lib.lane_numbers):
+                    rows.append([
+                        lane_no,
+                        lib.name + suffix,
+                        '',
+                        '',
+                        '',
+                        lib.barcode.name,
+                        seq,
+                        'Project',
+                        '',
+                    ])
         return '\n'.join(','.join(map(str, row)) for row in rows) + '\n'  # noqa

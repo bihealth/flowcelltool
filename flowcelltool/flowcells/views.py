@@ -153,7 +153,7 @@ class BarcodeSetCreateView(
     model = models.BarcodeSet
 
     #: Fields to show in creation form
-    fields = ['name', 'short_name', 'description']
+    fields = ['name', 'short_name', 'description', 'set_type']
 
 
 class BarcodeSetDetailView(
@@ -174,7 +174,7 @@ class BarcodeSetUpdateView(
     model = models.BarcodeSet
 
     #: Fields to show in creation form
-    fields = ['name', 'short_name', 'description']
+    fields = ['name', 'short_name', 'description', 'set_type']
 
 
 class BarcodeSetDeleteView(
