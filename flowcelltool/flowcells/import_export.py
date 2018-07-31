@@ -65,6 +65,10 @@ class FlowCellSampleSheetGenerator:
             '  status_delivery: {}'.format(self.flow_cell.status_delivery),
             '  delivery_type: {}'.format(self.flow_cell.delivery_type),
             '  read_length: {}'.format(self.flow_cell.read_length),
+            '  bcl2fastq_args:',
+            '    barcode_mismatches: {}'.format(
+                'null' if self.flow_cell.barcode_mismatches is None
+                else self.flow_cell.barcode_mismatches),
         ]
         if not self.flow_cell.libraries.count():
             rows.append('  libraries: []')

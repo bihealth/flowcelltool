@@ -187,7 +187,7 @@ class FlowCellForm(forms.ModelForm):
 
         fields = ('name', 'manual_label', 'description', 'num_lanes', 'operator', 'demux_operator',
                   'rta_version', 'status_sequencing', 'status_conversion', 'status_delivery',
-                  'delivery_type')
+                  'delivery_type', 'barcode_mismatches')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -6,6 +6,7 @@ History
 HEAD
 ----
 
+- Allowing to specify argument for ``--barcode-mismatches``.
 - Differentiating between "initial state" and "ready" for demultiplexing.
 - Allow flagging individual steps as ``complete_warnings``.
 - Fixing issue with validation errors late in the XLSX import (#141, #142).

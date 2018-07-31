@@ -84,7 +84,7 @@ class FlowCellSerializer(serializers.ModelSerializer):
                   'operator', 'rta_version', 'info_planned_reads', 'info_final_reads',
                   'info_adapters', 'info_quality_scores',
                   'status_sequencing', 'status_conversion', 'status_delivery',
-                  'delivery_type', 'libraries', 'messages')
+                  'delivery_type', 'libraries', 'messages', 'barcode_mismatches')
         read_only_fields = ('uuid', 'owner', 'created', 'modified')
 
     def create(self, validated_data):

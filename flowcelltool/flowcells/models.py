@@ -597,6 +597,10 @@ class FlowCell(UuidStampedMixin, TimeStampedModel):
         max_length=50, default=DELIVERY_TYPE_SEQ, choices=DELIVERY_CHOICES,
         help_text='Choices for data delivery type')
 
+    #: Number of mismatches to allow, defaults to ``None`` which triggers to use the default.
+    barcode_mismatches = models.PositiveSmallIntegerField(
+        null=True, blank=True, help_text='Number of mismatches to allow')
+
     def get_full_name(self):
         """Return full flow cell name"""
         if all(not x for x in (self.run_date, self.sequencing_machine,
