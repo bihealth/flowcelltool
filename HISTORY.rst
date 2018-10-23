@@ -2,9 +2,9 @@
 History
 =======
 
-----
-HEAD
-----
+------
+v0.4.0
+------
 
 - Allowing to specify argument for ``--barcode-mismatches``.
 - Differentiating between "initial state" and "ready" for demultiplexing.
